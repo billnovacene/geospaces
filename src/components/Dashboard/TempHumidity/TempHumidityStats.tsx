@@ -1,20 +1,7 @@
 
 import { StatCard } from "@/components/Dashboard/TempHumidity/StatCard";
 import { LiveDataMetrics } from "@/components/Dashboard/TempHumidity/LiveDataMetrics";
-
-interface StatsData {
-  avgTemp: number;
-  minTemp: number;
-  maxTemp: number;
-  avgHumidity: number;
-  lastSeen?: string;
-  status: {
-    avgTemp: 'good' | 'caution' | 'warning';
-    minTemp: 'good' | 'caution' | 'warning';
-    maxTemp: 'good' | 'caution' | 'warning';
-    avgHumidity: 'good' | 'caution' | 'warning';
-  };
-}
+import { StatsData } from "@/services/interfaces/temp-humidity";
 
 interface TempHumidityStatsProps {
   stats: StatsData;
@@ -24,7 +11,7 @@ export function TempHumidityStats({
   stats
 }: TempHumidityStatsProps) {
   return (
-    <div className="grid grid-cols-5 gap-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
       <StatCard 
         title="Avg Temperature" 
         value={stats.avgTemp.toFixed(1)} 

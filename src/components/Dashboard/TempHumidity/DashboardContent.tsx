@@ -3,15 +3,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TemperatureGuide } from "@/components/Dashboard/TempHumidity/TemperatureGuide";
 import { MonthlyChart } from "@/components/Dashboard/TempHumidity/MonthlyChart";
 import { DailyChart } from "@/components/Dashboard/TempHumidity/DailyChart";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
-import { MonthlyOverviewPoint } from "@/services/temp-humidity";
+import { MonthlyOverviewPoint, DailyOverviewPoint, StatsData } from "@/services/interfaces/temp-humidity";
 
 interface DashboardContentProps {
   data: {
-    daily: any[];
+    daily: DailyOverviewPoint[];
     monthly: MonthlyOverviewPoint[];
-    stats: any;
+    stats: StatsData;
   };
   contextName?: string;
 }
@@ -65,7 +63,7 @@ export function DashboardContent({ data, contextName = "All Locations" }: Dashbo
       <div className="mb-16">
         <Card className="shadow-sm border-0">
           <CardContent className="p-8">
-            <div className="grid grid-cols-4 gap-8 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-8 items-center">
               <div className="col-span-1">
                 <h2 className="text-xl font-medium mb-4">Monthly Overview - {contextName}</h2>
                 <p className="text-sm text-gray-600">
@@ -74,7 +72,7 @@ export function DashboardContent({ data, contextName = "All Locations" }: Dashbo
                   show the largest temperature variations.
                 </p>
               </div>
-              <div className="col-span-3">
+              <div className="col-span-1 lg:col-span-3">
                 <MonthlyChart data={data.monthly} />
               </div>
             </div>
@@ -86,7 +84,7 @@ export function DashboardContent({ data, contextName = "All Locations" }: Dashbo
       <div className="mb-12">
         <Card className="shadow-sm border-0">
           <CardContent className="p-8">
-            <div className="grid grid-cols-4 gap-8 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-8 items-center">
               <div className="col-span-1">
                 <h2 className="text-xl font-medium mb-4">Daily Overview - {contextName}</h2>
                 <p className="text-sm text-gray-600">
@@ -95,7 +93,7 @@ export function DashboardContent({ data, contextName = "All Locations" }: Dashbo
                 </p>
               </div>
               
-              <div className="col-span-3">
+              <div className="col-span-1 lg:col-span-3">
                 <DailyChart data={data.daily} />
               </div>
             </div>
