@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesForZone } from "@/services/devices";
@@ -14,6 +14,7 @@ import { DeviceCard } from "./DeviceCard";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DevicesTableSkeleton } from "@/components/Site/DevicesTableSkeleton";
+import { toast } from "sonner";
 
 interface ZoneDevicesProps {
   zoneId: number;
@@ -35,18 +36,35 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
     }
   };
 
-  const { data: devices, isLoading, error } = useQuery({
+  const { data: devices, isLoading, error, refetch } = useQuery({
     queryKey: ["zone-devices-list", zoneId],
     queryFn: () => fetchDevicesForZone(zoneId),
     enabled: !!zoneId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  // Effect to refetch when zoneId changes
+  useEffect(() => {
+    if (zoneId) {
+      refetch();
+    }
+  }, [zoneId, refetch]);
+
   console.log(`Devices for zone ${zoneId}:`, devices);
+  console.log(`Number of devices:`, devices?.length || 0);
 
   // Prepare and sort device data
   const devicesData = prepareDeviceData(devices || []);
   const sortedDevicesData = getSortedData(devicesData, sortField, sortDirection);
+
+  console.log("Prepared device data:", devicesData);
+  console.log("Sorted device data:", sortedDevicesData);
+
+  // Add a refresh handler
+  const handleRefresh = () => {
+    toast.info("Refreshing devices data...");
+    refetch();
+  };
 
   return (
     <Card className="mb-8">
@@ -60,18 +78,26 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
             </Badge>
           </CardTitle>
           
-          <Tabs value={view} onValueChange={(v) => setView(v as "table" | "cards")} className="w-auto">
-            <TabsList className="grid w-[200px] grid-cols-2">
-              <TabsTrigger value="table">
-                <Table2 className="h-4 w-4 mr-2" />
-                Table
-              </TabsTrigger>
-              <TabsTrigger value="cards">
-                <LayoutGrid className="h-4 w-4 mr-2" />
-                Cards
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={handleRefresh} 
+              className="text-xs text-primary hover:underline flex items-center gap-1"
+            >
+              Refresh
+            </button>
+            <Tabs value={view} onValueChange={(v) => setView(v as "table" | "cards")} className="w-auto">
+              <TabsList className="grid w-[200px] grid-cols-2">
+                <TabsTrigger value="table">
+                  <Table2 className="h-4 w-4 mr-2" />
+                  Table
+                </TabsTrigger>
+                <TabsTrigger value="cards">
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  Cards
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
       </CardHeader>
       <CardContent>

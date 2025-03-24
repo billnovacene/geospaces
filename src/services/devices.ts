@@ -1,3 +1,4 @@
+
 import { apiRequest } from "./api-client";
 import { toast } from "sonner";
 
@@ -109,8 +110,10 @@ export const fetchDevicesForZone = async (zoneId: number): Promise<Device[]> => 
   try {
     console.log(`Fetching devices for zone ${zoneId} from API...`);
     
+    // Add nocache parameter to avoid caching issues
+    const nocache = new Date().getTime();
     const response = await apiRequest<DevicesResponse>(
-      `/devices?zoneids=${zoneId}&limit=100&nodeveui=false&includeSensors=true`
+      `/devices?zoneids=${zoneId}&limit=100&nodeveui=false&includeSensors=true&nocache=${nocache}`
     );
     
     console.log(`Devices API response for zone ${zoneId}:`, response);
@@ -131,7 +134,7 @@ export const fetchDevicesForZone = async (zoneId: number): Promise<Device[]> => 
         modelId: device.modelId,
         createdAt: device.createdAt,
         updatedAt: device.updatedAt,
-        sensors: device.sensors,
+        sensors: device.sensors || [],
         status: device.isRemoved ? "Inactive" : "Active",
         isRemoved: device.isRemoved,
         zoneName: device.zoneName || (device.zone ? device.zone.name : null),
@@ -152,8 +155,10 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
   try {
     console.log(`Fetching devices for site ${siteId} from API...`);
     
+    // Add nocache parameter to avoid caching issues  
+    const nocache = new Date().getTime();
     const response = await apiRequest<DevicesResponse>(
-      `/devices?siteid=${siteId}&limit=100&nodeveui=false&includeSensors=true`
+      `/devices?siteid=${siteId}&limit=100&nodeveui=false&includeSensors=true&nocache=${nocache}`
     );
     
     console.log(`Devices API response for site ${siteId}:`, response);
@@ -174,7 +179,7 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
         modelId: device.modelId,
         createdAt: device.createdAt,
         updatedAt: device.updatedAt,
-        sensors: device.sensors,
+        sensors: device.sensors || [],
         status: device.isRemoved ? "Inactive" : "Active",
         isRemoved: device.isRemoved,
         zoneName: device.zoneName || (device.zone ? device.zone.name : null),

@@ -43,6 +43,8 @@ export const getSortedData = (data: any[], sortField: string | null, sortDirecti
 export const prepareDeviceData = (devices: any[]) => {
   if (!devices || devices.length === 0) return [];
   
+  console.log("Raw devices data:", devices);
+  
   return devices.map(device => {
     // Extract sensor data
     const co2Sensor = device.sensors?.find((s: any) => s.name?.toLowerCase().includes('co2'));
@@ -70,6 +72,12 @@ export const prepareDeviceData = (devices: any[]) => {
 
     const derivedStatus = hasCriticalValue ? "Inactive" : (hasWarningValue ? "Warning" : "Active");
     
+    console.log(`Prepared device ${device.id}: ${device.name}`, { 
+      co2: co2Value, 
+      temp: tempValue, 
+      humidity: humidityValue 
+    });
+    
     return {
       id: device.id,
       name: device.name,
@@ -94,8 +102,5 @@ export const prepareDeviceData = (devices: any[]) => {
         thresholds: null
       }
     };
-  }).filter(device => 
-    // Filter condition - show all devices if they have sensors, even if they don't have readings yet
-    device.id !== undefined
-  );
+  });
 };

@@ -12,22 +12,32 @@ import { ZoneErrorState } from "@/components/Zone/ZoneErrorState";
 import { ZoneDevices } from "@/components/Zone/ZoneDevices";
 import { SubZonesList } from "@/components/Zone/SubZonesList";
 import { useZoneArea } from "@/hooks/useZoneArea";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 const ZoneDetail = () => {
   const { zoneId } = useParams<{ zoneId: string }>();
   
-  const { data: zone, isLoading, error } = useQuery({
+  const { data: zone, isLoading, error, refetch: refetchZone } = useQuery({
     queryKey: ["zone", zoneId],
     queryFn: () => fetchZone(Number(zoneId)),
     enabled: !!zoneId,
   });
 
-  const { data: deviceCount, isLoading: deviceCountLoading } = useQuery({
+  const { data: deviceCount, isLoading: deviceCountLoading, refetch: refetchDeviceCount } = useQuery({
     queryKey: ["zone-devices", zoneId],
     queryFn: () => fetchDevicesCountForZone(Number(zoneId)),
     enabled: !!zoneId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Effect to refresh data when zoneId changes
+  useEffect(() => {
+    if (zoneId) {
+      refetchZone();
+      refetchDeviceCount();
+    }
+  }, [zoneId, refetchZone, refetchDeviceCount]);
 
   console.log(`Fetching details for zone ${zoneId}`);
   console.log("Zone data in ZoneDetail:", zone);
@@ -35,6 +45,12 @@ const ZoneDetail = () => {
   console.log("Zone device count from API:", deviceCount);
 
   const areaValue = useZoneArea(zone);
+
+  const handleRefresh = () => {
+    toast.info("Refreshing zone data...");
+    refetchZone();
+    refetchDeviceCount();
+  };
 
   return (
     <SidebarWrapper>
@@ -45,7 +61,15 @@ const ZoneDetail = () => {
           <ZoneErrorState />
         ) : (
           <>
-            <ZoneDetailHeader zone={zone} />
+            <div className="flex justify-between items-start mb-6">
+              <ZoneDetailHeader zone={zone} />
+              <button 
+                onClick={handleRefresh}
+                className="text-xs text-primary hover:underline"
+              >
+                Refresh Data
+              </button>
+            </div>
 
             <div className="grid gap-6 md:grid-cols-2 mb-8">
               <ZoneDetailsCard 
