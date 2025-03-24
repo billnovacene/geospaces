@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
+import { zoneDevicesCache } from "@/services/zones";
 
 const ZoneDetail = () => {
   const { zoneId } = useParams<{ zoneId: string }>();
@@ -29,6 +30,14 @@ const ZoneDetail = () => {
     } catch (e) {
       return dateString;
     }
+  };
+
+  // Get device count (prioritize cache)
+  const getDeviceCount = (zoneId: number | undefined) => {
+    if (zoneId && zoneDevicesCache[zoneId] !== undefined && zoneDevicesCache[zoneId] > 0) {
+      return zoneDevicesCache[zoneId];
+    }
+    return zone?.devices || 0;
   };
 
   // Get status color
@@ -111,7 +120,7 @@ const ZoneDetail = () => {
                       <CardContent className="p-4">
                         <div>
                           <p className="text-sm font-medium">Devices</p>
-                          <p className="text-2xl font-bold">{zone.devices || 0}</p>
+                          <p className="text-2xl font-bold">{getDeviceCount(zone.id)}</p>
                         </div>
                       </CardContent>
                     </Card>
