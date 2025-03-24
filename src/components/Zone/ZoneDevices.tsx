@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesForZone } from "@/services/devices";
-import { Wifi, Table2, LayoutGrid } from "lucide-react";
+import { Wifi, Table2, LayoutGrid, RefreshCw } from "lucide-react";
 import { ErrorDevicesState } from "@/components/Site/ErrorDevicesState";
 import { EmptyDevicesState } from "@/components/Site/EmptyDevicesState";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -15,16 +15,20 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DevicesTableSkeleton } from "@/components/Site/DevicesTableSkeleton";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { TooltipWrapper } from "@/components/UI/TooltipWrapper";
 
 interface ZoneDevicesProps {
   zoneId: number;
+  siteId?: number;
 }
 
-export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
+export const ZoneDevices = ({ zoneId, siteId }: ZoneDevicesProps) => {
   // Sorting state
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [view, setView] = useState<"table" | "cards">("table");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Handle sorting
   const handleSort = (field: string) => {
@@ -38,7 +42,7 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
 
   const { data: devices, isLoading, error, refetch } = useQuery({
     queryKey: ["zone-devices-list", zoneId],
-    queryFn: () => fetchDevicesForZone(zoneId),
+    queryFn: () => fetchDevicesForZone(zoneId, siteId),
     enabled: !!zoneId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -50,7 +54,7 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
     }
   }, [zoneId, refetch]);
 
-  console.log(`Devices for zone ${zoneId}:`, devices);
+  console.log(`Devices for zone ${zoneId} (including sub-zones):`, devices);
   console.log(`Number of devices:`, devices?.length || 0);
 
   // Prepare and sort device data
@@ -61,9 +65,11 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
   console.log("Sorted device data:", sortedDevicesData);
 
   // Add a refresh handler
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
     toast.info("Refreshing devices data...");
-    refetch();
+    await refetch();
+    setIsRefreshing(false);
   };
 
   return (
@@ -73,18 +79,24 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
           <CardTitle className="flex items-center gap-2">
             <Wifi className="h-5 w-5 text-primary" />
             Devices in Zone
-            <Badge variant="outline" className="ml-2">
-              {devices?.length || 0}
-            </Badge>
+            <TooltipWrapper content="Shows devices from current zone and all sub-zones">
+              <Badge variant="outline" className="ml-2">
+                {devices?.length || 0}
+              </Badge>
+            </TooltipWrapper>
           </CardTitle>
           
           <div className="flex items-center gap-2">
-            <button 
+            <Button 
+              variant="outline"
+              size="sm"
               onClick={handleRefresh} 
-              className="text-xs text-primary hover:underline flex items-center gap-1"
+              className="text-xs flex items-center gap-1"
+              disabled={isRefreshing}
             >
+              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
               Refresh
-            </button>
+            </Button>
             <Tabs value={view} onValueChange={(v) => setView(v as "table" | "cards")} className="w-auto">
               <TabsList className="grid w-[200px] grid-cols-2">
                 <TabsTrigger value="table">
@@ -117,7 +129,7 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
                       <TableColumnHeader field="status" label="Status" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} className="w-[80px]" />
                       <TableColumnHeader field="signal" label="Signal" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} className="w-[80px]" />
                       <TableColumnHeader field="name" label="Device Name" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
-                      <TableColumnHeader field="location" label="Location" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
+                      <TableColumnHeader field="location" label="Zone" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
                       <TableColumnHeader field="co2" label="Active Measure 1" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
                       <TableColumnHeader field="temperature" label="Active Measure 2" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
                       <TableColumnHeader field="humidity" label="Active Measure 3" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
