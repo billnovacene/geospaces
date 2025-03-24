@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,7 +23,6 @@ import {
 import { getStatusColor } from "@/utils/formatting";
 import { format } from "date-fns";
 import {
-  Chart,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
