@@ -18,7 +18,7 @@ export function DashboardContent({ data }: DashboardContentProps) {
     <>
       {/* Temperature Guide */}
       <div className="mb-8">
-        <Card className="shadow-sm">
+        <Card className="shadow-sm border-0">
           <CardContent className="p-6">
             <TemperatureGuide />
           </CardContent>
@@ -27,7 +27,7 @@ export function DashboardContent({ data }: DashboardContentProps) {
 
       {/* Monthly Overview */}
       <div className="mb-8">
-        <Card className="shadow-sm">
+        <Card className="shadow-sm border-0">
           <CardContent className="p-8">
             <div className="grid grid-cols-4 gap-8 items-center">
               <div className="col-span-1">
@@ -48,7 +48,7 @@ export function DashboardContent({ data }: DashboardContentProps) {
 
       {/* Daily Overview */}
       <div className="mb-8">
-        <Card className="shadow-sm">
+        <Card className="shadow-sm border-0">
           <CardContent className="p-8">
             <div className="grid grid-cols-4 gap-8 items-center">
               <div className="col-span-1">
