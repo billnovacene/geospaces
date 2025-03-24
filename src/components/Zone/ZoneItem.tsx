@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesCountForZone } from "@/services/devices";
 import { Skeleton } from "@/components/ui/skeleton";
 import { calculateTotalZoneDevices, sumZoneAndChildrenDevices } from "@/utils/zoneUtils";
+import { TooltipWrapper } from "@/components/UI/TooltipWrapper";
 
 interface ZoneItemProps {
   zone: Zone;
@@ -43,24 +44,6 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
   
   // Calculate direct device count from zone data
   const zoneDirectDevices = calculateTotalZoneDevices(zone);
-  
-  // Only sum up children's devices if this is a parent zone
-  let totalDeviceCount = zoneDirectDevices;
-  if (hasChildren) {
-    // Calculate total by summing this zone's devices with children's devices
-    const summedTotal = sumZoneAndChildrenDevices(zone);
-    
-    console.log(`DISPLAY: Zone ${zone.name} - Direct count: ${zoneDirectDevices}, Total including children: ${summedTotal}`);
-    
-    // Debug log for child zones
-    if (zone.children) {
-      console.log(`Children of ${zone.name}:`);
-      zone.children.forEach(child => {
-        const childDevices = calculateTotalZoneDevices(child);
-        console.log(`- ${child.name}: ${childDevices} direct devices`);
-      });
-    }
-  }
   
   // Render the appropriate status icon based on the icon name
   const renderStatusIcon = () => {
@@ -103,13 +86,10 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
           ) : (
             <div className="text-sm text-muted-foreground">
               {hasChildren ? (
-                // For parent zones with children, ONLY show direct device count
-                // This is a key change - we're not showing combined counts anymore
                 <span title="Direct devices in this zone">
                   {directDeviceCount || zoneDirectDevices} devices
                 </span>
               ) : (
-                // For leaf zones, just show device count
                 <span>{directDeviceCount || zoneDirectDevices} devices</span>
               )}
             </div>
