@@ -21,7 +21,7 @@ const ProjectDetail = () => {
     enabled: !!projectId,
   });
 
-  console.log("Project data:", project); // Debug log to see what's coming from API
+  console.log("Project data in ProjectDetail:", project); // Enhanced debug log
 
   if (error) {
     return (

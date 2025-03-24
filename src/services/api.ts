@@ -93,10 +93,40 @@ export const fetchProjects = async (): Promise<Project[]> => {
   }
 };
 
+// Cache for project devices counts from the list endpoint
+let projectDevicesCache: Record<number, number> = {};
+
 // Function to fetch a single project
 export const fetchProject = async (id: string): Promise<Project | null> => {
   try {
     console.log(`Fetching project ${id} from API...`);
+    
+    // First, try to get the project from the projects list to ensure we have accurate device count
+    try {
+      const projectsResponse = await fetch(`${API_BASE_URL}/projects`, {
+        method: "GET",
+        headers: {
+          "accept": "application/json",
+          "api_token": API_TOKEN
+        }
+      });
+      
+      if (projectsResponse.ok) {
+        const projectsData = await projectsResponse.json();
+        const projectsList = projectsData.list || [];
+        const projectId = parseInt(id, 10);
+        const matchingProject = projectsList.find((p: any) => p.id === projectId);
+        
+        if (matchingProject && matchingProject.devices !== undefined) {
+          console.log(`Caching device count ${matchingProject.devices} for project ${id}`);
+          projectDevicesCache[projectId] = matchingProject.devices;
+        }
+      }
+    } catch (listError) {
+      console.error("Error fetching projects list for device count:", listError);
+    }
+    
+    // Now fetch the individual project details
     const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
       method: "GET",
       headers: {
@@ -114,43 +144,20 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
     const data = await response.json();
     console.log(`Project ${id} API response:`, data);
     
-    // Detailed debugging for the device count
-    console.log(`Project devices raw value:`, data.project?.devices || data.devices);
-    
     // Check if the response has a project property and use it
     const projectData = data.project || data;
     
     if (projectData) {
-      // First try to get devices from the response
-      const devicesFromResponse = projectData.devices;
+      const projectId = projectData.id;
       
-      // As a fallback for the device count discrepancy, check if we have a device count in projects list
-      // We'll make a separate API call to get this information if not available
-      let deviceCount = devicesFromResponse;
+      // Use the cached device count if available, otherwise use the one from the response
+      let deviceCount = projectData.devices;
       
+      // If device count is missing or zero, try to use the cached value
       if (deviceCount === 0 || deviceCount === undefined || deviceCount === null) {
-        console.log("Device count is missing or zero, attempting to fetch from projects list");
-        try {
-          const projectsResponse = await fetch(`${API_BASE_URL}/projects`, {
-            method: "GET",
-            headers: {
-              "accept": "application/json",
-              "api_token": API_TOKEN
-            }
-          });
-          
-          if (projectsResponse.ok) {
-            const projectsData = await projectsResponse.json();
-            const projectsList = projectsData.list || [];
-            const matchingProject = projectsList.find((p: any) => p.id === projectData.id);
-            
-            if (matchingProject && matchingProject.devices) {
-              console.log(`Found device count ${matchingProject.devices} from projects list`);
-              deviceCount = matchingProject.devices;
-            }
-          }
-        } catch (listError) {
-          console.error("Error fetching projects list for device count:", listError);
+        if (projectDevicesCache[projectId] !== undefined) {
+          console.log(`Using cached device count: ${projectDevicesCache[projectId]}`);
+          deviceCount = projectDevicesCache[projectId];
         }
       }
       
