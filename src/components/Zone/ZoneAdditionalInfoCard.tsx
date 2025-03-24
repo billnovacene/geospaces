@@ -1,0 +1,43 @@
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Zone } from "@/services/interfaces";
+import { formatDate } from "@/utils/formatting";
+
+interface ZoneAdditionalInfoCardProps {
+  zone: Zone;
+  formatLocation: () => React.ReactNode;
+}
+
+export const ZoneAdditionalInfoCard = ({ zone, formatLocation }: ZoneAdditionalInfoCardProps) => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Additional Information</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <h3 className="font-medium text-sm text-muted-foreground mb-1">Last Updated</h3>
+          <p>{formatDate(zone.updatedAt)}</p>
+        </div>
+        
+        {zone.location && (
+          <div>
+            <h3 className="font-medium text-sm text-muted-foreground mb-1">Location Data</h3>
+            {formatLocation()}
+          </div>
+        )}
+        
+        {zone.fields && zone.fields.length > 0 && (
+          <div>
+            <h3 className="font-medium text-sm text-muted-foreground mb-1">Custom Fields</h3>
+            <div className="border rounded-lg p-3">
+              <pre className="text-xs overflow-auto max-h-48">
+                {JSON.stringify(zone.fields, null, 2)}
+              </pre>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
