@@ -21,7 +21,7 @@ export function SiteListItem({ site, isActive }: SiteListItemProps) {
           <span className="text-sm font-medium text-gray-900">{site.name}</span>
         </div>
         <span className="text-sm text-[#8E9196]">
-          {typeof site.devices === 'number' ? site.devices : 0}
+          {typeof site.devices === 'number' ? site.devices : 0} devices
         </span>
       </div>
     </Link>
