@@ -18,8 +18,15 @@ export default function Dashboard() {
     queryFn: fetchProjects,
   });
 
+  // Log when projects data changes
+  useEffect(() => {
+    console.log("Dashboard received projects data:", projects);
+    console.log("Total projects in Dashboard:", projects.length);
+  }, [projects]);
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    console.log("Manual refresh triggered");
     await refetch();
     toast.success("Data refreshed successfully");
     setIsRefreshing(false);
