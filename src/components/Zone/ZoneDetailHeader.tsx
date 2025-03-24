@@ -1,10 +1,17 @@
 
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Zone } from "@/services/interfaces";
 import { getStatusColor } from "@/utils/formatting";
 import { Link } from "react-router-dom";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { HomeIcon } from "lucide-react";
 
 interface ZoneDetailHeaderProps {
   zone: Zone;
@@ -13,12 +20,31 @@ interface ZoneDetailHeaderProps {
 export const ZoneDetailHeader = ({ zone }: ZoneDetailHeaderProps) => {
   return (
     <>
-      <Button variant="outline" size="sm" asChild className="mb-8">
-        <Link to={`/site/${zone.siteId}`}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Site
-        </Link>
-      </Button>
+      <div className="mb-8">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/">
+                  <HomeIcon className="h-3.5 w-3.5" />
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to={`/site/${zone.siteId}`}>
+                  Site
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{zone.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
@@ -33,4 +59,4 @@ export const ZoneDetailHeader = ({ zone }: ZoneDetailHeaderProps) => {
       </div>
     </>
   );
-};
+}
