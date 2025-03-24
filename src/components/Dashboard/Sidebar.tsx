@@ -86,7 +86,7 @@ function DashboardItem({
       </div>
       <div className="flex items-center gap-2">
         <span className="text-sm text-[#8E9196]">{count}</span>
-        <Checkbox checked={checked} className="rounded-[3px] border-[#8E9196]" />
+        <Checkbox checked={checked} className="rounded-[3px] border-[#8E9196] bg-neutral-200 hover:bg-neutral-100 text-zinc-400" />
       </div>
     </div>;
 }
@@ -122,8 +122,8 @@ function DashboardSidebar() {
 
           <SidebarSection title="Filter Devices">
             <div className="bg-[#F6F7F9] py-2 px-4 cursor-pointer hover:bg-[#F0F1F3] flex items-center justify-between">
-              <span className="font-medium text-sm">Dashboards</span>
-              <Checkbox checked={true} className="rounded-[3px] border-[#8E9196]" />
+              <span className="font-medium text-sm text-zinc-800">Dashboards</span>
+              <Checkbox checked={true} className="rounded-[3px] border-[#8E9196] bg-zinc-200 hover:bg-zinc-100 text-zinc-500" />
             </div>
             <DashboardItem name="All Data" count={20} />
             <DashboardItem name="Temperature & Humidity" count={20} />
