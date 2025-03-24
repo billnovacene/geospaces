@@ -1,6 +1,8 @@
+
 import { apiRequest } from "./api-client";
 import { toast } from "sonner";
 import { fetchZones } from "./api";
+import { Zone } from "./interfaces";
 
 // Interface for Device data
 export interface Device {
@@ -147,7 +149,7 @@ export const fetchDevicesForZone = async (zoneId: number, siteId?: number): Prom
     // If no siteId is provided, first get the zone to retrieve its siteId
     if (!siteId) {
       try {
-        const zoneResponse = await apiRequest(`/zones/${zoneId}`);
+        const zoneResponse = await apiRequest<Zone>(`/zones/${zoneId}`);
         if (zoneResponse && zoneResponse.siteId) {
           siteId = zoneResponse.siteId;
           console.log(`Retrieved siteId ${siteId} for zone ${zoneId}`);
