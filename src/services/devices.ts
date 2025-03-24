@@ -6,4 +6,4 @@ export * from "./device-zones";
 export * from "./device-sites";
 
 // Export devices API with alias to maintain backward compatibility
-export { fetchDevicesCountForSite as fetchDevicesCount };
+export { fetchDevicesCountForSite as fetchDevicesCount } from "./device-sites";
