@@ -1,8 +1,9 @@
-
+import { useEffect, useState } from "react";
 import { Building } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Site } from "@/services/interfaces";
+import { fetchDevicesCountForSite } from "@/services/device-sites";
 
 interface SiteListItemProps {
   site: Site;
@@ -10,6 +11,29 @@ interface SiteListItemProps {
 }
 
 export function SiteListItem({ site, isActive }: SiteListItemProps) {
+  const [deviceCount, setDeviceCount] = useState<number | null>(null);
+  
+  useEffect(() => {
+    // Use the initial count while we fetch the accurate count
+    const initialCount = typeof site.devices === 'number' ? site.devices : 0;
+    setDeviceCount(initialCount);
+    
+    // Fetch the accurate device count from the API
+    const fetchDeviceCount = async () => {
+      try {
+        console.log(`Fetching device count for site ${site.id}...`);
+        const count = await fetchDevicesCountForSite(site.id);
+        console.log(`Device count for site ${site.id}: ${count}`);
+        setDeviceCount(count);
+      } catch (error) {
+        console.error(`Error fetching device count for site ${site.id}:`, error);
+        // Keep the initial count if there's an error
+      }
+    };
+    
+    fetchDeviceCount();
+  }, [site.id, site.devices]);
+
   return (
     <Link key={site.id} to={`/site/${site.id}`}>
       <div className={cn(
@@ -21,7 +45,7 @@ export function SiteListItem({ site, isActive }: SiteListItemProps) {
           <span className="text-sm font-medium text-gray-900">{site.name}</span>
         </div>
         <span className="text-sm text-[#8E9196]">
-          {typeof site.devices === 'number' ? site.devices : 0} devices
+          {deviceCount !== null ? deviceCount : '...'} devices
         </span>
       </div>
     </Link>
