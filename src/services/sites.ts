@@ -38,7 +38,7 @@ export const fetchSites = async (projectId: number): Promise<Site[]> => {
         name: site.name,
         address: site.locationText || site.address,
         description: site.description,
-        devices: deviceCount,
+        devices: deviceCount, // Ensure we're returning the parsed numeric value
         projectId: site.projectId,
         createdAt: site.createdAt,
         updatedAt: site.updatedAt,
@@ -94,7 +94,7 @@ export const fetchSite = async (siteId: number): Promise<Site | null> => {
       name: data.name,
       address: data.locationText || data.address,
       description: data.description,
-      devices: deviceCount,
+      devices: deviceCount, // Make sure we're returning the numeric value
       projectId: data.projectId,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,

@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSite } from "@/services/api";
@@ -12,6 +11,7 @@ import { format } from "date-fns";
 import { ZonesList } from "@/components/Site/ZonesList";
 import { ZonesHierarchyList } from "@/components/Site/ZonesHierarchyList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { siteDevicesCache } from "@/services/sites";
 
 const SiteDetail = () => {
   const { siteId } = useParams<{ siteId: string }>();
@@ -23,6 +23,7 @@ const SiteDetail = () => {
   });
 
   console.log("Site data in SiteDetail:", site);
+  console.log("Cached device count for this site:", site?.id ? siteDevicesCache[site.id] : "No cache");
 
   // Format date
   const formatDate = (dateString: string | undefined) => {
@@ -46,6 +47,24 @@ const SiteDetail = () => {
       default:
         return "bg-gray-100 text-gray-800";
     }
+  };
+
+  // Get device count (prioritize cache)
+  const getDeviceCount = () => {
+    if (!site) return 0;
+    
+    if (site.id && siteDevicesCache[site.id] !== undefined && siteDevicesCache[site.id] > 0) {
+      console.log(`Using cached device count in detail page: ${siteDevicesCache[site.id]}`);
+      return siteDevicesCache[site.id];
+    }
+    
+    // Fall back to the site's direct device count
+    const directCount = typeof site.devices === 'number' 
+      ? site.devices 
+      : parseInt(String(site.devices), 10) || 0;
+    
+    console.log(`Using direct device count in detail page: ${directCount}`);
+    return directCount;
   };
 
   return (
@@ -118,7 +137,7 @@ const SiteDetail = () => {
                       <CardContent className="p-4">
                         <div>
                           <p className="text-sm font-medium">Devices</p>
-                          <p className="text-2xl font-bold">{site.devices || 0}</p>
+                          <p className="text-2xl font-bold">{getDeviceCount()}</p>
                         </div>
                       </CardContent>
                     </Card>
