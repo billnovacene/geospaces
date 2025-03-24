@@ -10,7 +10,7 @@ import { getStatusInfo } from "@/utils/zones";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesCountForZone } from "@/services/devices";
 import { Skeleton } from "@/components/ui/skeleton";
-import { calculateTotalZoneDevices } from "@/utils/zoneUtils";
+import { calculateTotalZoneDevices, sumZoneAndChildrenDevices } from "@/utils/zoneUtils";
 
 interface ZoneItemProps {
   zone: Zone;
@@ -33,22 +33,31 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
   
-  // Log device count when it changes - outside the useQuery options
+  // Log the direct device count when it changes
   if (directDeviceCount !== undefined) {
-    console.log(`Direct device count for zone ${zone.id} (${zone.name}): ${directDeviceCount}`);
+    console.log(`API: Direct device count for zone ${zone.id} (${zone.name}): ${directDeviceCount}`);
   }
   
-  // Calculate total devices from this zone and its children
-  let totalDeviceCount = 0;
+  // For debugging: log the raw device count from the zone object
+  console.log(`RAW: Zone ${zone.name} (ID: ${zone.id}) raw devices property: ${zone.devices} (${typeof zone.devices})`);
+  
+  // Calculate direct device count from zone data
+  const zoneDirectDevices = calculateTotalZoneDevices(zone);
+  
+  // Only sum up children's devices if this is a parent zone
+  let totalDeviceCount = zoneDirectDevices;
   if (hasChildren) {
-    totalDeviceCount = calculateTotalZoneDevices(zone);
-    console.log(`Total device count (including children) for ${zone.name}: ${totalDeviceCount}`);
+    // Calculate total by summing this zone's devices with children's devices
+    const summedTotal = sumZoneAndChildrenDevices(zone);
+    
+    console.log(`DISPLAY: Zone ${zone.name} - Direct count: ${zoneDirectDevices}, Total including children: ${summedTotal}`);
     
     // Debug log for child zones
     if (zone.children) {
-      console.log(`${zone.name} has ${zone.children.length} children:`);
+      console.log(`Children of ${zone.name}:`);
       zone.children.forEach(child => {
-        console.log(`- ${child.name}: ${child.devices || 0} devices`);
+        const childDevices = calculateTotalZoneDevices(child);
+        console.log(`- ${child.name}: ${childDevices} direct devices`);
       });
     }
   }
@@ -94,13 +103,14 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
           ) : (
             <div className="text-sm text-muted-foreground">
               {hasChildren ? (
-                // For parent zones with children, show total/direct count
-                <span title="Total devices / Direct devices">
-                  {totalDeviceCount} / {directDeviceCount || 0} devices
+                // For parent zones with children, ONLY show direct device count
+                // This is a key change - we're not showing combined counts anymore
+                <span title="Direct devices in this zone">
+                  {directDeviceCount || zoneDirectDevices} devices
                 </span>
               ) : (
                 // For leaf zones, just show device count
-                <span>{directDeviceCount || 0} devices</span>
+                <span>{directDeviceCount || zoneDirectDevices} devices</span>
               )}
             </div>
           )}
