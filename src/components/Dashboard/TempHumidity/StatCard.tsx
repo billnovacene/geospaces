@@ -1,7 +1,5 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
 interface StatCardProps {
   title: string;
   value: number | string;
@@ -10,8 +8,14 @@ interface StatCardProps {
   description?: string;
   large?: boolean;
 }
-
-export function StatCard({ title, value, unit, status, description, large }: StatCardProps) {
+export function StatCard({
+  title,
+  value,
+  unit,
+  status,
+  description,
+  large
+}: StatCardProps) {
   const getStatusColor = (status: 'good' | 'caution' | 'warning') => {
     switch (status) {
       case 'good':
@@ -24,7 +28,6 @@ export function StatCard({ title, value, unit, status, description, large }: Sta
         return 'text-gray-500';
     }
   };
-
   const getStatusText = (status: 'good' | 'caution' | 'warning') => {
     switch (status) {
       case 'good':
@@ -37,41 +40,22 @@ export function StatCard({ title, value, unit, status, description, large }: Sta
         return 'Unknown';
     }
   };
-
-  return (
-    <Card className="overflow-hidden">
+  return <Card className="overflow-hidden">
       <CardContent className="p-0">
-        <div className="p-4">
+        <div className="px-[5px] mx-[5px]">
           <div className="flex flex-col items-center text-center">
             <div className="flex items-center">
-              <span className={cn(
-                "font-bold",
-                large ? "text-3xl" : "text-2xl"
-              )}>{value}</span>
-              {unit && <span className={cn(
-                "ml-1",
-                large ? "text-xl" : "text-lg"
-              )}>{unit}</span>}
+              <span className={cn("font-bold", large ? "text-3xl" : "text-2xl")}>{value}</span>
+              {unit && <span className={cn("ml-1", large ? "text-xl" : "text-lg")}>{unit}</span>}
             </div>
             <div className="mt-1 text-sm text-muted-foreground">{title}</div>
             
-            <div className={cn(
-              "mt-3 text-sm font-medium",
-              getStatusColor(status)
-            )}>
+            <div className={cn("mt-3 text-sm font-medium", getStatusColor(status))}>
               {getStatusText(status)}
             </div>
           </div>
         </div>
-        <div 
-          className={cn(
-            "h-1 w-full", 
-            status === 'good' ? "bg-green-500" : 
-            status === 'caution' ? "bg-amber-500" : 
-            "bg-red-500"
-          )} 
-        />
+        <div className={cn("h-1 w-full", status === 'good' ? "bg-green-500" : status === 'caution' ? "bg-amber-500" : "bg-red-500")} />
       </CardContent>
-    </Card>
-  );
+    </Card>;
 }
