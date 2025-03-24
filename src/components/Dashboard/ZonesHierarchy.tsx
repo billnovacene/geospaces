@@ -2,10 +2,11 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, Home } from "lucide-react";
+import { AlertTriangle, Home, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fetchZonesHierarchy } from "@/services/zones";
 import { Zone } from "@/services/interfaces";
+import { toast } from "sonner";
 
 interface ZonesHierarchyProps {
   siteId: number | null;
@@ -17,12 +18,21 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
   const { zoneId } = useParams<{ zoneId: string }>();
   const activeZoneId = zoneId ? Number(zoneId) : null;
   
+  console.log("ZonesHierarchy: Current siteId:", siteId);
+  console.log("ZonesHierarchy: Current activeZoneId:", activeZoneId);
+  
   // Fetch zones hierarchy data for the sidebar
   const { data: zones = [], isLoading, error } = useQuery({
     queryKey: ["zones-hierarchy", siteId],
     queryFn: () => siteId ? fetchZonesHierarchy(siteId) : Promise.resolve([]),
     enabled: !!siteId,
   });
+  
+  // Log zones data for debugging
+  useEffect(() => {
+    console.log("ZonesHierarchy: Zones data received:", zones);
+    console.log("ZonesHierarchy: Number of zones:", zones.length);
+  }, [zones]);
   
   // Expand parent zones of the active zone automatically
   useEffect(() => {
@@ -61,11 +71,20 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
   
   // Render zone items recursively
   const renderZoneItems = (zones: Zone[], depth = 0) => {
+    if (!zones || zones.length === 0) {
+      console.log(`No zones to render at depth ${depth}`);
+      return null;
+    }
+    
+    console.log(`Rendering ${zones.length} zones at depth ${depth}`);
+    
     return zones.map(zone => {
       const hasChildren = zone.children && zone.children.length > 0;
       const isExpanded = expandedZones.includes(zone.id);
       const isActive = activeZoneId === zone.id;
       const deviceCount = typeof zone.devices === 'number' ? zone.devices : parseInt(String(zone.devices), 10) || 0;
+      
+      console.log(`Zone: ${zone.name}, ID: ${zone.id}, isActive: ${isActive}, Children: ${zone.children?.length || 0}`);
       
       return (
         <div key={zone.id}>
@@ -92,7 +111,11 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
                 )}
                 onClick={(e) => e.stopPropagation()}
               >
-                {isActive ? `📍 ${zone.name}` : zone.name} {/* Add pin emoji to active zone */}
+                {isActive ? (
+                  <span className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3" /> {zone.name}
+                  </span>
+                ) : zone.name}
               </Link>
             </div>
             <span className="text-sm text-[#8E9196]">{deviceCount}</span>
@@ -123,6 +146,9 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
     );
   }
   
+  // Log rendering information
+  console.log(`Rendering ZonesHierarchy: isLoading=${isLoading}, hasError=${!!error}, zonesCount=${zones?.length}`);
+  
   return (
     <>
       <Link to={`/site/${siteId}`} className="block">
@@ -146,4 +172,3 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
     </>
   );
 }
-
