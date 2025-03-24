@@ -1,6 +1,5 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { TemperatureGuide } from "@/components/Dashboard/TempHumidity/TemperatureGuide";
 import { MonthlyChart } from "@/components/Dashboard/TempHumidity/MonthlyChart";
 import { DailyChart } from "@/components/Dashboard/TempHumidity/DailyChart";
 import { MonthlyOverviewPoint, DailyOverviewPoint, StatsData } from "@/services/interfaces/temp-humidity";
@@ -50,15 +49,6 @@ export function DashboardContent({ data, contextName = "All Locations" }: Dashbo
 
   return (
     <>
-      {/* Temperature Guide */}
-      <div className="mb-12">
-        <Card className="shadow-sm border-0">
-          <CardContent className="p-6">
-            <TemperatureGuide />
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Monthly Overview */}
       <div className="mb-16">
         <Card className="shadow-sm border-0">
