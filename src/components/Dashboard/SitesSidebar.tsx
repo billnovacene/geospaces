@@ -1,5 +1,5 @@
 
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,9 +8,33 @@ import { SitesSidebarError } from "./SitesSidebarError";
 import { SitesSidebarEmpty } from "./SitesSidebarEmpty";
 import { useSitesList } from "@/hooks/useSitesList";
 
-export function SitesSidebar() {
+interface SitesSidebarProps {
+  preserveDashboardRoute?: boolean;
+  currentDashboard?: string;
+}
+
+export function SitesSidebar({
+  preserveDashboardRoute = false,
+  currentDashboard = ""
+}: SitesSidebarProps) {
   const { siteId } = useParams<{ siteId: string }>();
+  const location = useLocation();
   const activeSiteId = siteId ? Number(siteId) : null;
+  
+  // Get the current dashboard path if needed
+  const getDashboardPath = () => {
+    if (!preserveDashboardRoute) return '';
+    
+    if (currentDashboard === "temp-humidity") {
+      return '/dashboard/temp-humidity';
+    } else if (location.pathname.includes('/dashboard')) {
+      return '/dashboard';
+    }
+    
+    return '';
+  };
+  
+  const dashboardPath = getDashboardPath();
   
   // Use project ID 145 instead of 1
   const projectId = 145;
@@ -18,6 +42,7 @@ export function SitesSidebar() {
   const { activeSites, sites, isLoading, error, refetch } = useSitesList(projectId);
   
   console.log(`SitesSidebar: Rendering with ${sites.length} total sites, ${activeSites.length} active sites`);
+  console.log(`Preserving dashboard: ${preserveDashboardRoute}, dashboardPath=${dashboardPath}`);
 
   if (isLoading) {
     return (
@@ -54,6 +79,7 @@ export function SitesSidebar() {
           key={site.id}
           site={site}
           isActive={activeSiteId === site.id}
+          linkTo={preserveDashboardRoute && dashboardPath ? `/site/${site.id}${dashboardPath}` : undefined}
         />
       ))}
     </div>

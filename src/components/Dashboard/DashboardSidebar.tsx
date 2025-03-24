@@ -3,10 +3,9 @@ import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import { SidebarSection } from "./SidebarSection";
 import { SidebarZoneItem } from "./SidebarZoneItem";
 import { SidebarDashboardItem } from "./SidebarDashboardItem";
@@ -17,6 +16,11 @@ import { fetchZone } from "@/services/zones";
 
 export function DashboardSidebar() {
   const { siteId, zoneId } = useParams<{ siteId: string, zoneId: string }>();
+  const location = useLocation();
+  
+  // Check if we're on a dashboard route
+  const isDashboardRoute = location.pathname.includes('/dashboard');
+  const isTempHumidityRoute = location.pathname.includes('/dashboard/temp-humidity');
   
   const validSiteId = siteId && !isNaN(Number(siteId)) ? Number(siteId) : null;
   const validZoneId = zoneId && !isNaN(Number(zoneId)) ? Number(zoneId) : null;
@@ -31,7 +35,7 @@ export function DashboardSidebar() {
   
   return (
     <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
-      <SidebarContent className="p-0">
+      <SidebarContent className="p-0 flex flex-col h-full">
         <div className="p-5 flex items-center justify-between border-b border-[#E5E7EB] bg-white">
           <div className="space-y-1.5">
             <div className="text-sm text-[#8E9196]">Projects</div>
@@ -55,21 +59,40 @@ export function DashboardSidebar() {
             <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center">
               <span className="font-medium text-sm text-zinc-800">Dashboards</span>
             </div>
-            <SidebarDashboardItem name="All Data" to="/dashboard" />
-            <SidebarDashboardItem name="Temperature & Humidity" to="/dashboard/temp-humidity" />
-            <SidebarDashboardItem name="Energy" />
-            <SidebarDashboardItem name="Co2" />
+            <SidebarDashboardItem 
+              name="All Data" 
+              to="/dashboard" 
+              contextPath={zoneId ? `/zone/${zoneId}` : (siteId ? `/site/${siteId}` : '')}
+            />
+            <SidebarDashboardItem 
+              name="Temperature & Humidity" 
+              to="/dashboard/temp-humidity" 
+              contextPath={zoneId ? `/zone/${zoneId}` : (siteId ? `/site/${siteId}` : '')}
+            />
+            <SidebarDashboardItem 
+              name="Energy" 
+              contextPath={zoneId ? `/zone/${zoneId}` : (siteId ? `/site/${siteId}` : '')}
+            />
+            <SidebarDashboardItem 
+              name="Co2" 
+              contextPath={zoneId ? `/zone/${zoneId}` : (siteId ? `/site/${siteId}` : '')}
+            />
           </SidebarSection>
         </div>
 
         <div className="overflow-y-auto flex-1">
           <SidebarSection title="Sites">
-            <SitesSidebar />
+            <SitesSidebar preserveDashboardRoute={isDashboardRoute} currentDashboard={isTempHumidityRoute ? "temp-humidity" : ""} />
           </SidebarSection>
 
           <SidebarSection title="Zones">
             {effectiveSiteId ? (
-              <ZonesHierarchy siteId={effectiveSiteId} />
+              <ZonesHierarchy 
+                siteId={effectiveSiteId} 
+                preserveDashboardRoute={isDashboardRoute}
+                currentDashboard={isTempHumidityRoute ? "temp-humidity" : ""}
+                hideZonesWithoutSensors={true}
+              />
             ) : validZoneId && zoneData ? (
               <div className="py-2.5 px-5 text-sm bg-white">
                 <div className="flex items-center gap-1.5 text-primary">
