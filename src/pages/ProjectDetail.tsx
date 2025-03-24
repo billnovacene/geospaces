@@ -43,6 +43,15 @@ const ProjectDetail = () => {
     }
   };
 
+  // Helper function to safely get description text
+  const getDescriptionText = (description: any): string => {
+    if (!description) return "No description provided";
+    if (typeof description === 'object' && description.value) {
+      return description.value;
+    }
+    return String(description);
+  };
+
   if (error) {
     return (
       <SidebarWrapper>
@@ -131,13 +140,7 @@ const ProjectDetail = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-sm text-muted-foreground mb-1">Description</h3>
-                    <p>
-                      {project?.description 
-                        ? (typeof project?.description === 'object' 
-                            ? (project?.description?.value || "No description provided") 
-                            : project?.description)
-                        : "No description provided"}
-                    </p>
+                    <p>{getDescriptionText(project?.description)}</p>
                   </div>
                   
                   <div className="pt-2 grid grid-cols-2 gap-4">
@@ -229,4 +232,3 @@ const ProjectDetail = () => {
 };
 
 export default ProjectDetail;
-
