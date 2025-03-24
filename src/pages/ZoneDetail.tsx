@@ -10,6 +10,7 @@ import { ZoneAdditionalInfoCard } from "@/components/Zone/ZoneAdditionalInfoCard
 import { ZoneLoadingSkeleton } from "@/components/Zone/ZoneLoadingSkeleton";
 import { ZoneErrorState } from "@/components/Zone/ZoneErrorState";
 import { ZoneDevices } from "@/components/Zone/ZoneDevices";
+import { SubZonesList } from "@/components/Zone/SubZonesList";
 import { useZoneArea } from "@/hooks/useZoneArea";
 
 const ZoneDetail = () => {
@@ -56,8 +57,11 @@ const ZoneDetail = () => {
               <ZoneAdditionalInfoCard zone={zone} />
             </div>
             
-            {/* Explicitly pass the zoneId to ensure correct data fetching */}
+            {/* Devices Table */}
             <ZoneDevices zoneId={Number(zoneId)} />
+            
+            {/* Sub-Zones List */}
+            <SubZonesList parentZoneId={Number(zoneId)} />
           </>
         )}
       </div>

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 export const zoneDevicesCache: Record<number, number> = {};
 
 // Function to organize zones in a hierarchical structure
-const organizeZonesHierarchy = (zones: Zone[]): Zone[] => {
+export const organizeZonesHierarchy = (zones: Zone[]): Zone[] => {
   // Create a map of zones by ID for easy lookup
   const zoneMap = new Map<number, Zone>();
   zones.forEach(zone => {
@@ -37,11 +37,23 @@ const organizeZonesHierarchy = (zones: Zone[]): Zone[] => {
 };
 
 // Function to fetch zones for a site
-export const fetchZones = async (siteId: number): Promise<Zone[]> => {
+export const fetchZones = async (siteId: number, parentZoneId?: number): Promise<Zone[]> => {
   try {
-    console.log(`Fetching zones for site ${siteId} from API...`);
-    const data = await apiRequest<PaginatedResponse<Zone>>(`/zones?siteid=${siteId}`);
-    console.log(`Zones for site ${siteId} API response:`, data);
+    // Determine the API endpoint based on whether we're fetching by site or parent zone
+    let endpoint = '';
+    if (parentZoneId) {
+      console.log(`Fetching sub-zones for parent zone ${parentZoneId} from API...`);
+      endpoint = `/zones?parent=${parentZoneId}`;
+    } else if (siteId) {
+      console.log(`Fetching zones for site ${siteId} from API...`);
+      endpoint = `/zones?siteid=${siteId}`;
+    } else {
+      console.error('Either siteId or parentZoneId must be provided');
+      return [];
+    }
+    
+    const data = await apiRequest<PaginatedResponse<Zone>>(endpoint);
+    console.log(`Zones API response:`, data);
     
     const zones = data.list || [];
     console.log('Number of zones received:', zones.length);
@@ -77,10 +89,9 @@ export const fetchZones = async (siteId: number): Promise<Zone[]> => {
     }));
 
     // Return all zones as a flat list for compatibility with existing code
-    // Note: You can use organizeZonesHierarchy(transformedZones) to get hierarchical zones
     return transformedZones;
   } catch (error) {
-    console.error(`Error fetching zones for site ${siteId}:`, error);
+    console.error(`Error fetching zones:`, error);
     toast.error("Failed to fetch zones. Please try again later.");
     return [];
   }
