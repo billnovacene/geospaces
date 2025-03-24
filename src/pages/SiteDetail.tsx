@@ -93,12 +93,12 @@ const SiteDetail = () => {
             </div>
 
             {/* Devices Measurements Table */}
-            <div className="table-container mb-10 section-spacing">
+            <div className="settings-card mb-10 section-spacing">
               <SiteDevicesMeasurementTable siteId={site.id} />
             </div>
 
             {/* Zones Tabs */}
-            <div className="section-spacing">
+            <div className="settings-card section-spacing">
               <SiteZonesTabs siteId={site.id} />
             </div>
           </>
