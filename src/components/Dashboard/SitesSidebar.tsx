@@ -14,7 +14,7 @@ export function SitesSidebar() {
   // The default project ID is 1 - we could make this configurable in the future
   const projectId = 1;
   
-  const { data: sites = [], isLoading, error } = useQuery({
+  const { data: sites = [], isLoading, error, refetch } = useQuery({
     queryKey: ["sites-sidebar"],
     queryFn: () => fetchSites(projectId),
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -45,11 +45,17 @@ export function SitesSidebar() {
       <div className="py-2.5 px-5 text-sm text-red-500 flex items-center gap-2">
         <AlertTriangle className="h-4 w-4" />
         <span>Error loading sites</span>
+        <button 
+          onClick={() => refetch()} 
+          className="ml-2 text-xs text-primary hover:underline"
+        >
+          Retry
+        </button>
       </div>
     );
   }
 
-  // If no sites are available, show this instead of using example sites
+  // If no sites are available, show this instead
   if (activeSites.length === 0) {
     return (
       <div className="py-2.5 px-5 text-sm text-[#8E9196]">
@@ -62,19 +68,13 @@ export function SitesSidebar() {
     );
   }
 
-  // Example sites for the Zircon project - only shown when API doesn't return sites
-  const zirconSites = activeSites.length > 0 ? activeSites : [
-    { id: 101, name: "Office", devices: 12 },
-    { id: 102, name: "Sandbox", devices: 8 }
-  ];
-
   return (
     <div className="site-listing">
       <div className="py-2 px-5 mb-2 text-sm font-medium text-zinc-500">
-        Project: Zircon ({zirconSites.length} sites)
+        Project: Zircon ({activeSites.length} sites)
       </div>
       
-      {zirconSites.map(site => (
+      {activeSites.map(site => (
         <Link key={site.id} to={`/site/${site.id}`}>
           <div className={cn(
             "flex items-center justify-between py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
