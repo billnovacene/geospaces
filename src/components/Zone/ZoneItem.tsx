@@ -34,6 +34,9 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
     enabled: !!zone.id,
     // Don't refetch unnecessarily
     staleTime: 5 * 60 * 1000, // 5 minutes
+    onSuccess: (count) => {
+      console.log(`Direct device count for zone ${zone.id} (${zone.name}): ${count}`);
+    }
   });
   
   // Render the appropriate status icon based on the icon name
