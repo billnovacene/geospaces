@@ -18,6 +18,7 @@ export function DashboardSidebar() {
   
   // Check if we have a valid siteId
   const validSiteId = siteId && !isNaN(Number(siteId)) ? Number(siteId) : null;
+  const validZoneId = zoneId && !isNaN(Number(zoneId)) ? Number(zoneId) : null;
   
   return (
     <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
@@ -44,12 +45,16 @@ export function DashboardSidebar() {
             <SitesSidebar />
           </SidebarSection>
 
-          {/* Only show Zones section if a site is selected */}
-          {validSiteId && (
-            <SidebarSection title="Zones">
+          {/* Always show Zones section, but with ZonesHierarchy only when a site is selected */}
+          <SidebarSection title="Zones">
+            {validSiteId ? (
               <ZonesHierarchy siteId={validSiteId} />
-            </SidebarSection>
-          )}
+            ) : (
+              <div className="py-2.5 px-5 text-sm text-[#8E9196] bg-white">
+                Select a site to view zones
+              </div>
+            )}
+          </SidebarSection>
 
           <SidebarSection title="Filter Devices">
             <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center justify-between">
