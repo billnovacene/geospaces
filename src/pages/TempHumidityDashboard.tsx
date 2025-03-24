@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
@@ -28,7 +29,7 @@ export default function TempHumidityDashboard() {
 
   return (
     <SidebarWrapper>
-      <div className="container mx-auto py-6 px-4">
+      <div className="container mx-auto py-8 px-6 md:px-8 lg:px-12">
         <div className="mb-4">
           <Breadcrumb>
             <BreadcrumbList>
