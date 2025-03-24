@@ -20,6 +20,8 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  console.log(`Devices for zone ${zoneId}:`, devices);
+
   // Format date
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return "N/A";
@@ -35,7 +37,7 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
           <Wifi className="h-5 w-5 text-primary" />
-          Devices in Zone
+          Devices in Zone {zoneId}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -61,7 +63,7 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
           </div>
         ) : !devices || devices.length === 0 ? (
           <div className="text-center py-8 border rounded-md bg-muted/30">
-            <p className="text-muted-foreground">No devices found in this zone</p>
+            <p className="text-muted-foreground">No devices found in zone {zoneId}</p>
           </div>
         ) : (
           <div className="grid gap-3">

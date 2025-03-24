@@ -28,6 +28,7 @@ const ZoneDetail = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  console.log(`Fetching details for zone ${zoneId}`);
   console.log("Zone data in ZoneDetail:", zone);
   console.log("Zone location data:", zone?.location);
   console.log("Zone device count from API:", deviceCount);
@@ -55,10 +56,8 @@ const ZoneDetail = () => {
               <ZoneAdditionalInfoCard zone={zone} />
             </div>
             
-            {/* Add the new ZoneDevices component */}
-            {zoneId && (
-              <ZoneDevices zoneId={Number(zoneId)} />
-            )}
+            {/* Explicitly pass the zoneId to ensure correct data fetching */}
+            <ZoneDevices zoneId={Number(zoneId)} />
           </>
         )}
       </div>
