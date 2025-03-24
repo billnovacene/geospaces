@@ -5,7 +5,7 @@ import { fetchSites } from "@/services/api";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, AlertTriangle, Building2 } from "lucide-react";
+import { Search, MapPin, AlertTriangle, Building2, Cpu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -71,8 +71,10 @@ export function SitesList({ projectId }: SitesListProps) {
   // Get device count (prioritize cache)
   const getDeviceCount = (site: any) => {
     if (site.id && siteDevicesCache[site.id] !== undefined && siteDevicesCache[site.id] > 0) {
+      console.log(`Using cached device count for site ${site.id}: ${siteDevicesCache[site.id]}`);
       return siteDevicesCache[site.id];
     }
+    console.log(`Using direct device count for site ${site.id}: ${site.devices}`);
     return typeof site.devices === 'number' ? site.devices : parseInt(String(site.devices), 10) || 0;
   };
 
@@ -179,7 +181,12 @@ export function SitesList({ projectId }: SitesListProps) {
                         "No location"
                       )}
                     </TableCell>
-                    <TableCell>{deviceCount}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <Cpu className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                        <span>{deviceCount}</span>
+                      </div>
+                    </TableCell>
                     <TableCell>{formatDate(site.createdAt)}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={statusInfo.color}>
