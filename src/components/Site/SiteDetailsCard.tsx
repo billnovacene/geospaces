@@ -1,4 +1,3 @@
-
 import { Site } from "@/services/interfaces";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,12 +10,29 @@ interface SiteDetailsCardProps {
 }
 
 export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCardProps) {
-  // Get device count with properly prioritized logic
   const getDeviceCount = () => {
     if (!site) return 0;
     
-    // Log all possible device count sources for debugging
-    const directCount = typeof site.devices === 'number' 
+    // Extract the actual device count from the original API response as a string
+    // This is often formatted as "38/38" for active/total devices
+    let rawDeviceString = "";
+    if (typeof site.devices === 'string') {
+      rawDeviceString = site.devices;
+      console.log(`Site ${site.id} - Original device string: "${rawDeviceString}"`);
+    }
+    
+    // Try to parse the raw device string if it's in format "X/Y"
+    let extractedCount = 0;
+    if (rawDeviceString && rawDeviceString.includes('/')) {
+      const parts = rawDeviceString.split('/');
+      if (parts.length > 0 && !isNaN(parseInt(parts[0]))) {
+        extractedCount = parseInt(parts[0]);
+        console.log(`Site ${site.id} - Extracted first number from "${rawDeviceString}": ${extractedCount}`);
+      }
+    }
+    
+    // Get other possible device count sources
+    const directNumericCount = typeof site.devices === 'number' 
       ? site.devices 
       : parseInt(String(site.devices), 10) || 0;
     
@@ -24,15 +40,39 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
     const cachedCount = site.id && siteDevicesCache[site.id] !== undefined ? siteDevicesCache[site.id] : 0;
     
     console.log(`Site ${site.id} - Device count sources:`, {
-      directFromAPI: directCount,
+      rawDeviceString,
+      extractedFromRawString: extractedCount,
+      directNumeric: directNumericCount,
       calculatedFromZones: zoneCalculatedCount,
       fromCache: cachedCount
     });
     
-    // Use the maximum value from all sources
-    const maxCount = Math.max(directCount, zoneCalculatedCount, cachedCount);
-    console.log(`Site ${site.id} - Using maximum device count: ${maxCount}`);
-    return maxCount;
+    // Prioritize the extracted count from the original string if available
+    if (extractedCount > 0) {
+      console.log(`Site ${site.id} - Using extracted device count: ${extractedCount}`);
+      return extractedCount;
+    }
+    
+    // Otherwise, use the direct numeric count if positive
+    if (directNumericCount > 0) {
+      console.log(`Site ${site.id} - Using direct numeric count: ${directNumericCount}`);
+      return directNumericCount;
+    }
+    
+    // Then try zone-calculated count if positive
+    if (zoneCalculatedCount > 0) {
+      console.log(`Site ${site.id} - Using zone-calculated count: ${zoneCalculatedCount}`);
+      return zoneCalculatedCount;
+    }
+    
+    // Finally, use cached count if available
+    if (cachedCount > 0) {
+      console.log(`Site ${site.id} - Using cached count: ${cachedCount}`);
+      return cachedCount;
+    }
+    
+    console.log(`Site ${site.id} - No valid device count found, returning 0`);
+    return 0;
   };
 
   // Calculate the device count once

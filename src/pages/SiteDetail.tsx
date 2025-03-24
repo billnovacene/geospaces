@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSite, fetchZones } from "@/services/api";
@@ -32,49 +31,43 @@ const SiteDetail = () => {
   // Calculate total devices from zones when zones data is available
   useEffect(() => {
     if (zones) {
+      console.log(`Site ${siteId} - Raw zone data:`, zones);
       console.log(`Site ${siteId} - Processing ${zones.length} zones to calculate total devices`);
       
-      // Check each zone and log its device count for debugging
+      // Print original site device data for debugging
+      if (site) {
+        console.log(`Site ${siteId} - Original device data type: ${typeof site.devices}`);
+        console.log(`Site ${siteId} - Original device value: ${site.devices}`);
+      }
+      
+      // Count zones with devices for debugging
       let zonesWithDevices = 0;
+      let totalDevicesFound = 0;
+      
+      // Analyze each zone's device count
       zones.forEach(zone => {
+        const rawZoneDevices = zone.devices;
+        console.log(`Zone ${zone.id} - Raw device value: ${rawZoneDevices} (${typeof rawZoneDevices})`);
+        
         const zoneDevices = typeof zone.devices === 'number' 
           ? zone.devices 
           : parseInt(String(zone.devices), 10) || 0;
         
         if (zoneDevices > 0) {
           zonesWithDevices++;
-          console.log(`Zone ${zone.id} - Has ${zoneDevices} devices`);
+          totalDevicesFound += zoneDevices;
+          console.log(`Zone ${zone.id} - Has ${zoneDevices} devices (parsed)`);
         }
       });
       
-      const deviceTotal = zones.reduce((total, zone) => {
-        const zoneDevices = typeof zone.devices === 'number' 
-          ? zone.devices 
-          : parseInt(String(zone.devices), 10) || 0;
-        return total + zoneDevices;
-      }, 0);
+      // Set the calculated total from zones
+      console.log(`Site ${siteId} - Found ${totalDevicesFound} devices across ${zonesWithDevices} zones`);
+      setTotalDevicesFromZones(totalDevicesFound);
       
-      console.log(`Site ${siteId} - Total devices calculated from zones: ${deviceTotal} (${zonesWithDevices} zones with devices)`);
-      setTotalDevicesFromZones(deviceTotal);
-      
-      // Update the cache with this calculated count
-      if (site?.id) {
-        // Determine the best count to cache
-        const directCount = typeof site.devices === 'number' 
-          ? site.devices 
-          : parseInt(String(site.devices), 10) || 0;
-        
-        const bestCount = Math.max(directCount, deviceTotal);
-        console.log(`Site ${siteId} - Updating device cache with best count: ${bestCount}`);
-        siteDevicesCache[site.id] = bestCount;
-      }
+      // Don't update the cache automatically - let the SiteDetailsCard component decide
+      // which count is best based on its prioritization logic
     }
   }, [zones, siteId, site]);
-
-  // Enhanced debugging
-  console.log(`Site ${siteId} - Original devices property:`, site?.devices);
-  console.log(`Site ${siteId} - Cached device count:`, site?.id ? siteDevicesCache[site.id] : "No cache");
-  console.log(`Site ${siteId} - Total devices from zones:`, totalDevicesFromZones);
 
   return (
     <SidebarWrapper>
