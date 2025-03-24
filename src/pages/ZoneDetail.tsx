@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZone } from "@/services/api";
+import { fetchDevicesCountForZone } from "@/services/devices";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -9,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { zoneDevicesCache } from "@/services/zones";
+import { getStatusColor } from "@/utils/formatting";
 
 const ZoneDetail = () => {
   const { zoneId } = useParams<{ zoneId: string }>();
