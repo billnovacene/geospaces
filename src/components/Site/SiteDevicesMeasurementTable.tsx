@@ -3,11 +3,13 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSiteDevices } from "@/services/devices";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertTriangle } from "lucide-react";
 import { TableColumnHeader } from "./TableColumnHeader";
 import { DeviceTableRow } from "./DeviceTableRow";
+import { DevicesTableSkeleton } from "./DevicesTableSkeleton";
+import { EmptyDevicesState } from "./EmptyDevicesState";
+import { ErrorDevicesState } from "./ErrorDevicesState";
 import { prepareDeviceData, getSortedData } from "@/utils/deviceTableUtils";
 
 interface SiteDevicesMeasurementTableProps {
@@ -47,74 +49,57 @@ export const SiteDevicesMeasurementTable = ({ siteId }: SiteDevicesMeasurementTa
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="space-y-3">
-            <Skeleton className="w-full h-10" />
-            <Skeleton className="w-full h-10" />
-            <Skeleton className="w-full h-10" />
-            <Skeleton className="w-full h-10" />
-          </div>
+          <DevicesTableSkeleton />
         ) : error ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <AlertTriangle className="mx-auto h-8 w-8 mb-2 text-yellow-500" />
-            <p>Error loading devices. Please try again later.</p>
-          </div>
+          <ErrorDevicesState />
         ) : sortedDevicesData.length === 0 ? (
-          <div className="text-center py-8 border rounded-md bg-muted/30">
-            <p className="text-muted-foreground">No devices with sensor data found for this site</p>
-          </div>
+          <EmptyDevicesState />
         ) : (
-          <div className="rounded-md border overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px]">Status</TableHead>
-                  <TableHead className="w-[80px]">Signal</TableHead>
-                  <TableColumnHeader 
-                    field="name"
-                    label="Device Name"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                  />
-                  <TableColumnHeader 
-                    field="location"
-                    label="Location"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                  />
-                  <TableColumnHeader 
-                    field="co2"
-                    label="Active Measure 1"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                  />
-                  <TableColumnHeader 
-                    field="temperature"
-                    label="Active Measure 2"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                  />
-                  <TableColumnHeader 
-                    field="humidity"
-                    label="Active Measure 3"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                  />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedDevicesData.map((device) => (
-                  <DeviceTableRow key={device.id} device={device} />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <DevicesMeasurementTable 
+            sortedDevicesData={sortedDevicesData} 
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+          />
         )}
       </CardContent>
     </Card>
+  );
+};
+
+interface DevicesMeasurementTableProps {
+  sortedDevicesData: any[];
+  sortField: string | null;
+  sortDirection: 'asc' | 'desc';
+  onSort: (field: string) => void;
+}
+
+const DevicesMeasurementTable = ({ 
+  sortedDevicesData, 
+  sortField, 
+  sortDirection, 
+  onSort 
+}: DevicesMeasurementTableProps) => {
+  return (
+    <div className="rounded-md border overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableColumnHeader field="status" label="Status" sortField={sortField} sortDirection={sortDirection} onSort={onSort} className="w-[80px]" />
+            <TableColumnHeader field="signal" label="Signal" sortField={sortField} sortDirection={sortDirection} onSort={onSort} className="w-[80px]" />
+            <TableColumnHeader field="name" label="Device Name" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
+            <TableColumnHeader field="location" label="Location" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
+            <TableColumnHeader field="co2" label="Active Measure 1" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
+            <TableColumnHeader field="temperature" label="Active Measure 2" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
+            <TableColumnHeader field="humidity" label="Active Measure 3" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sortedDevicesData.map((device) => (
+            <DeviceTableRow key={device.id} device={device} />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
