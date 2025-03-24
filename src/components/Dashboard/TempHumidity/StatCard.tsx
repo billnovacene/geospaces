@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 interface StatCardProps {
@@ -46,8 +45,8 @@ export function StatCard({
         <div className="px-[5px] mx-[5px] flex-grow flex flex-col justify-center">
           <div className="flex flex-col items-center text-center">
             <div className="flex items-center">
-              <span className={cn("font-bold", large ? "text-3xl" : "text-2xl")}>{value}</span>
-              {unit && <span className={cn("ml-1", large ? "text-xl" : "text-lg")}>{unit}</span>}
+              <span className="text-center font-medium">{value}</span>
+              {unit && <span className="font-thin text-left text-sm">{unit}</span>}
             </div>
             <div className="mt-1 text-sm text-muted-foreground">{title}</div>
             
