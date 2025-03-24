@@ -1,4 +1,3 @@
-
 import { useState, ReactNode } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, ChevronUp, ChevronDown, Menu, MoreVertical } from "lucide-react";
@@ -55,9 +54,9 @@ function SidebarSection({ title, children, defaultOpen = true }: SidebarSectionP
       <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between">
         <span>{title}</span>
         <CollapsibleTrigger className="focus:outline-none hover:text-foreground">
-          {({ open }: { open: boolean }) => (
-            open ? <ChevronUp size={16} /> : <ChevronDown size={16} />
-          )}
+          <span className="inline-block">
+            {defaultOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </span>
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent>
