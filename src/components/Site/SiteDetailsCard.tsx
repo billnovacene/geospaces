@@ -1,3 +1,4 @@
+
 import { Site } from "@/services/interfaces";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,71 +14,59 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
   const getDeviceCount = () => {
     if (!site) return 0;
     
-    // Extract the actual device count from the original API response as a string
-    // This is often formatted as "38/38" for active/total devices
-    let rawDeviceString = "";
-    if (typeof site.devices === 'string') {
-      rawDeviceString = site.devices;
-      console.log(`Site ${site.id} - Original device string: "${rawDeviceString}"`);
-    }
+    // For site 471 (and other sites), we should directly get the raw devices count
+    console.log(`SiteDetailsCard: Raw device data for site ${site.id}:`, {
+      rawDevices: site.devices,
+      calculatedDeviceCount,
+      deviceType: typeof site.devices
+    });
     
-    // Try to parse the raw device string if it's in format "X/Y"
-    let extractedCount = 0;
-    if (rawDeviceString && rawDeviceString.includes('/')) {
-      const parts = rawDeviceString.split('/');
-      if (parts.length > 0 && !isNaN(parseInt(parts[0]))) {
-        extractedCount = parseInt(parts[0]);
-        console.log(`Site ${site.id} - Extracted first number from "${rawDeviceString}": ${extractedCount}`);
+    // If API returns a string with format "X/Y", extract X as active devices
+    if (typeof site.devices === 'string' && site.devices.includes('/')) {
+      const parts = site.devices.split('/');
+      if (parts.length > 0) {
+        const activeDevices = parseInt(parts[0], 10);
+        if (!isNaN(activeDevices)) {
+          console.log(`SiteDetailsCard: Using active devices from string "${site.devices}": ${activeDevices}`);
+          return activeDevices;
+        }
       }
     }
     
-    // Get other possible device count sources
-    const directNumericCount = typeof site.devices === 'number' 
-      ? site.devices 
-      : parseInt(String(site.devices), 10) || 0;
-    
-    const zoneCalculatedCount = calculatedDeviceCount !== null ? calculatedDeviceCount : 0;
-    const cachedCount = site.id && siteDevicesCache[site.id] !== undefined ? siteDevicesCache[site.id] : 0;
-    
-    console.log(`Site ${site.id} - Device count sources:`, {
-      rawDeviceString,
-      extractedFromRawString: extractedCount,
-      directNumeric: directNumericCount,
-      calculatedFromZones: zoneCalculatedCount,
-      fromCache: cachedCount
-    });
-    
-    // Prioritize the extracted count from the original string if available
-    if (extractedCount > 0) {
-      console.log(`Site ${site.id} - Using extracted device count: ${extractedCount}`);
-      return extractedCount;
+    // Direct API response value if it's a number
+    if (typeof site.devices === 'number') {
+      console.log(`SiteDetailsCard: Using direct numeric device count: ${site.devices}`);
+      return site.devices;
     }
     
-    // Otherwise, use the direct numeric count if positive
-    if (directNumericCount > 0) {
-      console.log(`Site ${site.id} - Using direct numeric count: ${directNumericCount}`);
-      return directNumericCount;
+    // Try parsing if it's a string containing just a number
+    if (typeof site.devices === 'string') {
+      const parsed = parseInt(site.devices, 10);
+      if (!isNaN(parsed)) {
+        console.log(`SiteDetailsCard: Using parsed numeric device count: ${parsed}`);
+        return parsed;
+      }
     }
     
-    // Then try zone-calculated count if positive
-    if (zoneCalculatedCount > 0) {
-      console.log(`Site ${site.id} - Using zone-calculated count: ${zoneCalculatedCount}`);
-      return zoneCalculatedCount;
+    // Fallback to calculated count from zones if available
+    if (calculatedDeviceCount !== null && calculatedDeviceCount > 0) {
+      console.log(`SiteDetailsCard: Using calculated device count from zones: ${calculatedDeviceCount}`);
+      return calculatedDeviceCount;
     }
     
-    // Finally, use cached count if available
-    if (cachedCount > 0) {
-      console.log(`Site ${site.id} - Using cached count: ${cachedCount}`);
-      return cachedCount;
+    // Last resort - check cache
+    if (site.id && siteDevicesCache[site.id] > 0) {
+      console.log(`SiteDetailsCard: Using cached device count: ${siteDevicesCache[site.id]}`);
+      return siteDevicesCache[site.id];
     }
     
-    console.log(`Site ${site.id} - No valid device count found, returning 0`);
+    console.log(`SiteDetailsCard: No valid device count found, returning 0`);
     return 0;
   };
 
-  // Calculate the device count once
+  // Calculate the device count
   const deviceCount = getDeviceCount();
-  console.log(`Site ${site.id} - Final device count to display: ${deviceCount}`);
+  console.log(`SiteDetailsCard: Final device count to display for site ${site.id}: ${deviceCount}`);
 
   return (
     <Card>

@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSite, fetchZones } from "@/services/api";
@@ -15,11 +16,22 @@ const SiteDetail = () => {
   const { siteId } = useParams<{ siteId: string }>();
   const [totalDevicesFromZones, setTotalDevicesFromZones] = useState<number | null>(null);
   
+  // Log which site we're viewing for debugging
+  console.log(`SiteDetail: Viewing site ${siteId}`);
+  
   const { data: site, isLoading: siteLoading, error: siteError } = useQuery({
     queryKey: ["site", siteId],
     queryFn: () => fetchSite(Number(siteId)),
     enabled: !!siteId,
   });
+
+  // Log raw site data when it arrives
+  useEffect(() => {
+    if (site) {
+      console.log(`SiteDetail: Raw site data received:`, site);
+      console.log(`SiteDetail: Raw device value: ${site.devices} (${typeof site.devices})`);
+    }
+  }, [site]);
 
   // Fetch zones to calculate total devices directly
   const { data: zones } = useQuery({
@@ -31,43 +43,37 @@ const SiteDetail = () => {
   // Calculate total devices from zones when zones data is available
   useEffect(() => {
     if (zones) {
-      console.log(`Site ${siteId} - Raw zone data:`, zones);
-      console.log(`Site ${siteId} - Processing ${zones.length} zones to calculate total devices`);
+      console.log(`SiteDetail: Processing ${zones.length} zones to calculate total devices`);
       
-      // Print original site device data for debugging
-      if (site) {
-        console.log(`Site ${siteId} - Original device data type: ${typeof site.devices}`);
-        console.log(`Site ${siteId} - Original device value: ${site.devices}`);
-      }
-      
-      // Count zones with devices for debugging
-      let zonesWithDevices = 0;
+      // Count total devices across all zones
       let totalDevicesFound = 0;
       
-      // Analyze each zone's device count
       zones.forEach(zone => {
-        const rawZoneDevices = zone.devices;
-        console.log(`Zone ${zone.id} - Raw device value: ${rawZoneDevices} (${typeof rawZoneDevices})`);
+        let zoneDevices = 0;
         
-        const zoneDevices = typeof zone.devices === 'number' 
-          ? zone.devices 
-          : parseInt(String(zone.devices), 10) || 0;
+        // Handle different types of device count data
+        if (typeof zone.devices === 'number') {
+          zoneDevices = zone.devices;
+        } else if (typeof zone.devices === 'string') {
+          // Check if it's in format "X/Y"
+          if (zone.devices.includes('/')) {
+            const parts = zone.devices.split('/');
+            zoneDevices = parseInt(parts[0], 10) || 0;
+          } else {
+            zoneDevices = parseInt(zone.devices, 10) || 0;
+          }
+        }
         
         if (zoneDevices > 0) {
-          zonesWithDevices++;
+          console.log(`SiteDetail: Zone ${zone.id} has ${zoneDevices} devices`);
           totalDevicesFound += zoneDevices;
-          console.log(`Zone ${zone.id} - Has ${zoneDevices} devices (parsed)`);
         }
       });
       
-      // Set the calculated total from zones
-      console.log(`Site ${siteId} - Found ${totalDevicesFound} devices across ${zonesWithDevices} zones`);
+      console.log(`SiteDetail: Total devices calculated from zones: ${totalDevicesFound}`);
       setTotalDevicesFromZones(totalDevicesFound);
-      
-      // Don't update the cache automatically - let the SiteDetailsCard component decide
-      // which count is best based on its prioritization logic
     }
-  }, [zones, siteId, site]);
+  }, [zones, siteId]);
 
   return (
     <SidebarWrapper>
