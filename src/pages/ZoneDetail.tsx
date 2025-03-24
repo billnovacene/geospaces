@@ -81,7 +81,7 @@ const ZoneDetail = () => {
               <ZoneAdditionalInfoCard zone={zone} />
             </div>
             
-            {/* Devices Table and Cards - Pass siteId to enable recursive sub-zone fetching */}
+            {/* Devices Table and Cards - Default to not including sub-zones */}
             <ZoneDevices zoneId={Number(zoneId)} siteId={zone.siteId} />
             
             {/* Sub-Zones List - Pass siteId from zone */}

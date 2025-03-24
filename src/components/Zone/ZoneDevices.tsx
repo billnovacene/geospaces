@@ -17,6 +17,8 @@ import { DevicesTableSkeleton } from "@/components/Site/DevicesTableSkeleton";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { TooltipWrapper } from "@/components/UI/TooltipWrapper";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface ZoneDevicesProps {
   zoneId: number;
@@ -29,6 +31,7 @@ export const ZoneDevices = ({ zoneId, siteId }: ZoneDevicesProps) => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [view, setView] = useState<"table" | "cards">("table");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [includeSubZones, setIncludeSubZones] = useState(false);
 
   // Handle sorting
   const handleSort = (field: string) => {
@@ -40,23 +43,23 @@ export const ZoneDevices = ({ zoneId, siteId }: ZoneDevicesProps) => {
     }
   };
 
-  // Ensure queryKey is accurate and dependent on both zoneId and siteId
+  // Query for devices with the includeSubZones parameter
   const { data: devices, isLoading, error, refetch } = useQuery({
-    queryKey: ["zone-devices-list", zoneId, siteId],
-    queryFn: () => fetchDevicesForZone(zoneId, siteId),
-    enabled: !!zoneId && !!siteId, // Only run query when both IDs are available
+    queryKey: ["zone-devices-list", zoneId, siteId, includeSubZones],
+    queryFn: () => fetchDevicesForZone(zoneId, siteId, includeSubZones),
+    enabled: !!zoneId, // Run query when zoneId is available
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Effect to refetch when zoneId or siteId changes
+  // Effect to refetch when zoneId, siteId, or includeSubZones changes
   useEffect(() => {
-    if (zoneId && siteId) {
-      console.log(`ZoneDevices: Fetching devices for zone ${zoneId} with siteId ${siteId}`);
+    if (zoneId) {
+      console.log(`ZoneDevices: Fetching devices for zone ${zoneId} with siteId ${siteId || 'undefined'}, includeSubZones: ${includeSubZones}`);
       refetch();
     }
-  }, [zoneId, siteId, refetch]); // Include siteId as a dependency
+  }, [zoneId, siteId, includeSubZones, refetch]);
 
-  console.log(`Devices for zone ${zoneId} (including sub-zones):`, devices);
+  console.log(`Devices for zone ${zoneId}:`, devices);
   console.log(`Number of devices:`, devices?.length || 0);
 
   // Prepare and sort device data
@@ -85,36 +88,47 @@ export const ZoneDevices = ({ zoneId, siteId }: ZoneDevicesProps) => {
           <CardTitle className="flex items-center gap-2">
             <Wifi className="h-5 w-5 text-primary" />
             Devices in Zone
-            <TooltipWrapper content="Shows devices from current zone and all sub-zones">
+            <TooltipWrapper content={includeSubZones ? "Shows devices from current zone and all sub-zones" : "Shows only devices directly in this zone"}>
               <Badge variant="outline" className="ml-2">
                 {devices?.length || 0}
               </Badge>
             </TooltipWrapper>
           </CardTitle>
           
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline"
-              size="sm"
-              onClick={handleRefresh} 
-              className="text-xs flex items-center gap-1"
-              disabled={isRefreshing || isLoading}
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
-            <Tabs value={view} onValueChange={(v) => setView(v as "table" | "cards")} className="w-auto">
-              <TabsList className="grid w-[200px] grid-cols-2">
-                <TabsTrigger value="table">
-                  <Table2 className="h-4 w-4 mr-2" />
-                  Table
-                </TabsTrigger>
-                <TabsTrigger value="cards">
-                  <LayoutGrid className="h-4 w-4 mr-2" />
-                  Cards
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Switch 
+                id="include-subzones" 
+                checked={includeSubZones} 
+                onCheckedChange={setIncludeSubZones}
+              />
+              <Label htmlFor="include-subzones" className="text-sm">Include sub-zones</Label>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh} 
+                className="text-xs flex items-center gap-1"
+                disabled={isRefreshing || isLoading}
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Tabs value={view} onValueChange={(v) => setView(v as "table" | "cards")} className="w-auto">
+                <TabsList className="grid w-[200px] grid-cols-2">
+                  <TabsTrigger value="table">
+                    <Table2 className="h-4 w-4 mr-2" />
+                    Table
+                  </TabsTrigger>
+                  <TabsTrigger value="cards">
+                    <LayoutGrid className="h-4 w-4 mr-2" />
+                    Cards
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
           </div>
         </div>
       </CardHeader>

@@ -74,27 +74,27 @@ export const fetchDevicesCountForZone = async (zoneId: number): Promise<number> 
   }
 };
 
-// Function to fetch devices for a zone and all its sub-zones
-export const fetchDevicesForZone = async (zoneId: number, siteId?: number): Promise<Device[]> => {
+// Function to fetch devices for a zone, with option to include subzones
+export const fetchDevicesForZone = async (zoneId: number, siteId?: number, includeSubZones: boolean = false): Promise<Device[]> => {
   try {
-    console.log(`Fetching devices for zone ${zoneId} with siteId ${siteId || 'undefined'}...`);
+    console.log(`Fetching devices for zone ${zoneId}, siteId: ${siteId || 'undefined'}, includeSubZones: ${includeSubZones}`);
     
-    // If no siteId is provided, just fetch devices for this zone only
-    if (!siteId) {
-      console.log(`No siteId provided for zone ${zoneId}, fetching only this zone's devices`);
+    // If we don't want subzones or no siteId is provided, just fetch for this zone only
+    if (!includeSubZones || !siteId) {
+      console.log(`Fetching only direct devices for zone ${zoneId}`);
       return fetchDevicesForSingleZone(zoneId);
     }
     
     // Get all sub-zones to fetch devices from all of them
     const zoneIds = await getAllSubZoneIds(zoneId, siteId);
-    console.log(`Will fetch devices for these zones:`, zoneIds);
+    console.log(`Will fetch devices for zone ${zoneId} and its subzones:`, zoneIds);
     
     // Build a comma-separated list of zone IDs for the API query
     const zoneIdsParam = zoneIds.join(',');
     
     return fetchDevicesWithZoneIds(zoneIdsParam, zoneId);
   } catch (error) {
-    console.error(`Error fetching devices for zone ${zoneId} and sub-zones:`, error);
+    console.error(`Error fetching devices for zone ${zoneId}:`, error);
     toast.error("Failed to fetch devices. Please try again later.");
     return [];
   }
