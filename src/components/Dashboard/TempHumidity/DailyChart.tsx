@@ -38,12 +38,9 @@ export function DailyChart({ data }: DailyChartProps) {
     }
   };
   
-  // Get the temperature thresholds from our config
   const temperatureConfig = sensorTypes.temperature;
   
-  // Transform data to include color information based on our threshold system
   const enhancedData = data.map(point => {
-    // Get the appropriate color for the temperature value
     const barColor = getSensorValueColor("temperature", point.temperature);
     
     return {
@@ -51,6 +48,12 @@ export function DailyChart({ data }: DailyChartProps) {
       barColor,
     };
   });
+
+  const actualMinTemp = Math.min(...data.map(d => d.temperature));
+  const actualMaxTemp = Math.max(...data.map(d => d.temperature));
+  
+  const yAxisMin = Math.floor(actualMinTemp - 2);
+  const yAxisMax = Math.ceil(actualMaxTemp + 2);
 
   return (
     <div className="w-full h-full">
@@ -93,10 +96,7 @@ export function DailyChart({ data }: DailyChartProps) {
               height={25}
             />
             <YAxis 
-              domain={[
-                Math.min(temperatureConfig.minValue, Math.floor(Math.min(...data.map(d => d.temperature)) - 2)),
-                Math.max(temperatureConfig.maxValue, Math.ceil(Math.max(...data.map(d => d.temperature)) + 2))
-              ]} 
+              domain={[yAxisMin, yAxisMax]} 
               axisLine={false} 
               tickLine={false} 
               tick={{ fontSize: 10 }}
@@ -104,15 +104,16 @@ export function DailyChart({ data }: DailyChartProps) {
             />
             <Tooltip content={<ChartTooltipContent />} />
             
-            {/* Add reference lines for temperature thresholds */}
-            {temperatureConfig.thresholds.map((threshold, i) => (
-              <ReferenceLine 
-                key={`threshold-${i}`}
-                y={threshold} 
-                stroke="#ddd" 
-                strokeDasharray="3 3" 
-              />
-            ))}
+            {temperatureConfig.thresholds
+              .filter(threshold => threshold >= yAxisMin && threshold <= yAxisMax)
+              .map((threshold, i) => (
+                <ReferenceLine 
+                  key={`threshold-${i}`}
+                  y={threshold} 
+                  stroke="#ddd" 
+                  strokeDasharray="3 3" 
+                />
+              ))}
             
             <Bar 
               dataKey="temperature" 

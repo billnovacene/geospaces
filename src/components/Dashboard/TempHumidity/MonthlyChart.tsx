@@ -32,6 +32,14 @@ export function MonthlyChart({
     };
   });
 
+  // Calculate the actual min and max temperature values in our data
+  const actualMinTemp = Math.min(...data.map(d => d.minTemp));
+  const actualMaxTemp = Math.max(...data.map(d => d.maxTemp));
+  
+  // Create a buffer zone of 2 degrees above and below the actual min/max
+  const yAxisMin = Math.floor(actualMinTemp - 2);
+  const yAxisMax = Math.ceil(actualMaxTemp + 2);
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex justify-end gap-2 mb-4">
@@ -73,10 +81,7 @@ export function MonthlyChart({
               height={25}
             />
             <YAxis 
-              domain={[
-                Math.min(temperatureConfig.minValue, Math.floor(Math.min(...data.map(d => d.minTemp)) - 2)),
-                Math.max(temperatureConfig.maxValue, Math.ceil(Math.max(...data.map(d => d.maxTemp)) + 2))
-              ]} 
+              domain={[yAxisMin, yAxisMax]} 
               axisLine={false} 
               tickLine={false} 
               tick={{ fontSize: 10 }}
@@ -84,15 +89,17 @@ export function MonthlyChart({
             />
             <Tooltip content={<ChartTooltipContent />} />
             
-            {/* Add reference lines for temperature thresholds */}
-            {temperatureConfig.thresholds.map((threshold, i) => (
-              <ReferenceLine 
-                key={`threshold-${i}`}
-                y={threshold} 
-                stroke="#ddd" 
-                strokeDasharray="3 3" 
-              />
-            ))}
+            {/* Add reference lines for temperature thresholds that fall within our chart range */}
+            {temperatureConfig.thresholds
+              .filter(threshold => threshold >= yAxisMin && threshold <= yAxisMax)
+              .map((threshold, i) => (
+                <ReferenceLine 
+                  key={`threshold-${i}`}
+                  y={threshold} 
+                  stroke="#ddd" 
+                  strokeDasharray="3 3" 
+                />
+              ))}
             
             <Bar 
               dataKey="avgTemp" 
@@ -126,4 +133,3 @@ export function MonthlyChart({
     </div>
   );
 }
-
