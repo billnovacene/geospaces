@@ -53,7 +53,7 @@ export function DashboardContent({ data, contextName = "All Locations" }: Dashbo
   return (
     <>
       {/* Temperature Guide */}
-      <div className="mb-8">
+      <div className="mb-12">
         <Card className="shadow-sm border-0">
           <CardContent className="p-6">
             <TemperatureGuide />
@@ -62,7 +62,7 @@ export function DashboardContent({ data, contextName = "All Locations" }: Dashbo
       </div>
 
       {/* Monthly Overview */}
-      <div className="mb-8">
+      <div className="mb-16">
         <Card className="shadow-sm border-0">
           <CardContent className="p-8">
             <div className="grid grid-cols-4 gap-8 items-center">
@@ -83,7 +83,7 @@ export function DashboardContent({ data, contextName = "All Locations" }: Dashbo
       </div>
 
       {/* Daily Overview */}
-      <div className="mb-8">
+      <div className="mb-12">
         <Card className="shadow-sm border-0">
           <CardContent className="p-8">
             <div className="grid grid-cols-4 gap-8 items-center">
