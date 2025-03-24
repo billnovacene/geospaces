@@ -1,4 +1,3 @@
-
 import { 
   BarChart, 
   Bar, 
@@ -142,9 +141,6 @@ export function DailyChart({ data }: DailyChartProps) {
           >
             Next <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
-        </div>
-        <div className="text-sm text-gray-500">
-          06:00 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12:00 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18:00
         </div>
       </div>
     </div>
