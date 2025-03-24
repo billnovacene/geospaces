@@ -11,9 +11,12 @@ export function SitesSidebar() {
   const { siteId } = useParams<{ siteId: string }>();
   const activeSiteId = siteId ? Number(siteId) : null;
   
+  // The default project ID is 1 - we could make this configurable in the future
+  const projectId = 1;
+  
   const { data: sites = [], isLoading, error } = useQuery({
     queryKey: ["sites-sidebar"],
-    queryFn: () => fetchSites(),
+    queryFn: () => fetchSites(projectId),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
