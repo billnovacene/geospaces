@@ -76,12 +76,26 @@ const ZoneDetail = () => {
   };
 
   // Get device count (prioritize cache)
-  const getDeviceCount = (zoneId: number | undefined) => {
-    if (zoneId && zoneDevicesCache[zoneId] !== undefined && zoneDevicesCache[zoneId] > 0) {
-      return zoneDevicesCache[zoneId];
+  const getDeviceCount = () => {
+    if (!zone?.id) return 0;
+    
+    if (zone.id && zoneDevicesCache[zone.id] !== undefined && zoneDevicesCache[zone.id] > 0) {
+      console.log(`Using cached device count for zone ${zone.id}: ${zoneDevicesCache[zone.id]}`);
+      return zoneDevicesCache[zone.id];
     }
-    return zone?.devices || 0;
+    
+    // Fall back to the zone's direct device count
+    const directCount = typeof zone.devices === 'number' 
+      ? zone.devices 
+      : parseInt(String(zone.devices), 10) || 0;
+    
+    console.log(`Using direct device count for zone: ${directCount}`);
+    return directCount;
   };
+
+  // Calculate the device count once
+  const deviceCount = getDeviceCount();
+  console.log("Final zone device count to display:", deviceCount);
 
   // Get status color
   const getStatusColor = (status: string) => {
@@ -183,7 +197,7 @@ const ZoneDetail = () => {
                       <CardContent className="p-4">
                         <div>
                           <p className="text-sm font-medium">Devices</p>
-                          <p className="text-2xl font-bold">{getDeviceCount(zone.id)}</p>
+                          <p className="text-2xl font-bold">{deviceCount}</p>
                         </div>
                       </CardContent>
                     </Card>

@@ -28,6 +28,10 @@ export function SiteDetailsCard({ site }: SiteDetailsCardProps) {
     return directCount;
   };
 
+  // Calculate the device count once
+  const deviceCount = getDeviceCount();
+  console.log("Final device count to display:", deviceCount);
+
   return (
     <Card>
       <CardHeader>
@@ -57,7 +61,7 @@ export function SiteDetailsCard({ site }: SiteDetailsCardProps) {
             <CardContent className="p-4">
               <div>
                 <p className="text-sm font-medium">Devices</p>
-                <p className="text-2xl font-bold">{getDeviceCount()}</p>
+                <p className="text-2xl font-bold">{deviceCount}</p>
               </div>
             </CardContent>
           </Card>
