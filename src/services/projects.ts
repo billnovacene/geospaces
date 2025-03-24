@@ -20,9 +20,12 @@ export const fetchProjects = async (): Promise<Project[]> => {
     // Cache device counts for later use
     projects.forEach(project => {
       if (project.id && project.devices !== undefined) {
-        projectDevicesCache[project.id] = typeof project.devices === 'number' 
+        const deviceCount = typeof project.devices === 'number' 
           ? project.devices 
           : parseInt(String(project.devices), 10) || 0;
+        
+        console.log(`Caching device count ${deviceCount} for project ${project.id}`);
+        projectDevicesCache[project.id] = deviceCount;
       }
     });
     
@@ -55,7 +58,7 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
   try {
     console.log(`Fetching project ${id} from API...`);
     
-    // First, try to get the project from the projects list to ensure we have accurate device count
+    // First, always try to get the project from the projects list to ensure we have accurate device count
     try {
       const projectsData = await apiRequest<PaginatedResponse<Project>>('/projects');
       const projectsList = projectsData.list || [];
@@ -63,10 +66,12 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
       const matchingProject = projectsList.find((p: any) => p.id === projectId);
       
       if (matchingProject && matchingProject.devices !== undefined) {
-        console.log(`Caching device count ${matchingProject.devices} for project ${id}`);
-        projectDevicesCache[projectId] = typeof matchingProject.devices === 'number' 
+        const deviceCount = typeof matchingProject.devices === 'number' 
           ? matchingProject.devices 
           : parseInt(String(matchingProject.devices), 10) || 0;
+          
+        console.log(`Caching device count ${deviceCount} for project ${id}`);
+        projectDevicesCache[projectId] = deviceCount;
       }
     } catch (listError) {
       console.error("Error fetching projects list for device count:", listError);
@@ -86,15 +91,11 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
     
     const projectId = parseInt(id, 10);
     
-    // Use the cached device count if available, otherwise use the one from the response
+    // Get the device count from cache if available
     let deviceCount = projectData.devices;
-    
-    // If device count is missing or zero, try to use the cached value
-    if (deviceCount === 0 || deviceCount === undefined || deviceCount === null) {
-      if (projectDevicesCache[projectId] !== undefined) {
-        console.log(`Using cached device count: ${projectDevicesCache[projectId]}`);
-        deviceCount = projectDevicesCache[projectId];
-      }
+    if (projectDevicesCache[projectId] !== undefined) {
+      console.log(`Using cached device count: ${projectDevicesCache[projectId]}`);
+      deviceCount = projectDevicesCache[projectId];
     }
     
     console.log(`Final device count for project ${id}:`, deviceCount);
@@ -107,7 +108,7 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
       updatedAt: projectData.updatedAt,
       image: projectData.image,
       sites: typeof projectData.sites === 'number' ? projectData.sites : parseInt(String(projectData.sites), 10) || 0,
-      devices: typeof deviceCount === 'number' ? deviceCount : parseInt(String(deviceCount), 10) || 0,
+      devices: deviceCount,
       status: projectData.status || "Unknown",
       description: projectData.description,
       bb101: projectData.bb101,
