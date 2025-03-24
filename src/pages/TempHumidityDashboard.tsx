@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
@@ -156,15 +155,14 @@ export default function TempHumidityDashboard() {
               <Card className="shadow-sm">
                 <CardContent className="p-6">
                   <div className="space-y-6">
-                    <div className="border-b pb-4">
-                      <h2 className="text-xl font-medium">Daily Overview</h2>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-gray-600 max-w-2xl">
-                        Temps range from ~8°C early to ~22°C peak, with humidity near 47%.
-                        The building warms quickly and stays fairly stable during working hours.
-                      </p>
+                    <div className="flex items-start justify-between">
+                      <div className="w-1/3">
+                        <h2 className="text-xl font-medium">Daily Overview</h2>
+                        <p className="mt-4 text-sm text-gray-600">
+                          Temps range from ~8°C early to ~22°C peak, with humidity near 47%.
+                          The building warms quickly and stays fairly stable during working hours.
+                        </p>
+                      </div>
                       
                       <div className="flex gap-2">
                         <Button variant="outline" className="h-8">

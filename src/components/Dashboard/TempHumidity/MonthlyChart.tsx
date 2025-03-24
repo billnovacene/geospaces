@@ -13,6 +13,7 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip,
+  Legend,
   ResponsiveContainer
 } from "recharts";
 import { MonthlyOverviewPoint } from "@/services/temp-humidity";
@@ -52,16 +53,15 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
 
   return (
     <div className="space-y-6">
-      <div className="border-b pb-4">
-        <h2 className="text-xl font-medium">Monthly Overview</h2>
-      </div>
-      
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600 max-w-2xl">
-          Lowest temps rarely dip below 8°C, highest near 22°C. Humidity remains
-          about 47%, showing steady indoor conditions with minor fluctuations
-          linked to weather or occupancy.
-        </p>
+      <div className="flex items-start justify-between">
+        <div className="w-1/3">
+          <h2 className="text-xl font-medium">Monthly Overview</h2>
+          <p className="mt-4 text-sm text-gray-600">
+            Lowest temps rarely dip below 8°C, highest near 22°C. Humidity remains
+            about 47%, showing steady indoor conditions with minor fluctuations
+            linked to weather or occupancy.
+          </p>
+        </div>
         
         <div className="flex gap-2">
           <Button variant="outline" className="h-8">
