@@ -11,39 +11,28 @@ interface SiteDetailsCardProps {
 }
 
 export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCardProps) {
-  // Get device count with improved priority logic
+  // Get device count with properly prioritized logic
   const getDeviceCount = () => {
     if (!site) return 0;
     
-    // Get the direct device count from API response
+    // Log all possible device count sources for debugging
     const directCount = typeof site.devices === 'number' 
       ? site.devices 
       : parseInt(String(site.devices), 10) || 0;
     
-    console.log(`Direct device count from API for site ${site.id}: ${directCount}`);
+    const zoneCalculatedCount = calculatedDeviceCount !== null ? calculatedDeviceCount : 0;
+    const cachedCount = site.id && siteDevicesCache[site.id] !== undefined ? siteDevicesCache[site.id] : 0;
     
-    // Check if we have a reliable device count from the API
-    if (directCount > 0) {
-      console.log(`Using reliable direct count from API: ${directCount}`);
-      return directCount;
-    }
+    console.log(`Site ${site.id} - Device count sources:`, {
+      directFromAPI: directCount,
+      calculatedFromZones: zoneCalculatedCount,
+      fromCache: cachedCount
+    });
     
-    // Next, check if we have a calculated count from zones (if available and positive)
-    if (calculatedDeviceCount !== null && calculatedDeviceCount > 0) {
-      console.log(`Using calculated device count from zones: ${calculatedDeviceCount}`);
-      return calculatedDeviceCount;
-    }
-    
-    // Lastly, check the cache as fallback
-    if (site.id && siteDevicesCache[site.id] !== undefined && siteDevicesCache[site.id] > 0) {
-      const cachedCount = siteDevicesCache[site.id];
-      console.log(`Using cached device count: ${cachedCount}`);
-      return cachedCount;
-    }
-    
-    // If all else fails, return 0
-    console.log(`No reliable device count found, using 0`);
-    return 0;
+    // Use the maximum value from all sources
+    const maxCount = Math.max(directCount, zoneCalculatedCount, cachedCount);
+    console.log(`Site ${site.id} - Using maximum device count: ${maxCount}`);
+    return maxCount;
   };
 
   // Calculate the device count once

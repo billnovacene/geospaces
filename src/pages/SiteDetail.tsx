@@ -32,9 +32,19 @@ const SiteDetail = () => {
   // Calculate total devices from zones when zones data is available
   useEffect(() => {
     if (zones) {
+      console.log(`Site ${siteId} - Processing ${zones.length} zones to calculate total devices`);
+      
       // Check each zone and log its device count for debugging
+      let zonesWithDevices = 0;
       zones.forEach(zone => {
-        console.log(`Zone ${zone.id} - Device count: ${zone.devices}`);
+        const zoneDevices = typeof zone.devices === 'number' 
+          ? zone.devices 
+          : parseInt(String(zone.devices), 10) || 0;
+        
+        if (zoneDevices > 0) {
+          zonesWithDevices++;
+          console.log(`Zone ${zone.id} - Has ${zoneDevices} devices`);
+        }
       });
       
       const deviceTotal = zones.reduce((total, zone) => {
@@ -44,29 +54,24 @@ const SiteDetail = () => {
         return total + zoneDevices;
       }, 0);
       
-      console.log(`Site ${siteId} - Total devices calculated from zones: ${deviceTotal}`);
+      console.log(`Site ${siteId} - Total devices calculated from zones: ${deviceTotal} (${zonesWithDevices} zones with devices)`);
       setTotalDevicesFromZones(deviceTotal);
       
-      // Update the cache with this more accurate count
+      // Update the cache with this calculated count
       if (site?.id) {
-        console.log(`Updating device cache for site ${site.id} with calculated total: ${deviceTotal}`);
-        // Only update the cache if the site doesn't already have a higher direct device count
+        // Determine the best count to cache
         const directCount = typeof site.devices === 'number' 
           ? site.devices 
           : parseInt(String(site.devices), 10) || 0;
-          
-        if (deviceTotal > directCount) {
-          siteDevicesCache[site.id] = deviceTotal;
-        } else if (directCount > 0) {
-          console.log(`Using direct count ${directCount} from API instead of zone total ${deviceTotal}`);
-          siteDevicesCache[site.id] = directCount;
-        }
+        
+        const bestCount = Math.max(directCount, deviceTotal);
+        console.log(`Site ${siteId} - Updating device cache with best count: ${bestCount}`);
+        siteDevicesCache[site.id] = bestCount;
       }
     }
   }, [zones, siteId, site]);
 
   // Enhanced debugging
-  console.log(`Site ${siteId} - Complete site data:`, site);
   console.log(`Site ${siteId} - Original devices property:`, site?.devices);
   console.log(`Site ${siteId} - Cached device count:`, site?.id ? siteDevicesCache[site.id] : "No cache");
   console.log(`Site ${siteId} - Total devices from zones:`, totalDevicesFromZones);
