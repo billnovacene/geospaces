@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchProjects, fetchSites } from "@/services/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, Devices, WifiOff, Thermometer, Droplets, Wind, Users } from "lucide-react";
+import { Building2, Cpu, WifiOff, Thermometer, Droplets, Wind, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { fetchDevicesCountForSite } from "@/services/devices";
@@ -114,7 +114,7 @@ export function StatsCards() {
     {
       title: "Total Devices",
       value: stats.totalDevices,
-      icon: Devices,
+      icon: Cpu,
       color: "bg-green-50 text-green-600",
       description: "Connected IoT sensors",
     },
@@ -229,7 +229,7 @@ export function StatsCards() {
                         domain={['dataMin - 5', 'dataMax + 5']} 
                       />
                       <Tooltip 
-                        formatter={(value) => [`${value.toFixed(1)} ${metric.unit}`, metric.title]}
+                        formatter={(value: any) => [`${typeof value === 'number' ? value.toFixed(1) : value} ${metric.unit}`, metric.title]}
                         contentStyle={{ fontSize: '12px' }}
                       />
                       <Bar 
