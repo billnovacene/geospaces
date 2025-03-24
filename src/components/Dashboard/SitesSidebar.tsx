@@ -1,11 +1,12 @@
 
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchSites } from "@/services/sites";
-import { Link, useParams } from "react-router-dom";
-import { AlertTriangle, Building, ExternalLink } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SiteListItem } from "./SiteListItem";
+import { SitesSidebarError } from "./SitesSidebarError";
+import { SitesSidebarEmpty } from "./SitesSidebarEmpty";
+import { useSitesList } from "@/hooks/useSitesList";
 
 export function SitesSidebar() {
   const { siteId } = useParams<{ siteId: string }>();
@@ -14,21 +15,7 @@ export function SitesSidebar() {
   // The default project ID is 1 - we could make this configurable in the future
   const projectId = 1;
   
-  const { data: sites = [], isLoading, error, refetch } = useQuery({
-    queryKey: ["sites-sidebar"],
-    queryFn: () => fetchSites(projectId),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-
-  // Filter out sites with status "Inactive" or "Removed"
-  const activeSites = sites.filter(site => 
-    site.status !== "Inactive" && site.status !== "Removed"
-  );
-
-  useEffect(() => {
-    console.log("SitesSidebar: Sites fetched", sites);
-    console.log("SitesSidebar: Active sites", activeSites);
-  }, [sites, activeSites]);
+  const { activeSites, isLoading, error, refetch } = useSitesList(projectId);
 
   if (isLoading) {
     return (
@@ -41,31 +28,12 @@ export function SitesSidebar() {
   }
 
   if (error) {
-    return (
-      <div className="py-2.5 px-5 text-sm text-red-500 flex items-center gap-2">
-        <AlertTriangle className="h-4 w-4" />
-        <span>Error loading sites</span>
-        <button 
-          onClick={() => refetch()} 
-          className="ml-2 text-xs text-primary hover:underline"
-        >
-          Retry
-        </button>
-      </div>
-    );
+    return <SitesSidebarError onRetry={refetch} />;
   }
 
-  // If no sites are available, show this instead
+  // If no sites are available, show empty state
   if (activeSites.length === 0) {
-    return (
-      <div className="py-2.5 px-5 text-sm text-[#8E9196]">
-        <div className="flex items-center gap-2 mb-2">
-          <AlertTriangle className="h-4 w-4" />
-          <span>No sites available for this project</span>
-        </div>
-        <p className="text-xs text-zinc-400">Try selecting a different project</p>
-      </div>
-    );
+    return <SitesSidebarEmpty />;
   }
 
   return (
@@ -75,20 +43,11 @@ export function SitesSidebar() {
       </div>
       
       {activeSites.map(site => (
-        <Link key={site.id} to={`/site/${site.id}`}>
-          <div className={cn(
-            "flex items-center justify-between py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
-            activeSiteId === site.id && "bg-[#F9F9FA] font-bold border-l-4 border-primary text-primary"
-          )}>
-            <div className="flex items-center gap-2">
-              <Building className="h-4 w-4 text-[#8E9196]" />
-              <span className="text-sm font-medium text-gray-900">{site.name}</span>
-            </div>
-            <span className="text-sm text-[#8E9196]">
-              {typeof site.devices === 'number' ? site.devices : 0}
-            </span>
-          </div>
-        </Link>
+        <SiteListItem 
+          key={site.id}
+          site={site}
+          isActive={activeSiteId === site.id}
+        />
       ))}
 
       <div className="mt-3 px-5 py-2 border-t border-zinc-100">
