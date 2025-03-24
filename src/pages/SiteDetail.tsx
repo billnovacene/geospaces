@@ -9,6 +9,7 @@ import { SiteAdditionalInfoCard } from "@/components/Site/SiteAdditionalInfoCard
 import { SiteZonesTabs } from "@/components/Site/SiteZonesTabs";
 import { SiteLoadingSkeleton } from "@/components/Site/SiteLoadingSkeleton";
 import { SiteErrorState } from "@/components/Site/SiteErrorState";
+import { SiteDevicesMeasurementTable } from "@/components/Site/SiteDevicesMeasurementTable";
 import { siteDevicesCache } from "@/services/sites";
 import { useState, useEffect } from "react";
 
@@ -90,6 +91,9 @@ const SiteDetail = () => {
               <SiteDetailsCard site={site} calculatedDeviceCount={totalDevicesFromZones} />
               <SiteAdditionalInfoCard site={site} />
             </div>
+
+            {/* Devices Measurements Table */}
+            <SiteDevicesMeasurementTable siteId={site.id} />
 
             {/* Zones Tabs */}
             <SiteZonesTabs siteId={site.id} />

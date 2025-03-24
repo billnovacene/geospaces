@@ -1,4 +1,3 @@
-
 import { apiRequest } from "./api-client";
 import { toast } from "sonner";
 
@@ -17,6 +16,7 @@ export interface Device {
   status?: string;
   sensors?: any[];
   modelId?: any;
+  zoneName?: string;
   [key: string]: any; // For any additional properties
 }
 
@@ -134,6 +134,7 @@ export const fetchDevicesForZone = async (zoneId: number): Promise<Device[]> => 
         sensors: device.sensors,
         status: device.isRemoved ? "Inactive" : "Active",
         isRemoved: device.isRemoved,
+        zoneName: device.zoneName || (device.zone ? device.zone.name : null),
         ...device // Include any other properties
       }));
     }
@@ -141,6 +142,49 @@ export const fetchDevicesForZone = async (zoneId: number): Promise<Device[]> => 
     return [];
   } catch (error) {
     console.error(`Error fetching devices for zone ${zoneId}:`, error);
+    toast.error("Failed to fetch devices. Please try again later.");
+    return [];
+  }
+};
+
+// Function to fetch all devices for a site
+export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
+  try {
+    console.log(`Fetching devices for site ${siteId} from API...`);
+    
+    const response = await apiRequest<DevicesResponse>(
+      `/devices?siteid=${siteId}&limit=100&nodeveui=false&includeSensors=true`
+    );
+    
+    console.log(`Devices API response for site ${siteId}:`, response);
+    
+    if (response && response.devices && Array.isArray(response.devices)) {
+      // Store the count in cache
+      deviceCountsBySite[siteId] = response.total;
+      console.log(`Caching device count ${response.total} for site ${siteId}`);
+      
+      // Transform the response into the Device interface
+      return response.devices.map(device => ({
+        id: device.id,
+        name: device.name || `Device ${device.id}`,
+        type: device.type,
+        zoneId: device.zoneId,
+        siteId: device.siteId,
+        projectId: device.projectId,
+        modelId: device.modelId,
+        createdAt: device.createdAt,
+        updatedAt: device.updatedAt,
+        sensors: device.sensors,
+        status: device.isRemoved ? "Inactive" : "Active",
+        isRemoved: device.isRemoved,
+        zoneName: device.zoneName || (device.zone ? device.zone.name : null),
+        ...device // Include any other properties
+      }));
+    }
+    
+    return [];
+  } catch (error) {
+    console.error(`Error fetching devices for site ${siteId}:`, error);
     toast.error("Failed to fetch devices. Please try again later.");
     return [];
   }
