@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSites } from "@/services/sites";
 import { Link, useParams } from "react-router-dom";
-import { AlertTriangle, Building } from "lucide-react";
+import { AlertTriangle, Building, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -62,7 +62,11 @@ export function SitesSidebar() {
   }
 
   return (
-    <>
+    <div className="site-listing">
+      <div className="py-2 px-5 mb-2 text-sm font-medium text-zinc-500">
+        Project: Zircon ({activeSites.length} sites)
+      </div>
+      
       {activeSites.map(site => (
         <Link key={site.id} to={`/site/${site.id}`}>
           <div className={cn(
@@ -79,6 +83,13 @@ export function SitesSidebar() {
           </div>
         </Link>
       ))}
-    </>
+
+      <div className="mt-3 px-5 py-2 border-t border-zinc-100">
+        <Link to="/" className="flex items-center gap-1.5 text-xs text-primary hover:underline">
+          <ExternalLink className="h-3 w-3" />
+          <span>View all projects</span>
+        </Link>
+      </div>
+    </div>
   );
 }
