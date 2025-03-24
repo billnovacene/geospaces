@@ -8,9 +8,10 @@ interface StatCardProps {
   unit?: string;
   status: 'good' | 'caution' | 'warning';
   description?: string;
+  large?: boolean;
 }
 
-export function StatCard({ title, value, unit, status, description }: StatCardProps) {
+export function StatCard({ title, value, unit, status, description, large }: StatCardProps) {
   const getStatusColor = (status: 'good' | 'caution' | 'warning') => {
     switch (status) {
       case 'good':
@@ -43,8 +44,14 @@ export function StatCard({ title, value, unit, status, description }: StatCardPr
         <div className="p-4">
           <div className="flex flex-col items-center text-center">
             <div className="flex items-center">
-              <span className="text-3xl font-bold">{value}</span>
-              {unit && <span className="text-xl ml-1">{unit}</span>}
+              <span className={cn(
+                "font-bold",
+                large ? "text-3xl" : "text-2xl"
+              )}>{value}</span>
+              {unit && <span className={cn(
+                "ml-1",
+                large ? "text-xl" : "text-lg"
+              )}>{unit}</span>}
             </div>
             <div className="mt-1 text-sm text-muted-foreground">{title}</div>
             

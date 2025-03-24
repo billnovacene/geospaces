@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { HomeIcon, Thermometer, ChevronLeft, ChevronRight } from "lucide-react";
+import { HomeIcon, Thermometer, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { StatCard } from "@/components/Dashboard/TempHumidity/StatCard";
 import { TemperatureGuide } from "@/components/Dashboard/TempHumidity/TemperatureGuide";
