@@ -2,6 +2,7 @@
 import React from "react";
 import { formatDistanceToNow } from "date-fns";
 import { AlertTriangle } from "lucide-react";
+import { getSensorValueColor, getSensorValueStatus } from "@/utils/sensorThresholds";
 
 interface SensorMeasurementProps {
   value: number | null | undefined;
@@ -12,6 +13,7 @@ interface SensorMeasurementProps {
     warning: number;
     critical: number;
   };
+  sensorType?: string; // Added sensor type parameter
 }
 
 export const SensorMeasurement = ({ 
@@ -19,7 +21,8 @@ export const SensorMeasurement = ({
   unit, 
   name, 
   time,
-  thresholds
+  thresholds,
+  sensorType = "temperature" // Default to temperature if not specified
 }: SensorMeasurementProps) => {
   // Format time ago
   const formatTimeAgo = (timestamp: string | undefined) => {
@@ -32,13 +35,31 @@ export const SensorMeasurement = ({
     }
   };
 
-  // Get status indicator based on value and thresholds
-  const getStatusIndicator = () => {
-    if (!value || !thresholds) return null;
+  // Use the new sensor thresholds utility
+  const getColorForValue = () => {
+    if (value === null || value === undefined) return "#a1a1aa"; // Default gray
     
-    if (value >= thresholds.critical) {
+    // Use the detected sensor type from the name if not explicitly provided
+    const detectedType = sensorType || 
+      (name.toLowerCase().includes("temp") ? "temperature" :
+       name.toLowerCase().includes("co2") ? "co2" :
+       name.toLowerCase().includes("humid") ? "humidity" :
+       name.toLowerCase().includes("rssi") ? "rssi" :
+       name.toLowerCase().includes("battery") || name.toLowerCase().includes("vdd") ? "batteryVoltage" :
+       name.toLowerCase().includes("light") ? "light" :
+       "temperature");
+    
+    return getSensorValueColor(detectedType, value);
+  };
+
+  // Get status indicator based on the new thresholds system
+  const getStatusIndicator = () => {
+    if (!value) return null;
+    
+    const color = getColorForValue();
+    if (color === "#db4f6a") {
       return <AlertTriangle className="h-5 w-5 text-red-500" />;
-    } else if (value >= thresholds.warning) {
+    } else if (color === "#ebc651") {
       return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
     }
     
@@ -47,15 +68,20 @@ export const SensorMeasurement = ({
 
   if (!value) return <div>N/A</div>;
 
+  const valueColor = getColorForValue();
+
   return (
     <div className="flex items-center">
       <div>
         <div className="font-medium flex items-center gap-1">
-          {value} {unit}
+          <span style={{ color: valueColor }}>{value}</span> {unit}
           {getStatusIndicator()}
         </div>
         <div className="text-xs text-muted-foreground flex items-center gap-1">
-          <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+          <span 
+            className="inline-block w-2 h-2 rounded-full" 
+            style={{ backgroundColor: valueColor }}
+          ></span>
           {name} - {formatTimeAgo(time)}
         </div>
       </div>

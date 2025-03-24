@@ -14,6 +14,7 @@ import { useState } from "react";
 import { subDays, format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { sensorTypes, getSensorValueColor } from "@/utils/sensorThresholds";
 
 interface DailyChartProps {
   data: DailyOverviewPoint[];
@@ -37,12 +38,19 @@ export function DailyChart({ data }: DailyChartProps) {
     }
   };
   
-  // Transform data to include color information
-  const enhancedData = data.map(point => ({
-    ...point,
-    barColor: point.status === 'good' ? '#10B981' : 
-              point.status === 'caution' ? '#F59E0B' : '#EF4444',
-  }));
+  // Get the temperature thresholds from our config
+  const temperatureConfig = sensorTypes.temperature;
+  
+  // Transform data to include color information based on our threshold system
+  const enhancedData = data.map(point => {
+    // Get the appropriate color for the temperature value
+    const barColor = getSensorValueColor("temperature", point.temperature);
+    
+    return {
+      ...point,
+      barColor,
+    };
+  });
 
   return (
     <div className="w-full h-full">
@@ -57,16 +65,16 @@ export function DailyChart({ data }: DailyChartProps) {
       
       <div className="flex justify-end gap-6 mb-4">
         <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded-sm bg-[#10B981]"></div>
-          <span className="text-xs">Green</span>
+          <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: temperatureConfig.colors[2] }}></div>
+          <span className="text-xs">Good (17-22°C)</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded-sm bg-[#F59E0B]"></div>
-          <span className="text-xs">Amber</span>
+          <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: temperatureConfig.colors[1] }}></div>
+          <span className="text-xs">Cool/Warm (10-17°C, 22-30°C)</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded-sm bg-[#EF4444]"></div>
-          <span className="text-xs">Red</span>
+          <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: temperatureConfig.colors[0] }}></div>
+          <span className="text-xs">Too Cold/Hot (&lt;10°C, &gt;30°C)</span>
         </div>
       </div>
       
@@ -85,7 +93,10 @@ export function DailyChart({ data }: DailyChartProps) {
               height={25}
             />
             <YAxis 
-              domain={[0, 25]} 
+              domain={[
+                Math.min(temperatureConfig.minValue, Math.floor(Math.min(...data.map(d => d.temperature)) - 2)),
+                Math.max(temperatureConfig.maxValue, Math.ceil(Math.max(...data.map(d => d.temperature)) + 2))
+              ]} 
               axisLine={false} 
               tickLine={false} 
               tick={{ fontSize: 10 }}
@@ -93,10 +104,15 @@ export function DailyChart({ data }: DailyChartProps) {
             />
             <Tooltip content={<ChartTooltipContent />} />
             
-            <ReferenceLine y={20} stroke="#ddd" strokeDasharray="3 3" />
-            <ReferenceLine y={15} stroke="#ddd" strokeDasharray="3 3" />
-            <ReferenceLine y={10} stroke="#ddd" strokeDasharray="3 3" />
-            <ReferenceLine y={5} stroke="#ddd" strokeDasharray="3 3" />
+            {/* Add reference lines for temperature thresholds */}
+            {temperatureConfig.thresholds.map((threshold, i) => (
+              <ReferenceLine 
+                key={`threshold-${i}`}
+                y={threshold} 
+                stroke="#ddd" 
+                strokeDasharray="3 3" 
+              />
+            ))}
             
             <Bar 
               dataKey="temperature" 

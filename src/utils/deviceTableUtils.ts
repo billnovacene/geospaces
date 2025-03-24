@@ -1,4 +1,6 @@
 
+import { getSensorValueColor, getSensorValueStatus } from "./sensorThresholds";
+
 // Helper function for sorting device data
 export const getSortedData = (data: any[], sortField: string | null, sortDirection: 'asc' | 'desc') => {
   if (!sortField || !data || data.length === 0) return data;
@@ -59,23 +61,31 @@ export const prepareDeviceData = (devices: any[]) => {
     const tempTime = tempSensor?.lastReceivedDataTime;
     const humidityTime = humiditySensor?.lastReceivedDataTime;
 
-    // Determine status based on sensor values
-    const hasCriticalValue = 
-      (co2Value && co2Value > 1000) || 
-      (tempValue && (tempValue > 28 || tempValue < 16)) || 
-      (humidityValue && (humidityValue > 70 || humidityValue < 20));
-      
-    const hasWarningValue = 
-      (co2Value && co2Value > 800) || 
-      (tempValue && (tempValue > 26 || tempValue < 18)) || 
-      (humidityValue && (humidityValue > 60 || humidityValue < 30));
-
-    const derivedStatus = hasCriticalValue ? "Inactive" : (hasWarningValue ? "Warning" : "Active");
+    // Determine status based on sensor values using the new threshold system
+    const tempStatus = tempValue ? getSensorValueStatus("temperature", tempValue) : "N/A";
+    const co2Status = co2Value ? getSensorValueStatus("co2", co2Value) : "N/A";
+    const humidityStatus = humidityValue ? getSensorValueStatus("humidity", humidityValue) : "N/A";
+    
+    // Determine overall device status - prioritize Critical > Warning > Good
+    const hasCriticalStatus = [tempStatus, co2Status, humidityStatus].some(
+      status => status === "Too Cold" || status === "Too Hot" || 
+               status === "Very Poor" || status === "Too Dry" || 
+               status === "Too Humid" || status === "Critical"
+    );
+    
+    const hasWarningStatus = [tempStatus, co2Status, humidityStatus].some(
+      status => status === "Cool" || status === "Warm" || 
+               status === "Poor" || status === "Dry" || 
+               status === "Humid" || status === "Warning"
+    );
+    
+    const derivedStatus = hasCriticalStatus ? "Inactive" : (hasWarningStatus ? "Warning" : "Active");
     
     console.log(`Prepared device ${device.id}: ${device.name}`, { 
       co2: co2Value, 
       temp: tempValue, 
-      humidity: humidityValue 
+      humidity: humidityValue,
+      status: derivedStatus
     });
     
     return {
