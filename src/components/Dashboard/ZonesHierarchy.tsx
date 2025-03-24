@@ -24,14 +24,15 @@ export function ZonesHierarchy({ siteId: propsSiteId }: ZonesHierarchyProps) {
     queryKey: ["zone-for-sidebar", activeZoneId],
     queryFn: () => fetchZone(Number(activeZoneId)),
     enabled: !!activeZoneId && !propsSiteId,
-    // Use onSettled instead of onSuccess to handle the data after query completion
-    onSettled: (data) => {
-      if (data && data.siteId && data.siteId !== effectiveSiteId) {
-        console.log("Setting effective siteId from zone data:", data.siteId);
-        setEffectiveSiteId(data.siteId);
-      }
-    }
   });
+  
+  // Update effectiveSiteId when zoneData or propsSiteId changes
+  useEffect(() => {
+    if (zoneData && zoneData.siteId && zoneData.siteId !== effectiveSiteId) {
+      console.log("Setting effective siteId from zone data:", zoneData.siteId);
+      setEffectiveSiteId(zoneData.siteId);
+    }
+  }, [zoneData, effectiveSiteId]);
   
   // Update effectiveSiteId when propsSiteId changes
   useEffect(() => {
