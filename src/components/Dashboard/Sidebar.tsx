@@ -51,7 +51,7 @@ function SidebarSection({
   defaultOpen = true
 }: SidebarSectionProps) {
   return <Collapsible defaultOpen={defaultOpen} className="w-full">
-      <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-zinc-50">
+      <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-white">
         <span>{title}</span>
         <CollapsibleTrigger className="focus:outline-none hover:text-foreground">
           <span className="inline-block">
@@ -69,7 +69,7 @@ function ZoneItem({
   name,
   count
 }: ZoneItemProps) {
-  return <div className="flex items-center justify-between py-2 px-4 cursor-pointer bg-zinc-100">
+  return <div className="flex items-center justify-between py-2 px-4 cursor-pointer bg-white">
       <div className="flex items-center gap-2">
         <span className="text-xs text-zinc-600">▶</span>
         <span className="text-sm font-medium text-gray-900">{name}</span>
@@ -82,7 +82,7 @@ function DashboardItem({
   count,
   checked = true
 }: DashboardItemProps) {
-  return <div className="flex items-center justify-between py-2 px-4 cursor-pointer bg-gray-100">
+  return <div className="flex items-center justify-between py-2 px-4 cursor-pointer bg-white">
       <div className="flex items-center gap-2">
         <span className="text-xs text-zinc-500">▶</span>
         <span className="text-sm font-medium text-zinc-800">{name}</span>
@@ -98,7 +98,7 @@ function DashboardSidebar() {
   
   return <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
       <SidebarContent className="p-0">
-        <div className="p-4 flex items-center justify-between border-b border-[#E5E7EB] bg-zinc-50">
+        <div className="p-4 flex items-center justify-between border-b border-[#E5E7EB] bg-white">
           <div className="space-y-1">
             <div className="text-sm text-[#8E9196]">Projects</div>
             <h2 className="text-xl font-bold text-zinc-950">Zircon</h2>
@@ -108,7 +108,7 @@ function DashboardSidebar() {
           </Button>
         </div>
 
-        <div className="p-4 border-b border-[#E5E7EB] bg-zinc-50">
+        <div className="p-4 border-b border-[#E5E7EB] bg-white">
           <div className="relative">
             <Input placeholder="Search" className="pl-4 h-9 text-sm border-[#E5E7EB] bg-white text-[#8E9196]" />
             <Search className="absolute right-3 top-2.5 h-4 w-4 text-[#8E9196]" />
@@ -139,21 +139,21 @@ function DashboardSidebar() {
           </SidebarSection>
 
           <SidebarSection title="Annalytics">
-            <div className="py-2 px-4 text-sm text-[#8E9196] bg-zinc-50">
+            <div className="py-2 px-4 text-sm text-[#8E9196] bg-white">
               No analytics available
             </div>
           </SidebarSection>
 
           <SidebarSection title="Settings">
-            <div className="py-2 px-4 text-sm text-[#8E9196] bg-zinc-50">
+            <div className="py-2 px-4 text-sm text-[#8E9196] bg-white">
               System settings
             </div>
           </SidebarSection>
         </div>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-[#E5E7EB] p-3 bg-zinc-100">
-        <div className="flex items-center justify-between bg-zinc-100">
+      <SidebarFooter className="border-t border-[#E5E7EB] p-3 bg-white">
+        <div className="flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
             <Avatar className="h-9 w-9 bg-black">
               <div className="text-white font-bold">N</div>
