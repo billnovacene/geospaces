@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
-import { Settings, Search, MoreVertical, Home } from "lucide-react";
+import { Settings, Search, MoreVertical, Home, Building } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar } from "@/components/ui/avatar";
@@ -11,6 +11,7 @@ import { SidebarSection } from "./SidebarSection";
 import { SidebarZoneItem } from "./SidebarZoneItem";
 import { SidebarDashboardItem } from "./SidebarDashboardItem";
 import { ZonesHierarchy } from "./ZonesHierarchy";
+import { SitesList } from "./SitesList";
 
 export function DashboardSidebar() {
   const { siteId } = useParams<{ siteId: string }>();
@@ -39,6 +40,10 @@ export function DashboardSidebar() {
         </div>
 
         <div className="overflow-y-auto flex-1">
+          <SidebarSection title="Sites">
+            <SitesSidebar />
+          </SidebarSection>
+
           <SidebarSection title="Zones">
             <ZonesHierarchy siteId={validSiteId} />
           </SidebarSection>
