@@ -12,8 +12,8 @@ export function SitesSidebar() {
   const { siteId } = useParams<{ siteId: string }>();
   const activeSiteId = siteId ? Number(siteId) : null;
   
-  // The default project ID is 1 - we could make this configurable in the future
-  const projectId = 1;
+  // Use project ID 145 instead of 1
+  const projectId = 145;
   
   const { activeSites, sites, isLoading, error, refetch } = useSitesList(projectId);
   

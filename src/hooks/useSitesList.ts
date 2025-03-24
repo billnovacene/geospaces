@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { fetchSites } from "@/services/sites";
 import { Site } from "@/services/interfaces";
 
-export function useSitesList(projectId: number) {
+export function useSitesList(projectId: number = 145) {
   console.log(`useSitesList: Starting fetch for projectId=${projectId}`);
   
   const { 

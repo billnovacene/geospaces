@@ -14,7 +14,7 @@ interface SitesListProps {
   projectId?: number;
 }
 
-export function SitesList({ projectId }: SitesListProps) {
+export function SitesList({ projectId = 145 }: SitesListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   
   const { data: sites = [], isLoading, error, refetch } = useQuery({

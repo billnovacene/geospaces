@@ -1,4 +1,3 @@
-
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSite, fetchZones } from "@/services/api";
@@ -63,6 +62,7 @@ const SiteDetail = () => {
   useEffect(() => {
     if (site) {
       console.log(`SiteDetail: Raw site data received:`, site);
+      console.log(`SiteDetail: Site projectId: ${site.projectId}`);
       console.log(`SiteDetail: Raw device value: ${site.devices} (${typeof site.devices})`);
     }
   }, [site]);
