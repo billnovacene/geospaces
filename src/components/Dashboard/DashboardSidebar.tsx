@@ -44,9 +44,12 @@ export function DashboardSidebar() {
             <SitesSidebar />
           </SidebarSection>
 
-          <SidebarSection title="Zones">
-            <ZonesHierarchy siteId={validSiteId} />
-          </SidebarSection>
+          {/* Only show Zones section if a site is selected */}
+          {validSiteId && (
+            <SidebarSection title="Zones">
+              <ZonesHierarchy siteId={validSiteId} />
+            </SidebarSection>
+          )}
 
           <SidebarSection title="Filter Devices">
             <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center justify-between">
