@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ZonesList } from "@/components/Site/ZonesList";
+import { ZonesHierarchyList } from "@/components/Site/ZonesHierarchyList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SiteDetail = () => {
   const { siteId } = useParams<{ siteId: string }>();
@@ -181,8 +183,19 @@ const SiteDetail = () => {
               </Card>
             </div>
 
-            {/* Zones List Component */}
-            <ZonesList siteId={site.id} />
+            {/* Zones Tabs */}
+            <Tabs defaultValue="hierarchy" className="mb-8">
+              <TabsList className="mb-4">
+                <TabsTrigger value="hierarchy">Hierarchical View</TabsTrigger>
+                <TabsTrigger value="list">List View</TabsTrigger>
+              </TabsList>
+              <TabsContent value="hierarchy">
+                <ZonesHierarchyList siteId={site.id} />
+              </TabsContent>
+              <TabsContent value="list">
+                <ZonesList siteId={site.id} />
+              </TabsContent>
+            </Tabs>
           </>
         )}
       </div>

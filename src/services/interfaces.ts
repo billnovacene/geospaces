@@ -50,6 +50,8 @@ export interface Zone {
   type?: string;
   devices?: number;
   status?: string;
+  parent?: number | null; // Parent zone ID
+  children?: Zone[]; // Child zones
   [key: string]: any; // For any additional properties
 }
 

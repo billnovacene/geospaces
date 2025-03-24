@@ -6,6 +6,36 @@ import { toast } from "sonner";
 // Cache for zone device counts
 export const zoneDevicesCache: Record<number, number> = {};
 
+// Function to organize zones in a hierarchical structure
+const organizeZonesHierarchy = (zones: Zone[]): Zone[] => {
+  // Create a map of zones by ID for easy lookup
+  const zoneMap = new Map<number, Zone>();
+  zones.forEach(zone => {
+    // Create a children array for each zone
+    zone.children = [];
+    zoneMap.set(zone.id, zone);
+  });
+
+  // Identify top-level zones and build the hierarchy
+  const topLevelZones: Zone[] = [];
+
+  zones.forEach(zone => {
+    // If the zone has a parent, add it as a child to the parent
+    if (zone.parent !== undefined && zone.parent !== null && zoneMap.has(zone.parent)) {
+      const parentZone = zoneMap.get(zone.parent);
+      if (parentZone && parentZone.children) {
+        parentZone.children.push(zone);
+      }
+    } else {
+      // If it doesn't have a parent, it's a top-level zone
+      topLevelZones.push(zone);
+    }
+  });
+
+  console.log('Organized zones hierarchy:', topLevelZones);
+  return topLevelZones;
+};
+
 // Function to fetch zones for a site
 export const fetchZones = async (siteId: number): Promise<Zone[]> => {
   try {
@@ -29,7 +59,7 @@ export const fetchZones = async (siteId: number): Promise<Zone[]> => {
     });
     
     // Transform API response to match our Zone interface
-    return zones.map((zone: any) => ({
+    const transformedZones = zones.map((zone: any) => ({
       id: zone.id,
       name: zone.name,
       siteId: zone.siteId,
@@ -42,13 +72,24 @@ export const fetchZones = async (siteId: number): Promise<Zone[]> => {
       isRemoved: zone.isRemoved,
       type: zone.type,
       fields: zone.fields,
+      parent: zone.parent,
       ...zone  // Include any other properties
     }));
+
+    // Return all zones as a flat list for compatibility with existing code
+    // Note: You can use organizeZonesHierarchy(transformedZones) to get hierarchical zones
+    return transformedZones;
   } catch (error) {
     console.error(`Error fetching zones for site ${siteId}:`, error);
     toast.error("Failed to fetch zones. Please try again later.");
     return [];
   }
+};
+
+// Function to fetch zones for a site and organize them hierarchically
+export const fetchZonesHierarchy = async (siteId: number): Promise<Zone[]> => {
+  const zones = await fetchZones(siteId);
+  return organizeZonesHierarchy(zones);
 };
 
 // Function to fetch a single zone
@@ -84,6 +125,7 @@ export const fetchZone = async (zoneId: number): Promise<Zone | null> => {
       isRemoved: data.isRemoved,
       type: data.type,
       fields: data.fields,
+      parent: data.parent,
       ...data  // Include any other properties
     };
   } catch (error) {
