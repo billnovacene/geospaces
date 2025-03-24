@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { SiteStatusBadge } from "./SiteStatusBadge";
 import { siteDevicesCache } from "@/services/sites";
 import { Site } from "@/services/interfaces";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface SitesTableProps {
-  sites: any[];
+  sites: Site[];
 }
 
 export function SitesTable({ sites }: SitesTableProps) {
@@ -23,13 +25,27 @@ export function SitesTable({ sites }: SitesTableProps) {
   };
 
   // Get device count (prioritize cache)
-  const getDeviceCount = (site: any) => {
+  const getDeviceCount = (site: Site) => {
     if (site.id && siteDevicesCache[site.id] !== undefined && siteDevicesCache[site.id] > 0) {
       console.log(`Using cached device count for site ${site.id}: ${siteDevicesCache[site.id]}`);
       return siteDevicesCache[site.id];
     }
     console.log(`Using direct device count for site ${site.id}: ${site.devices}`);
     return typeof site.devices === 'number' ? site.devices : parseInt(String(site.devices), 10) || 0;
+  };
+
+  // Get status description based on status
+  const getStatusDescription = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "active":
+        return "The site is operational and running normally.";
+      case "warning":
+        return "The site has some issues that need attention.";
+      case "inactive":
+        return "The site is currently not operational.";
+      default:
+        return "Status information is unavailable.";
+    }
   };
 
   return (
@@ -60,12 +76,19 @@ export function SitesTable({ sites }: SitesTableProps) {
               </TableCell>
               <TableCell>
                 {site.locationText ? (
-                  <div className="flex items-center">
-                    <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
-                    <span className="text-muted-foreground truncate max-w-[200px]" title={site.locationText}>
-                      {site.locationText}
-                    </span>
-                  </div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center cursor-help">
+                        <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                        <span className="text-muted-foreground truncate max-w-[200px]">
+                          {site.locationText}
+                        </span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{site.locationText}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 ) : (
                   "No location"
                 )}
@@ -78,7 +101,22 @@ export function SitesTable({ sites }: SitesTableProps) {
               </TableCell>
               <TableCell>{formatDate(site.createdAt)}</TableCell>
               <TableCell>
-                <SiteStatusBadge status={site.status || "Unknown"} />
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <div>
+                      <SiteStatusBadge status={site.status || "Unknown"} />
+                    </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80">
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-semibold">Site Status: {site.status || "Unknown"}</h4>
+                      <p className="text-sm">{getStatusDescription(site.status || "Unknown")}</p>
+                      {site.warning && (
+                        <p className="text-sm text-yellow-600 mt-2">Warning: {site.warning}</p>
+                      )}
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
               </TableCell>
               <TableCell className="text-right">
                 <Button variant="outline" size="sm" asChild>

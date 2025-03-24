@@ -17,7 +17,7 @@ interface SitesListProps {
 export function SitesList({ projectId }: SitesListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   
-  const { data: sites = [], isLoading, error } = useQuery({
+  const { data: sites = [], isLoading, error, refetch } = useQuery({
     queryKey: ["sites", projectId],
     queryFn: () => projectId ? fetchSites(projectId) : Promise.resolve([]),
     enabled: !!projectId,
@@ -30,8 +30,12 @@ export function SitesList({ projectId }: SitesListProps) {
     (site.locationText && site.locationText.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const handleRetry = () => {
+    refetch();
+  };
+
   if (error) {
-    return <SitesErrorState />;
+    return <SitesErrorState onRetry={handleRetry} />;
   }
 
   return (
