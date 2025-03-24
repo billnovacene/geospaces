@@ -1,7 +1,7 @@
 
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProject } from "@/services/api";
+import { fetchProject } from "@/services/projects";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
