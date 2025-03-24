@@ -27,6 +27,9 @@ export const ProjectDetailsCard = ({ project }: ProjectDetailsCardProps) => {
     return 0;
   };
 
+  console.log("Project details in card:", project);
+  console.log("Devices count in card:", project?.devices);
+
   return (
     <Card>
       <CardHeader>

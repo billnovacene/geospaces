@@ -17,6 +17,15 @@ export const fetchProjects = async (): Promise<Project[]> => {
     const projects = data.list || [];
     console.log('Number of projects received:', projects.length);
     
+    // Cache device counts for later use
+    projects.forEach(project => {
+      if (project.id && project.devices !== undefined) {
+        projectDevicesCache[project.id] = typeof project.devices === 'number' 
+          ? project.devices 
+          : parseInt(String(project.devices), 10) || 0;
+      }
+    });
+    
     // Transform API response to match our Project interface
     return projects.map((project: any) => ({
       id: project.id,
@@ -25,8 +34,8 @@ export const fetchProjects = async (): Promise<Project[]> => {
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
       image: project.image,
-      sites: typeof project.sites === 'number' ? project.sites : parseInt(project.sites, 10) || 0,
-      devices: typeof project.devices === 'number' ? project.devices : parseInt(project.devices, 10) || 0,
+      sites: typeof project.sites === 'number' ? project.sites : parseInt(String(project.sites), 10) || 0,
+      devices: typeof project.devices === 'number' ? project.devices : parseInt(String(project.devices), 10) || 0,
       status: project.status || "Unknown",  // Default status if not provided
       description: project.description,
       bb101: project.bb101,
@@ -55,7 +64,9 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
       
       if (matchingProject && matchingProject.devices !== undefined) {
         console.log(`Caching device count ${matchingProject.devices} for project ${id}`);
-        projectDevicesCache[projectId] = matchingProject.devices;
+        projectDevicesCache[projectId] = typeof matchingProject.devices === 'number' 
+          ? matchingProject.devices 
+          : parseInt(String(matchingProject.devices), 10) || 0;
       }
     } catch (listError) {
       console.error("Error fetching projects list for device count:", listError);
@@ -66,43 +77,44 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
     console.log(`Project ${id} API response:`, data);
     
     // Check if the response has a project property and use it
-    const projectData = data.project || data;
+    const projectData = data.project;
     
-    if (projectData) {
-      const projectId = projectData.id;
-      
-      // Use the cached device count if available, otherwise use the one from the response
-      let deviceCount = projectData.devices;
-      
-      // If device count is missing or zero, try to use the cached value
-      if (deviceCount === 0 || deviceCount === undefined || deviceCount === null) {
-        if (projectDevicesCache[projectId] !== undefined) {
-          console.log(`Using cached device count: ${projectDevicesCache[projectId]}`);
-          deviceCount = projectDevicesCache[projectId];
-        }
-      }
-      
-      console.log(`Final device count for project ${id}:`, deviceCount);
-      
-      return {
-        id: projectData.id,
-        name: projectData.name,
-        customerId: projectData.customerId,
-        createdAt: projectData.createdAt,
-        updatedAt: projectData.updatedAt,
-        image: projectData.image,
-        sites: typeof projectData.sites === 'number' ? projectData.sites : parseInt(projectData.sites, 10) || 0,
-        devices: typeof deviceCount === 'number' ? deviceCount : parseInt(deviceCount, 10) || 0,
-        status: projectData.status || "Unknown",
-        description: projectData.description,
-        bb101: projectData.bb101,
-        triggerDevice: projectData.triggerDevice,
-        notification: projectData.notification,
-        ...projectData  // Include any other properties
-      };
+    if (!projectData) {
+      console.error("Project data not found in API response");
+      return null;
     }
     
-    return null;
+    const projectId = parseInt(id, 10);
+    
+    // Use the cached device count if available, otherwise use the one from the response
+    let deviceCount = projectData.devices;
+    
+    // If device count is missing or zero, try to use the cached value
+    if (deviceCount === 0 || deviceCount === undefined || deviceCount === null) {
+      if (projectDevicesCache[projectId] !== undefined) {
+        console.log(`Using cached device count: ${projectDevicesCache[projectId]}`);
+        deviceCount = projectDevicesCache[projectId];
+      }
+    }
+    
+    console.log(`Final device count for project ${id}:`, deviceCount);
+    
+    return {
+      id: projectData.id,
+      name: projectData.name,
+      customerId: projectData.customerId,
+      createdAt: projectData.createdAt,
+      updatedAt: projectData.updatedAt,
+      image: projectData.image,
+      sites: typeof projectData.sites === 'number' ? projectData.sites : parseInt(String(projectData.sites), 10) || 0,
+      devices: typeof deviceCount === 'number' ? deviceCount : parseInt(String(deviceCount), 10) || 0,
+      status: projectData.status || "Unknown",
+      description: projectData.description,
+      bb101: projectData.bb101,
+      triggerDevice: projectData.triggerDevice,
+      notification: projectData.notification,
+      ...projectData  // Include any other properties
+    };
   } catch (error) {
     console.error(`Error fetching project ${id}:`, error);
     toast.error("Failed to fetch project details. Please try again later.");
