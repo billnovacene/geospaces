@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, MoreVertical, Home, Building } from "lucide-react";
@@ -11,7 +10,7 @@ import { SidebarSection } from "./SidebarSection";
 import { SidebarZoneItem } from "./SidebarZoneItem";
 import { SidebarDashboardItem } from "./SidebarDashboardItem";
 import { ZonesHierarchy } from "./ZonesHierarchy";
-import { SitesList } from "./SitesList";
+import { SitesSidebar } from "./SitesSidebar";
 
 export function DashboardSidebar() {
   const { siteId } = useParams<{ siteId: string }>();
