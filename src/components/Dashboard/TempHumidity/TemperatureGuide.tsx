@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
 export function TemperatureGuide() {
   return (
-    <Card>
+    <Card className="border-0">
       <CardHeader className="pb-2">
         <CardTitle className="text-base font-medium">Temperature & Humidity</CardTitle>
       </CardHeader>

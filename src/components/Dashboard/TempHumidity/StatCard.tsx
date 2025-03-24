@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 interface StatCardProps {
@@ -40,7 +41,7 @@ export function StatCard({
         return 'Unknown';
     }
   };
-  return <Card className="overflow-hidden">
+  return <Card className="overflow-hidden border-0">
       <CardContent className="p-0">
         <div className="px-[5px] mx-[5px]">
           <div className="flex flex-col items-center text-center">
