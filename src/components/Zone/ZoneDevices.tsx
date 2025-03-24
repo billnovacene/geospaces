@@ -155,9 +155,9 @@ export const ZoneDevices = ({ zoneId, siteId }: ZoneDevicesProps) => {
                       <TableColumnHeader field="signal" label="Signal" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} className="w-[80px]" />
                       <TableColumnHeader field="name" label="Device Name" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
                       <TableColumnHeader field="location" label="Zone" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
-                      <TableColumnHeader field="co2" label="Active Measure 1" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
-                      <TableColumnHeader field="temperature" label="Active Measure 2" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
-                      <TableColumnHeader field="humidity" label="Active Measure 3" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
+                      <TableColumnHeader field="co2" label="Active Sensor 1" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
+                      <TableColumnHeader field="temperature" label="Active Sensor 2" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
+                      <TableColumnHeader field="humidity" label="Active Sensor 3" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
                     </TableRow>
                   </TableHeader>
                   <TableBody>

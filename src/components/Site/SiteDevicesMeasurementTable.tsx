@@ -89,9 +89,9 @@ const DevicesMeasurementTable = ({
             <TableColumnHeader field="signal" label="Signal" sortField={sortField} sortDirection={sortDirection} onSort={onSort} className="w-[80px]" />
             <TableColumnHeader field="name" label="Device Name" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
             <TableColumnHeader field="location" label="Location" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
-            <TableColumnHeader field="co2" label="Active Measure 1" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
-            <TableColumnHeader field="temperature" label="Active Measure 2" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
-            <TableColumnHeader field="humidity" label="Active Measure 3" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
+            <TableColumnHeader field="co2" label="Active Sensor 1" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
+            <TableColumnHeader field="temperature" label="Active Sensor 2" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
+            <TableColumnHeader field="humidity" label="Active Sensor 3" sortField={sortField} sortDirection={sortDirection} onSort={onSort} />
           </TableRow>
         </TableHeader>
         <TableBody>
