@@ -1,7 +1,7 @@
 
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSite } from "@/services/api";
+import { fetchZone } from "@/services/api";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -9,18 +9,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
-import { ZonesList } from "@/components/Site/ZonesList";
 
-const SiteDetail = () => {
-  const { siteId } = useParams<{ siteId: string }>();
+const ZoneDetail = () => {
+  const { zoneId } = useParams<{ zoneId: string }>();
   
-  const { data: site, isLoading, error } = useQuery({
-    queryKey: ["site", siteId],
-    queryFn: () => fetchSite(Number(siteId)),
-    enabled: !!siteId,
+  const { data: zone, isLoading, error } = useQuery({
+    queryKey: ["zone", zoneId],
+    queryFn: () => fetchZone(Number(zoneId)),
+    enabled: !!zoneId,
   });
 
-  console.log("Site data in SiteDetail:", site);
+  console.log("Zone data in ZoneDetail:", zone);
 
   // Format date
   const formatDate = (dateString: string | undefined) => {
@@ -64,12 +63,12 @@ const SiteDetail = () => {
               <Skeleton className="h-[300px] w-full" />
             </div>
           </div>
-        ) : error || !site ? (
+        ) : error || !zone ? (
           <Card>
             <CardContent className="pt-6">
               <div className="flex flex-col items-center justify-center h-40 text-center">
-                <p className="text-destructive mb-2">Failed to load site details</p>
-                <p className="text-muted-foreground text-sm">Please try again later or check if the site exists</p>
+                <p className="text-destructive mb-2">Failed to load zone details</p>
+                <p className="text-muted-foreground text-sm">Please try again later or check if the zone exists</p>
               </div>
             </CardContent>
           </Card>
@@ -77,12 +76,12 @@ const SiteDetail = () => {
           <>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
               <div>
-                <h1 className="text-3xl font-bold mb-2">{site.name}</h1>
+                <h1 className="text-3xl font-bold mb-2">{zone.name}</h1>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className={getStatusColor(site.status || "Unknown")}>
-                    {site.status || "Unknown"}
+                  <Badge variant="outline" className={getStatusColor(zone.status || "Unknown")}>
+                    {zone.status || "Unknown"}
                   </Badge>
-                  {site.type && <Badge variant="secondary">{site.type}</Badge>}
+                  {zone.type && <Badge variant="secondary">{zone.type}</Badge>}
                 </div>
               </div>
             </div>
@@ -90,25 +89,21 @@ const SiteDetail = () => {
             <div className="grid gap-6 md:grid-cols-2 mb-8">
               <Card>
                 <CardHeader>
-                  <CardTitle>Site Details</CardTitle>
+                  <CardTitle>Zone Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
+                    <h3 className="font-medium text-sm text-muted-foreground mb-1">Zone ID</h3>
+                    <p>{zone.id}</p>
+                  </div>
+                  <div>
                     <h3 className="font-medium text-sm text-muted-foreground mb-1">Site ID</h3>
-                    <p>{site.id}</p>
+                    <p>{zone.siteId}</p>
                   </div>
-                  <div>
-                    <h3 className="font-medium text-sm text-muted-foreground mb-1">Project ID</h3>
-                    <p>{site.projectId}</p>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-sm text-muted-foreground mb-1">Location</h3>
-                    <p>{site.locationText || "No location provided"}</p>
-                  </div>
-                  {site.location && site.location.length === 2 && (
+                  {zone.description && (
                     <div>
-                      <h3 className="font-medium text-sm text-muted-foreground mb-1">Coordinates</h3>
-                      <p>Longitude: {site.location[0]}, Latitude: {site.location[1]}</p>
+                      <h3 className="font-medium text-sm text-muted-foreground mb-1">Description</h3>
+                      <p>{zone.description}</p>
                     </div>
                   )}
                   <div className="pt-2 grid grid-cols-2 gap-4">
@@ -116,7 +111,7 @@ const SiteDetail = () => {
                       <CardContent className="p-4">
                         <div>
                           <p className="text-sm font-medium">Devices</p>
-                          <p className="text-2xl font-bold">{site.devices || 0}</p>
+                          <p className="text-2xl font-bold">{zone.devices || 0}</p>
                         </div>
                       </CardContent>
                     </Card>
@@ -124,7 +119,7 @@ const SiteDetail = () => {
                       <CardContent className="p-4">
                         <div>
                           <p className="text-sm font-medium">Created</p>
-                          <p className="text-sm">{formatDate(site.createdAt)}</p>
+                          <p className="text-sm">{formatDate(zone.createdAt)}</p>
                         </div>
                       </CardContent>
                     </Card>
@@ -139,50 +134,22 @@ const SiteDetail = () => {
                 <CardContent className="space-y-4">
                   <div>
                     <h3 className="font-medium text-sm text-muted-foreground mb-1">Last Updated</h3>
-                    <p>{formatDate(site.updatedAt)}</p>
+                    <p>{formatDate(zone.updatedAt)}</p>
                   </div>
                   
-                  {site.isEnabledScheduler !== undefined && (
-                    <div className="border rounded-md p-3">
-                      <h3 className="font-medium text-sm text-muted-foreground mb-1">Scheduler</h3>
-                      <Badge variant={site.isEnabledScheduler ? "default" : "outline"}>
-                        {site.isEnabledScheduler ? "Enabled" : "Disabled"}
-                      </Badge>
-                    </div>
-                  )}
-                  
-                  {site.isEnabledCondition !== undefined && (
-                    <div className="border rounded-md p-3">
-                      <h3 className="font-medium text-sm text-muted-foreground mb-1">Condition</h3>
-                      <Badge variant={site.isEnabledCondition ? "default" : "outline"}>
-                        {site.isEnabledCondition ? "Enabled" : "Disabled"}
-                      </Badge>
-                    </div>
-                  )}
-                  
-                  {/* Display any fields that contain energyCalculationField */}
-                  {site.fields && site.fields.some(field => field.energyCalculationField) && (
+                  {zone.fields && zone.fields.length > 0 && (
                     <div>
-                      <h3 className="font-medium text-sm text-muted-foreground mb-1">Operating Hours</h3>
-                      {site.fields
-                        .filter(field => field.energyCalculationField)
-                        .map((field, index) => {
-                          const energy = field.energyCalculationField;
-                          return (
-                            <div key={index} className="space-y-2">
-                              <p>Start: {formatDate(energy.operatingHoursStartTime)}</p>
-                              <p>End: {formatDate(energy.operatingHoursEndTime)}</p>
-                            </div>
-                          );
-                        })}
+                      <h3 className="font-medium text-sm text-muted-foreground mb-1">Custom Fields</h3>
+                      <div className="border rounded-lg p-3">
+                        <pre className="text-xs overflow-auto max-h-48">
+                          {JSON.stringify(zone.fields, null, 2)}
+                        </pre>
+                      </div>
                     </div>
                   )}
                 </CardContent>
               </Card>
             </div>
-
-            {/* Zones List Component */}
-            <ZonesList siteId={site.id} />
           </>
         )}
       </div>
@@ -190,4 +157,4 @@ const SiteDetail = () => {
   );
 };
 
-export default SiteDetail;
+export default ZoneDetail;

@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import ProjectDetail from "./pages/ProjectDetail";
 import SiteDetail from "./pages/SiteDetail";
+import ZoneDetail from "./pages/ZoneDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/" element={<Dashboard />} />
           <Route path="/project/:projectId" element={<ProjectDetail />} />
           <Route path="/site/:siteId" element={<SiteDetail />} />
+          <Route path="/zone/:zoneId" element={<ZoneDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

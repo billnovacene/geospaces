@@ -36,6 +36,23 @@ export interface Site {
   [key: string]: any; // For any additional properties
 }
 
+// Interface for Zone data
+export interface Zone {
+  id: number;
+  name: string;
+  siteId: number;
+  isRemoved?: boolean;
+  location?: any[];
+  description?: string;
+  fields?: any[];
+  createdAt: string;
+  updatedAt?: string;
+  type?: string;
+  devices?: number;
+  status?: string;
+  [key: string]: any; // For any additional properties
+}
+
 // Interface for API response types
 export interface PaginatedResponse<T> {
   list: T[];
