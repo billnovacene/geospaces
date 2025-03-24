@@ -53,7 +53,7 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
   };
   
   return (
-    <div className="border-b last:border-b-0">
+    <div className="last:border-b-0">
       <div 
         className={cn(
           "flex items-center py-2 px-3 hover:bg-muted/50 cursor-pointer",
@@ -105,7 +105,7 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
         </div>
       </div>
       {isExpanded && hasChildren && (
-        <div className="border-t">
+        <div>
           {zone.children!.map(child => (
             <ZoneItem 
               key={child.id} 

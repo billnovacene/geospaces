@@ -14,7 +14,7 @@ export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
 
   if (!isValidSiteId) {
     return (
-      <div className="flex items-center gap-2 p-4 bg-amber-50 text-amber-700 rounded-md border border-amber-200">
+      <div className="flex items-center gap-2 p-4 bg-amber-50 text-amber-700 rounded-md">
         <AlertTriangle className="h-5 w-5" />
         <div>
           <h3 className="font-medium">Invalid Site ID</h3>

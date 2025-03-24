@@ -81,7 +81,7 @@ const DevicesMeasurementTable = ({
   onSort 
 }: DevicesMeasurementTableProps) => {
   return (
-    <div className="rounded-md border overflow-x-auto">
+    <div className="rounded-md overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>

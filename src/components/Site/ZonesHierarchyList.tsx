@@ -49,7 +49,7 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
   }
 
   return (
-    <Card className="dashboard-card overflow-hidden">
+    <Card className="dashboard-card overflow-hidden shadow-sm border-0">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <ZonesHierarchyHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -62,7 +62,7 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
         {isLoading ? (
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-4 p-4 border rounded-md">
+              <div key={i} className="flex items-center gap-4 p-4 rounded-md">
                 <div className="space-y-2">
                   <Skeleton className="h-5 w-40" />
                   <Skeleton className="h-4 w-24" />
@@ -76,7 +76,7 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
         ) : filteredZones.length === 0 ? (
           <ZonesEmptyState siteId={siteId} searchTerm={searchTerm} />
         ) : (
-          <div className="border rounded-md overflow-hidden">
+          <div className="rounded-md overflow-hidden">
             {hierarchicalZones.map(zone => (
               <ZoneItem 
                 key={zone.id} 
@@ -89,7 +89,7 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
         )}
       </CardContent>
       {siteId && allZones.length > 0 && (
-        <CardFooter className="border-t p-4 text-sm text-muted-foreground flex justify-between items-center">
+        <CardFooter className="p-4 text-sm text-muted-foreground flex justify-between items-center">
           <div>Total zones: {allZones.length}</div>
           <div>Showing {filteredZones.length} of {allZones.length}</div>
         </CardFooter>

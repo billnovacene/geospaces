@@ -57,7 +57,7 @@ export function ZonesList({ siteId }: ZonesListProps) {
   }
 
   return (
-    <Card className="dashboard-card overflow-hidden">
+    <Card className="dashboard-card overflow-hidden shadow-sm border-0">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
           <div>
@@ -82,7 +82,7 @@ export function ZonesList({ siteId }: ZonesListProps) {
         {isLoading ? (
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-4 p-4 border rounded-md">
+              <div key={i} className="flex items-center gap-4 p-4 rounded-md">
                 <div className="space-y-2">
                   <Skeleton className="h-5 w-40" />
                   <Skeleton className="h-4 w-24" />
@@ -98,53 +98,55 @@ export function ZonesList({ siteId }: ZonesListProps) {
         ) : filteredZones.length === 0 ? (
           <ZonesEmptyState siteId={siteId} searchTerm={searchTerm} />
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Devices</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredZones.map((zone) => {
-                const statusInfo = getStatusInfo(zone.status || "Unknown");
-                const deviceCount = getDeviceCount(zone);
-                
-                return (
-                  <TableRow key={zone.id}>
-                    <TableCell className="font-medium">{zone.name}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <Home className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
-                        <span>{zone.type || "N/A"}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{deviceCount}</TableCell>
-                    <TableCell>{formatDate(zone.createdAt)}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={statusInfo.color}>
-                        {renderStatusIcon(statusInfo.icon)}
-                        {zone.status || "Unknown"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={`/zone/${zone.id}`}>View Details</Link>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Devices</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredZones.map((zone) => {
+                  const statusInfo = getStatusInfo(zone.status || "Unknown");
+                  const deviceCount = getDeviceCount(zone);
+                  
+                  return (
+                    <TableRow key={zone.id}>
+                      <TableCell className="font-medium">{zone.name}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Home className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                          <span>{zone.type || "N/A"}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{deviceCount}</TableCell>
+                      <TableCell>{formatDate(zone.createdAt)}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={statusInfo.color}>
+                          {renderStatusIcon(statusInfo.icon)}
+                          {zone.status || "Unknown"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to={`/zone/${zone.id}`}>View Details</Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </CardContent>
       {siteId && zones.length > 0 && (
-        <CardFooter className="border-t p-4 text-sm text-muted-foreground flex justify-between items-center">
+        <CardFooter className="p-4 text-sm text-muted-foreground flex justify-between items-center">
           <div>Total zones: {zones.length}</div>
           <div>Showing {filteredZones.length} of {zones.length}</div>
         </CardFooter>
