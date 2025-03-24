@@ -1,7 +1,7 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
-import { Settings, Search, MoreVertical, Home, Building } from "lucide-react";
+import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar } from "@/components/ui/avatar";
@@ -12,6 +12,8 @@ import { SidebarZoneItem } from "./SidebarZoneItem";
 import { SidebarDashboardItem } from "./SidebarDashboardItem";
 import { ZonesHierarchy } from "./ZonesHierarchy";
 import { SitesSidebar } from "./SitesSidebar";
+import { useQuery } from "@tanstack/react-query";
+import { fetchZone } from "@/services/zones";
 
 export function DashboardSidebar() {
   const { siteId, zoneId } = useParams<{ siteId: string, zoneId: string }>();
@@ -19,6 +21,16 @@ export function DashboardSidebar() {
   // Check if we have a valid siteId
   const validSiteId = siteId && !isNaN(Number(siteId)) ? Number(siteId) : null;
   const validZoneId = zoneId && !isNaN(Number(zoneId)) ? Number(zoneId) : null;
+  
+  // Fetch zone data if zoneId is present
+  const { data: zoneData } = useQuery({
+    queryKey: ["zone-for-sidebar", validZoneId],
+    queryFn: () => fetchZone(Number(validZoneId)),
+    enabled: !!validZoneId,
+  });
+
+  // Use zone's siteId if available but no siteId in URL
+  const effectiveSiteId = validSiteId || (zoneData?.siteId ? zoneData.siteId : null);
   
   return (
     <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
@@ -45,10 +57,19 @@ export function DashboardSidebar() {
             <SitesSidebar />
           </SidebarSection>
 
-          {/* Always show Zones section, but with ZonesHierarchy only when a site is selected */}
           <SidebarSection title="Zones">
-            {validSiteId ? (
-              <ZonesHierarchy siteId={validSiteId} />
+            {effectiveSiteId ? (
+              <ZonesHierarchy siteId={effectiveSiteId} />
+            ) : validZoneId && zoneData ? (
+              <div className="py-2.5 px-5 text-sm bg-white">
+                <div className="flex items-center gap-1.5 text-primary">
+                  <Package className="h-4 w-4" />
+                  <span className="font-medium">{zoneData.name}</span>
+                </div>
+                <div className="text-[#8E9196] text-xs mt-1">
+                  Module zone (ID: {validZoneId})
+                </div>
+              </div>
             ) : (
               <div className="py-2.5 px-5 text-sm text-[#8E9196] bg-white">
                 Select a site to view zones
