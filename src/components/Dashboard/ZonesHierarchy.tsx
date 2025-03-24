@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,32 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
     queryFn: () => siteId ? fetchZonesHierarchy(siteId) : Promise.resolve([]),
     enabled: !!siteId,
   });
+  
+  // Expand parent zones of the active zone automatically
+  useEffect(() => {
+    if (zoneId && zones) {
+      // Find parent zones of the active zone
+      const findParentZones = (zonesList: Zone[], targetId: number, parents: number[] = []): number[] => {
+        for (const zone of zonesList) {
+          if (zone.id === targetId) {
+            return parents;
+          }
+          
+          if (zone.children && zone.children.length > 0) {
+            const result = findParentZones(zone.children, targetId, [...parents, zone.id]);
+            if (result.length) return result;
+          }
+        }
+        return [];
+      };
+      
+      // Find all parent zones and expand them
+      const parentZones = findParentZones(zones, zoneId);
+      if (parentZones.length > 0) {
+        setExpandedZones(prev => [...new Set([...prev, ...parentZones])]);
+      }
+    }
+  }, [zoneId, zones]);
   
   // Toggle expanded state of parent zones
   const toggleExpanded = (zoneId: number) => {
