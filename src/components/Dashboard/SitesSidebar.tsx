@@ -25,6 +25,11 @@ export function SitesSidebar() {
     site.status !== "Inactive" && site.status !== "Removed"
   );
 
+  useEffect(() => {
+    console.log("SitesSidebar: Sites fetched", sites);
+    console.log("SitesSidebar: Active sites", activeSites);
+  }, [sites, activeSites]);
+
   if (isLoading) {
     return (
       <div className="py-2 px-5">
@@ -46,7 +51,13 @@ export function SitesSidebar() {
 
   if (activeSites.length === 0) {
     return (
-      <div className="py-2.5 px-5 text-sm text-[#8E9196]">No sites available</div>
+      <div className="py-2.5 px-5 text-sm text-[#8E9196]">
+        <div className="flex items-center gap-2 mb-2">
+          <AlertTriangle className="h-4 w-4" />
+          <span>No sites available for this project</span>
+        </div>
+        <p className="text-xs text-zinc-400">Try selecting a different project</p>
+      </div>
     );
   }
 
@@ -56,7 +67,7 @@ export function SitesSidebar() {
         <Link key={site.id} to={`/site/${site.id}`}>
           <div className={cn(
             "flex items-center justify-between py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
-            activeSiteId === site.id && "bg-[#F9F9FA]"
+            activeSiteId === site.id && "bg-[#F9F9FA] font-bold border-l-4 border-primary text-primary"
           )}>
             <div className="flex items-center gap-2">
               <Building className="h-4 w-4 text-[#8E9196]" />
