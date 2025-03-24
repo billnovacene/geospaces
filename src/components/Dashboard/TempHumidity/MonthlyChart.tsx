@@ -54,15 +54,6 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
   return (
     <div className="space-y-6">
       <div className="flex justify-between">
-        <div className="flex flex-col items-start w-1/4 pr-4">
-          <h2 className="text-xl font-medium mb-4">Monthly Overview</h2>
-          <p className="text-sm text-gray-600">
-            Lowest temps rarely dip below 8°C, highest near 22°C. Humidity remains
-            about 47%, showing steady indoor conditions with minor fluctuations
-            linked to weather or occupancy.
-          </p>
-        </div>
-        
         <div className="w-3/4">
           <div className="flex justify-end gap-2 mb-4">
             <Button variant="outline" className="h-8">
