@@ -7,14 +7,21 @@ import { siteDevicesCache } from "@/services/sites";
 
 interface SiteDetailsCardProps {
   site: Site;
+  calculatedDeviceCount: number | null;
 }
 
-export function SiteDetailsCard({ site }: SiteDetailsCardProps) {
-  // Get device count (prioritize cache)
+export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCardProps) {
+  // Get device count (prioritize calculated count from zones)
   const getDeviceCount = () => {
     if (!site) return 0;
     
-    // First check if the site has a direct devices property that's a positive number
+    // First check if we have a calculated count from the zones (most accurate)
+    if (calculatedDeviceCount !== null && calculatedDeviceCount > 0) {
+      console.log(`Using calculated device count from zones: ${calculatedDeviceCount}`);
+      return calculatedDeviceCount;
+    }
+    
+    // Next check if the site has a direct devices property that's a positive number
     const directCount = typeof site.devices === 'number' 
       ? site.devices 
       : parseInt(String(site.devices), 10) || 0;
