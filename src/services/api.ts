@@ -114,10 +114,48 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
     const data = await response.json();
     console.log(`Project ${id} API response:`, data);
     
+    // Detailed debugging for the device count
+    console.log(`Project devices raw value:`, data.project?.devices || data.devices);
+    
     // Check if the response has a project property and use it
     const projectData = data.project || data;
     
     if (projectData) {
+      // First try to get devices from the response
+      const devicesFromResponse = projectData.devices;
+      
+      // As a fallback for the device count discrepancy, check if we have a device count in projects list
+      // We'll make a separate API call to get this information if not available
+      let deviceCount = devicesFromResponse;
+      
+      if (deviceCount === 0 || deviceCount === undefined || deviceCount === null) {
+        console.log("Device count is missing or zero, attempting to fetch from projects list");
+        try {
+          const projectsResponse = await fetch(`${API_BASE_URL}/projects`, {
+            method: "GET",
+            headers: {
+              "accept": "application/json",
+              "api_token": API_TOKEN
+            }
+          });
+          
+          if (projectsResponse.ok) {
+            const projectsData = await projectsResponse.json();
+            const projectsList = projectsData.list || [];
+            const matchingProject = projectsList.find((p: any) => p.id === projectData.id);
+            
+            if (matchingProject && matchingProject.devices) {
+              console.log(`Found device count ${matchingProject.devices} from projects list`);
+              deviceCount = matchingProject.devices;
+            }
+          }
+        } catch (listError) {
+          console.error("Error fetching projects list for device count:", listError);
+        }
+      }
+      
+      console.log(`Final device count for project ${id}:`, deviceCount);
+      
       return {
         id: projectData.id,
         name: projectData.name,
@@ -126,7 +164,7 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
         updatedAt: projectData.updatedAt,
         image: projectData.image,
         sites: typeof projectData.sites === 'number' ? projectData.sites : parseInt(projectData.sites, 10) || 0,
-        devices: typeof projectData.devices === 'number' ? projectData.devices : parseInt(projectData.devices, 10) || 0,
+        devices: typeof deviceCount === 'number' ? deviceCount : parseInt(deviceCount, 10) || 0,
         status: projectData.status || "Unknown",
         description: projectData.description,
         bb101: projectData.bb101,
