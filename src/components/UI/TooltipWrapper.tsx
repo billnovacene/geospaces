@@ -15,7 +15,7 @@ interface TooltipWrapperProps {
 
 export const TooltipWrapper = ({ content, children, side = "top" }: TooltipWrapperProps) => {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={300}>
       <Tooltip>
         <TooltipTrigger asChild>
           {children}

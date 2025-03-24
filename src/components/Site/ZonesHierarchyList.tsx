@@ -10,8 +10,8 @@ import { ZonesEmptyState } from "@/components/Zone/ZonesEmptyState";
 import { ZonesHierarchyHeader } from "@/components/Zone/ZonesHierarchyHeader";
 import { ZonesErrorState } from "@/components/Zone/ZonesErrorState";
 import { organizeZonesHierarchy } from "@/utils/zones";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { HelpCircle } from "lucide-react";
+import { TooltipWrapper } from "@/components/UI/TooltipWrapper";
 
 interface ZonesHierarchyListProps {
   siteId?: number;
@@ -53,14 +53,9 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <ZonesHierarchyHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircle className="h-4 w-4 text-muted-foreground" />
-            </TooltipTrigger>
-            <TooltipContent side="top">
-              <p className="max-w-xs">For parent zones, device counts show direct devices in this zone</p>
-            </TooltipContent>
-          </Tooltip>
+          <TooltipWrapper content="For parent zones, device counts show direct devices in this zone">
+            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+          </TooltipWrapper>
         </div>
       </CardHeader>
       <CardContent>

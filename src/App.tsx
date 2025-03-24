@@ -9,6 +9,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import SiteDetail from "./pages/SiteDetail";
 import ZoneDetail from "./pages/ZoneDetail";
 import NotFound from "./pages/NotFound";
+import React from "react";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -21,20 +22,24 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/project/:projectId" element={<ProjectDetail />} />
-        <Route path="/site/:siteId" element={<SiteDetail />} />
-        <Route path="/zone/:zoneId" element={<ZoneDetail />} />
-        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <Toaster />
-      <Sonner position="top-right" />
-    </BrowserRouter>
-  </QueryClientProvider>
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/project/:projectId" element={<ProjectDetail />} />
+            <Route path="/site/:siteId" element={<SiteDetail />} />
+            <Route path="/zone/:zoneId" element={<ZoneDetail />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+          <Sonner position="top-right" />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
 
 export default App;

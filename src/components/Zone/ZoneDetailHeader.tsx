@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Zone } from "@/services/interfaces";
 import { getStatusColor } from "@/utils/formatting";
+import { Link } from "react-router-dom";
 
 interface ZoneDetailHeaderProps {
   zone: Zone;
@@ -13,10 +14,10 @@ export const ZoneDetailHeader = ({ zone }: ZoneDetailHeaderProps) => {
   return (
     <>
       <Button variant="outline" size="sm" asChild className="mb-6">
-        <a href="javascript:history.back()">
+        <Link to={`/site/${zone.siteId}`}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </a>
+          Back to Site
+        </Link>
       </Button>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">

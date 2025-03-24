@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import { Zone } from "@/services/interfaces";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ import { getStatusInfo } from "@/utils/zones";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesCountForZone } from "@/services/devices";
 import { Skeleton } from "@/components/ui/skeleton";
-import { calculateTotalZoneDevices, sumZoneAndChildrenDevices } from "@/utils/zoneUtils";
+import { calculateTotalZoneDevices } from "@/utils/zoneUtils";
 import { TooltipWrapper } from "@/components/UI/TooltipWrapper";
 
 interface ZoneItemProps {
@@ -86,9 +85,11 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
           ) : (
             <div className="text-sm text-muted-foreground">
               {hasChildren ? (
-                <span title="Direct devices in this zone">
-                  {directDeviceCount || zoneDirectDevices} devices
-                </span>
+                <TooltipWrapper content="Direct devices in this zone">
+                  <span>
+                    {directDeviceCount || zoneDirectDevices} devices
+                  </span>
+                </TooltipWrapper>
               ) : (
                 <span>{directDeviceCount || zoneDirectDevices} devices</span>
               )}
