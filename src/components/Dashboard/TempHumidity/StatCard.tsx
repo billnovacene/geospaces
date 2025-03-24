@@ -41,9 +41,9 @@ export function StatCard({
         return 'Unknown';
     }
   };
-  return <Card className="overflow-hidden border-0">
-      <CardContent className="p-0">
-        <div className="px-[5px] mx-[5px]">
+  return <Card className="overflow-hidden border-0 h-full">
+      <CardContent className="p-0 h-full flex flex-col">
+        <div className="px-[5px] mx-[5px] flex-grow flex flex-col justify-center">
           <div className="flex flex-col items-center text-center">
             <div className="flex items-center">
               <span className={cn("font-bold", large ? "text-3xl" : "text-2xl")}>{value}</span>
@@ -56,7 +56,7 @@ export function StatCard({
             </div>
           </div>
         </div>
-        <div className={cn("h-1 w-full", status === 'good' ? "bg-green-500" : status === 'caution' ? "bg-amber-500" : "bg-red-500")} />
+        <div className={cn("h-1 w-full rounded-none", status === 'good' ? "bg-green-500" : status === 'caution' ? "bg-amber-500" : "bg-red-500")} />
       </CardContent>
     </Card>;
 }
