@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -34,9 +33,7 @@ export function MonthlyChart({
     ...point,
     fill: point.status === 'good' ? '#F2FCE2' : point.status === 'caution' ? '#FEF7CD' : '#FFDEE2'
   }));
-  
-  return (
-    <div className="w-full h-full">
+  return <div className="w-full h-full">
       <div className="flex justify-end gap-2 mb-4">
         <Button variant="outline" className="h-8">
           {month} <ChevronDown className="ml-2 h-4 w-4" />
@@ -61,14 +58,14 @@ export function MonthlyChart({
         </div>
       </div>
       
-      <div className="w-full h-[300px]">
+      <div className="w-full h-full">
         <ChartContainer config={chartConfig}>
           <ComposedChart data={enhancedData} margin={{
-            top: 20,
-            right: 30,
-            left: 0,
-            bottom: 10
-          }}>
+          top: 20,
+          right: 30,
+          left: 0,
+          bottom: 10
+        }}>
             <defs>
               {enhancedData.map((entry, index) => <linearGradient key={`gradient-${index}`} id={`gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={entry.fill} stopOpacity={0.8} />
@@ -78,19 +75,19 @@ export function MonthlyChart({
             
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
             <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{
-              fontSize: 10
-            }} padding={{
-              left: 10,
-              right: 10
-            }} />
+            fontSize: 10
+          }} padding={{
+            left: 10,
+            right: 10
+          }} />
             <YAxis domain={[0, 30]} axisLine={false} tickLine={false} tick={{
-              fontSize: 10
-            }} />
+            fontSize: 10
+          }} />
             <Tooltip content={<ChartTooltipContent />} cursor={{
-              stroke: '#ddd',
-              strokeWidth: 1,
-              strokeDasharray: '3 3'
-            }} />
+            stroke: '#ddd',
+            strokeWidth: 1,
+            strokeDasharray: '3 3'
+          }} />
             
             {enhancedData.map((entry, index) => <Area key={`area-${index}`} type="monotone" dataKey="minTemp" stroke="none" fill={`url(#gradient-${index})`} activeDot={false} isAnimationActive={false} stackId={index} data={[entry]} />)}
             
@@ -115,6 +112,5 @@ export function MonthlyChart({
           </UITooltip>
         </TooltipProvider>
       </div>
-    </div>
-  );
+    </div>;
 }
