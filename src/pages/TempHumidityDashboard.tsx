@@ -20,6 +20,8 @@ import { Package, Building } from "lucide-react";
 export default function TempHumidityDashboard() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
   
+  console.log("TempHumidityDashboard: Route params:", { siteId, zoneId });
+  
   const { data: siteData } = useQuery({
     queryKey: ["site-for-temp-dashboard", siteId],
     queryFn: () => fetchSite(Number(siteId)),
@@ -122,7 +124,10 @@ export default function TempHumidityDashboard() {
             </div>
             
             <div className="mb-8">
-              <SensorSourceInfo sourceData={data.sourceData} />
+              <SensorSourceInfo 
+                sourceData={data.sourceData} 
+                isLoading={false}
+              />
             </div>
           </>
         )}

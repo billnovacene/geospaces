@@ -18,8 +18,9 @@ export async function findZoneSensors(zoneId: number, siteId: number): Promise<{
   }
 
   // Fetch all devices in the zone
-  console.log(`Finding sensors for zone ${zoneId}`);
+  console.log(`Finding sensors for zone ${zoneId} in site ${siteId}`);
   const devices = await fetchDevicesForZone(zoneId, siteId, true);
+  console.log(`Found ${devices.length} devices in zone ${zoneId}`);
   
   // Arrays to store sensor IDs
   const temperatureSensors: string[] = [];
@@ -81,6 +82,10 @@ export async function findZoneSensors(zoneId: number, siteId: number): Promise<{
   // Cache the result
   ZONE_SENSORS_CACHE[cacheKey] = result;
   
-  console.log(`Zone ${zoneId} sensors found:`, result);
+  console.log(`Zone ${zoneId} sensors found:`, {
+    temperatureSensors: temperatureSensorDetails.length,
+    humiditySensors: humiditySensorDetails.length,
+    totalSensors: temperatureSensorDetails.length + humiditySensorDetails.length
+  });
   return result;
 }

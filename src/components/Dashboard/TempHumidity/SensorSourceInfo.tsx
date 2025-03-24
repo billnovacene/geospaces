@@ -1,94 +1,95 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { SensorSourceData } from "@/services/interfaces/temp-humidity";
-import { formatDistanceToNow } from "date-fns";
-import { Thermometer, Droplets, Info } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { Thermometer, Droplets } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SensorSourceInfoProps {
   sourceData: SensorSourceData;
+  isLoading?: boolean;
 }
 
-export function SensorSourceInfo({ sourceData }: SensorSourceInfoProps) {
-  // No sensors available
-  const noSensorsAvailable = 
-    sourceData.temperatureSensors.length === 0 && 
-    sourceData.humiditySensors.length === 0;
-
-  if (noSensorsAvailable) {
+export function SensorSourceInfo({ sourceData, isLoading = false }: SensorSourceInfoProps) {
+  if (isLoading) {
     return (
-      <Card className="shadow-sm border border-amber-200 bg-amber-50">
-        <CardContent className="p-4 text-sm">
-          <div className="flex items-center gap-2">
-            <Info className="h-4 w-4 text-amber-500" />
-            <span>Using simulated data. No actual sensors connected.</span>
+      <Card className="border-0 shadow-sm">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Skeleton className="h-5 w-5" />
+            <Skeleton className="h-6 w-48" />
+          </div>
+          
+          <div className="grid gap-3 animate-pulse">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
           </div>
         </CardContent>
       </Card>
     );
   }
-
-  // Format time ago
-  const formatTimeAgo = (timestamp: string) => {
+  
+  const totalSensors = sourceData.temperatureSensors.length + sourceData.humiditySensors.length;
+  
+  if (totalSensors === 0) {
+    return (
+      <Card className="border-0 shadow-sm">
+        <CardContent className="p-6">
+          <p className="text-sm text-gray-500">No sensor data available for this location.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  const formatTime = (isoTime: string) => {
     try {
-      return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+      return format(parseISO(isoTime), 'MMM d, yyyy h:mm a');
     } catch (e) {
-      return "Unknown";
+      return 'Unknown';
     }
   };
-
+  
   return (
-    <Card className="shadow-sm">
-      <CardContent className="p-4">
-        <h3 className="text-sm font-medium mb-3">Data Sources</h3>
+    <Card className="border-0 shadow-sm">
+      <CardContent className="p-6">
+        <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
+            <Thermometer className="h-3 w-3 text-primary" />
+          </span>
+          Sensor Data Sources ({totalSensors} sensors)
+        </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Temperature Sensors Section */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium text-orange-600">
-              <Thermometer className="h-4 w-4" />
-              <span>Temperature Sensors ({sourceData.temperatureSensors.length})</span>
-            </div>
-            
-            {sourceData.temperatureSensors.length === 0 ? (
-              <div className="text-xs text-gray-500 pl-6">No temperature sensors available</div>
-            ) : (
-              <div className="space-y-2">
-                {sourceData.temperatureSensors.map((sensor) => (
-                  <div key={sensor.id} className="border rounded-md p-2 bg-gray-50 text-xs">
-                    <div className="font-medium">{sensor.name}</div>
-                    <div className="text-gray-600">Device: {sensor.deviceName}</div>
-                    <div className="text-gray-500 text-[10px]">
-                      Last updated: {formatTimeAgo(sensor.lastUpdated)}
-                    </div>
-                  </div>
-                ))}
+        <div className="space-y-4">
+          {sourceData.temperatureSensors.map((sensor) => (
+            <div key={sensor.id} className="rounded-md border p-3 bg-primary/5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Thermometer className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-sm">{sensor.name}</span>
+                </div>
+                <span className="text-xs text-gray-500">
+                  Last updated: {formatTime(sensor.lastUpdated)}
+                </span>
               </div>
-            )}
-          </div>
-
-          {/* Humidity Sensors Section */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium text-blue-600">
-              <Droplets className="h-4 w-4" />
-              <span>Humidity Sensors ({sourceData.humiditySensors.length})</span>
+              <p className="text-xs text-gray-600 mt-1">Device: {sensor.deviceName}</p>
             </div>
-            
-            {sourceData.humiditySensors.length === 0 ? (
-              <div className="text-xs text-gray-500 pl-6">No humidity sensors available</div>
-            ) : (
-              <div className="space-y-2">
-                {sourceData.humiditySensors.map((sensor) => (
-                  <div key={sensor.id} className="border rounded-md p-2 bg-gray-50 text-xs">
-                    <div className="font-medium">{sensor.name}</div>
-                    <div className="text-gray-600">Device: {sensor.deviceName}</div>
-                    <div className="text-gray-500 text-[10px]">
-                      Last updated: {formatTimeAgo(sensor.lastUpdated)}
-                    </div>
-                  </div>
-                ))}
+          ))}
+          
+          {sourceData.humiditySensors.map((sensor) => (
+            <div key={sensor.id} className="rounded-md border p-3 bg-blue-50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Droplets className="h-4 w-4 text-blue-500" />
+                  <span className="font-medium text-sm">{sensor.name}</span>
+                </div>
+                <span className="text-xs text-gray-500">
+                  Last updated: {formatTime(sensor.lastUpdated)}
+                </span>
               </div>
-            )}
-          </div>
+              <p className="text-xs text-gray-600 mt-1">Device: {sensor.deviceName}</p>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>
