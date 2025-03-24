@@ -14,7 +14,8 @@ interface ZonesHierarchyProps {
 export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
   const [expandedZones, setExpandedZones] = useState<number[]>([]);
   const location = useLocation();
-  const zoneId = location.pathname.includes('/zone/') ? Number(location.pathname.split('/zone/')[1]) : null;
+  const { zoneId } = useParams<{ zoneId: string }>();
+  const activeZoneId = zoneId ? Number(zoneId) : null;
   
   // Fetch zones hierarchy data for the sidebar
   const { data: zones = [], isLoading, error } = useQuery({
@@ -25,7 +26,7 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
   
   // Expand parent zones of the active zone automatically
   useEffect(() => {
-    if (zoneId && zones) {
+    if (activeZoneId && zones) {
       // Find parent zones of the active zone
       const findParentZones = (zonesList: Zone[], targetId: number, parents: number[] = []): number[] => {
         for (const zone of zonesList) {
@@ -42,12 +43,12 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
       };
       
       // Find all parent zones and expand them
-      const parentZones = findParentZones(zones, zoneId);
+      const parentZones = findParentZones(zones, activeZoneId);
       if (parentZones.length > 0) {
         setExpandedZones(prev => [...new Set([...prev, ...parentZones])]);
       }
     }
-  }, [zoneId, zones]);
+  }, [activeZoneId, zones]);
   
   // Toggle expanded state of parent zones
   const toggleExpanded = (zoneId: number) => {
@@ -63,15 +64,15 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
     return zones.map(zone => {
       const hasChildren = zone.children && zone.children.length > 0;
       const isExpanded = expandedZones.includes(zone.id);
-      const isActive = zoneId === zone.id;
+      const isActive = activeZoneId === zone.id;
       const deviceCount = typeof zone.devices === 'number' ? zone.devices : parseInt(String(zone.devices), 10) || 0;
       
       return (
         <div key={zone.id}>
           <div 
             className={cn(
-              "flex items-center justify-between py-2.5 px-5 cursor-pointer bg-white sidebar-hover-item",
-              isActive && "bg-[#F9F9FA]",
+              "flex items-center justify-between py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
+              isActive && "bg-[#F9F9FA] font-medium",
               depth > 0 && "pl-8"
             )}
             style={{ paddingLeft: depth > 0 ? `${depth * 12 + 20}px` : undefined }}
@@ -85,7 +86,10 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
               )}
               <Link 
                 to={`/zone/${zone.id}`}
-                className="text-sm font-medium text-gray-900"
+                className={cn(
+                  "text-sm text-gray-900",
+                  isActive && "font-medium"
+                )}
                 onClick={(e) => e.stopPropagation()}
               >
                 {zone.name}
