@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZone } from "@/services/api";
@@ -20,25 +19,28 @@ const ZoneDetail = () => {
     enabled: !!zoneId,
   });
 
+  const { data: deviceCount, isLoading: deviceCountLoading } = useQuery({
+    queryKey: ["zone-devices", zoneId],
+    queryFn: () => fetchDevicesCountForZone(Number(zoneId)),
+    enabled: !!zoneId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   console.log("Zone data in ZoneDetail:", zone);
   console.log("Zone location data:", zone?.location);
+  console.log("Zone device count from API:", deviceCount);
 
-  // Calculate area if location coordinates are available
   const calculateArea = () => {
     if (!zone?.location || !Array.isArray(zone.location) || zone.location.length < 3) {
       return null;
     }
 
     try {
-      // Assuming location is an array of [x, y] coordinates forming a polygon
-      // Using the Shoelace formula to calculate the area
       let area = 0;
       const coordinates = zone.location;
       
-      // Log the format of coordinates for debugging
       console.log("Coordinates format:", coordinates);
       
-      // Check if coordinates are in the expected format
       if (!coordinates.every(coord => Array.isArray(coord) && coord.length >= 2)) {
         console.log("Coordinates not in expected format");
         return null;
@@ -53,7 +55,6 @@ const ZoneDetail = () => {
       area = Math.abs(area) / 2;
       console.log("Calculated area:", area);
       
-      // If area is too small, it might be in a different unit (like degrees)
       if (area < 0.000001) {
         return null;
       }
@@ -65,7 +66,6 @@ const ZoneDetail = () => {
     }
   };
 
-  // Format date
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return "N/A";
     try {
@@ -75,43 +75,6 @@ const ZoneDetail = () => {
     }
   };
 
-  // Get device count (prioritize cache)
-  const getDeviceCount = () => {
-    if (!zone?.id) return 0;
-    
-    if (zone.id && zoneDevicesCache[zone.id] !== undefined && zoneDevicesCache[zone.id] > 0) {
-      console.log(`Using cached device count for zone ${zone.id}: ${zoneDevicesCache[zone.id]}`);
-      return zoneDevicesCache[zone.id];
-    }
-    
-    // Fall back to the zone's direct device count
-    const directCount = typeof zone.devices === 'number' 
-      ? zone.devices 
-      : parseInt(String(zone.devices), 10) || 0;
-    
-    console.log(`Using direct device count for zone: ${directCount}`);
-    return directCount;
-  };
-
-  // Calculate the device count once
-  const deviceCount = getDeviceCount();
-  console.log("Final zone device count to display:", deviceCount);
-
-  // Get status color
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "warning":
-        return "bg-yellow-100 text-yellow-800";
-      case "inactive":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  // Format location data if available
   const formatLocation = () => {
     if (!zone?.location) return null;
     
@@ -128,7 +91,6 @@ const ZoneDetail = () => {
     }
   };
 
-  // Calculate and display area
   const areaValue = calculateArea();
 
   return (
@@ -197,7 +159,11 @@ const ZoneDetail = () => {
                       <CardContent className="p-4">
                         <div>
                           <p className="text-sm font-medium">Devices</p>
-                          <p className="text-2xl font-bold">{deviceCount}</p>
+                          {deviceCountLoading ? (
+                            <Skeleton className="h-8 w-16" />
+                          ) : (
+                            <p className="text-2xl font-bold">{deviceCount || 0}</p>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

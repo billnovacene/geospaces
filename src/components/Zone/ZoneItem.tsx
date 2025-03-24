@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronDown, AlertTriangle, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { getStatusInfo, getDeviceCount } from "@/utils/zones";
+import { getStatusInfo } from "@/utils/zones";
+import { useQuery } from "@tanstack/react-query";
+import { fetchDevicesCountForZone } from "@/services/devices";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ZoneItemProps {
   zone: Zone;
@@ -19,7 +22,15 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
   const isExpanded = expandedZones.includes(zone.id);
   const hasChildren = zone.children && zone.children.length > 0;
   const statusInfo = getStatusInfo(zone.status || "Unknown");
-  const deviceCount = getDeviceCount(zone);
+  
+  // Fetch actual device count from API
+  const { data: deviceCount, isLoading: deviceCountLoading } = useQuery({
+    queryKey: ["zone-devices", zone.id],
+    queryFn: () => fetchDevicesCountForZone(zone.id),
+    enabled: !!zone.id,
+    // Don't refetch unnecessarily
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
   
   // Render the appropriate status icon based on the icon name
   const renderStatusIcon = () => {
@@ -57,7 +68,11 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-muted-foreground">{deviceCount} devices</span>
+          {deviceCountLoading ? (
+            <Skeleton className="h-4 w-16" />
+          ) : (
+            <span className="text-sm text-muted-foreground">{deviceCount || 0} devices</span>
+          )}
           <Badge variant="outline" className={statusInfo.color}>
             {renderStatusIcon()}
             {zone.status || "Unknown"}

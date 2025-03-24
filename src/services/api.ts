@@ -5,3 +5,5 @@ export * from "./api-client";
 export * from "./projects";
 export * from "./sites";
 export * from "./zones";
+export * from "./devices";
+
