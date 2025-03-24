@@ -30,8 +30,14 @@ export function SitesTable({ sites }: SitesTableProps) {
       console.log(`Using cached device count for site ${site.id}: ${siteDevicesCache[site.id]}`);
       return siteDevicesCache[site.id];
     }
-    console.log(`Using direct device count for site ${site.id}: ${site.devices}`);
-    return typeof site.devices === 'number' ? site.devices : parseInt(String(site.devices), 10) || 0;
+    
+    // Fall back to the site's direct device count
+    const directCount = typeof site.devices === 'number' 
+      ? site.devices 
+      : parseInt(String(site.devices), 10) || 0;
+    
+    console.log(`Using direct device count for site ${site.id}: ${directCount}`);
+    return directCount;
   };
 
   // Get status description based on status

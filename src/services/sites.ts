@@ -17,36 +17,40 @@ export const fetchSites = async (projectId: number): Promise<Site[]> => {
     const sites = data.list || [];
     console.log('Number of sites received:', sites.length);
     
-    // Cache device counts for later use
-    sites.forEach(site => {
-      if (site.id && site.devices !== undefined) {
-        const deviceCount = typeof site.devices === 'number' 
+    // Transform API response to match our Site interface
+    return sites.map((site: any) => {
+      // Parse device count - make sure we have actual numbers
+      let deviceCount = 0;
+      if (site.devices !== undefined) {
+        deviceCount = typeof site.devices === 'number' 
           ? site.devices 
           : parseInt(String(site.devices), 10) || 0;
-        
+      }
+      
+      // Cache device count for later use
+      if (site.id) {
         console.log(`Caching device count ${deviceCount} for site ${site.id}`);
         siteDevicesCache[site.id] = deviceCount;
       }
+      
+      return {
+        id: site.id,
+        name: site.name,
+        address: site.locationText || site.address,
+        description: site.description,
+        devices: deviceCount,
+        projectId: site.projectId,
+        createdAt: site.createdAt,
+        updatedAt: site.updatedAt,
+        status: site.warning ? "Warning" : (site.isRemoved ? "Inactive" : "Active"),
+        location: site.location,
+        isRemoved: site.isRemoved,
+        type: site.type,
+        locationText: site.locationText,
+        fields: site.fields,
+        ...site  // Include any other properties
+      };
     });
-    
-    // Transform API response to match our Site interface
-    return sites.map((site: any) => ({
-      id: site.id,
-      name: site.name,
-      address: site.locationText || site.address,
-      description: site.description,
-      devices: site.devices,
-      projectId: site.projectId,
-      createdAt: site.createdAt,
-      updatedAt: site.updatedAt,
-      status: site.warning ? "Warning" : (site.isRemoved ? "Inactive" : "Active"),
-      location: site.location,
-      isRemoved: site.isRemoved,
-      type: site.type,
-      locationText: site.locationText,
-      fields: site.fields,
-      ...site  // Include any other properties
-    }));
   } catch (error) {
     console.error(`Error fetching sites for project ${projectId}:`, error);
     toast.error("Failed to fetch sites. Please try again later.");
@@ -67,11 +71,22 @@ export const fetchSite = async (siteId: number): Promise<Site | null> => {
       return null;
     }
     
-    // Use cached device count if available
-    let deviceCount = data.devices;
+    // Parse device count - make sure we have actual numbers
+    let deviceCount = 0;
+    if (data.devices !== undefined) {
+      deviceCount = typeof data.devices === 'number' 
+        ? data.devices 
+        : parseInt(String(data.devices), 10) || 0;
+    }
+    
+    // Use cached device count if available and greater than current count
     if (siteDevicesCache[siteId] !== undefined && siteDevicesCache[siteId] > 0) {
       console.log(`Using cached device count for site ${siteId}: ${siteDevicesCache[siteId]}`);
       deviceCount = siteDevicesCache[siteId];
+    } else if (deviceCount > 0) {
+      // Update cache with this count if better than what we had
+      console.log(`Updating cache with device count ${deviceCount} for site ${siteId}`);
+      siteDevicesCache[siteId] = deviceCount;
     }
     
     return {
