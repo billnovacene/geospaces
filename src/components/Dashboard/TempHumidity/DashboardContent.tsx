@@ -5,15 +5,34 @@ import { MonthlyChart } from "@/components/Dashboard/TempHumidity/MonthlyChart";
 import { DailyChart } from "@/components/Dashboard/TempHumidity/DailyChart";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { MonthlyOverviewPoint } from "@/services/temp-humidity";
 
 interface DashboardContentProps {
   data: {
     daily: any[];
-    monthly: any[];
+    monthly: MonthlyOverviewPoint[];
+    stats: any;
   };
 }
 
 export function DashboardContent({ data }: DashboardContentProps) {
+  // Calculate the min/max temperatures from monthly data
+  const calculateMonthlyStats = () => {
+    if (!data.monthly || data.monthly.length === 0) {
+      return { minTemp: 0, maxTemp: 0 };
+    }
+    
+    const minTemps = data.monthly.map(point => point.minTemp);
+    const maxTemps = data.monthly.map(point => point.maxTemp);
+    
+    return {
+      minTemp: Math.min(...minTemps).toFixed(1),
+      maxTemp: Math.max(...maxTemps).toFixed(1)
+    };
+  };
+  
+  const { minTemp, maxTemp } = calculateMonthlyStats();
+
   return (
     <>
       {/* Temperature Guide */}
@@ -33,8 +52,8 @@ export function DashboardContent({ data }: DashboardContentProps) {
               <div className="col-span-1">
                 <h2 className="text-xl font-medium mb-4">Monthly Overview</h2>
                 <p className="text-sm text-gray-600">
-                  The last 30 days show peak temps around 21-23°C with minimums
-                  near 8-9°C. Early morning and late evening periods typically
+                  The last 30 days show peak temps around {maxTemp}°C with minimums
+                  near {minTemp}°C. Early morning and late evening periods typically
                   show the largest temperature variations.
                 </p>
               </div>
@@ -107,3 +126,4 @@ export function DashboardContent({ data }: DashboardContentProps) {
     </>
   );
 }
+
