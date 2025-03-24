@@ -8,7 +8,7 @@ export interface Project {
   updatedAt?: string;
   image?: string;
   sites?: number;
-  devices?: number;
+  devices?: number | string;
   status?: string;
   description?: string;
   bb101?: boolean;
@@ -23,7 +23,7 @@ export interface Site {
   name: string;
   address?: string;
   description?: string;
-  devices?: number;
+  devices?: number | string;
   projectId: number;
   createdAt: string;
   updatedAt?: string;
@@ -48,7 +48,7 @@ export interface Zone {
   createdAt: string;
   updatedAt?: string;
   type?: string;
-  devices?: number;
+  devices?: number | string;
   status?: string;
   parent?: number | null; // Parent zone ID
   children?: Zone[]; // Child zones

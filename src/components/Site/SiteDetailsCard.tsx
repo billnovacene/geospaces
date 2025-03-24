@@ -22,13 +22,22 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
     });
     
     // If API returns a string with format "X/Y", extract X as active devices
-    if (typeof site.devices === 'string' && site.devices.includes('/')) {
-      const parts = site.devices.split('/');
-      if (parts.length > 0) {
-        const activeDevices = parseInt(parts[0], 10);
-        if (!isNaN(activeDevices)) {
-          console.log(`SiteDetailsCard: Using active devices from string "${site.devices}": ${activeDevices}`);
-          return activeDevices;
+    if (typeof site.devices === 'string') {
+      if (site.devices.includes('/')) {
+        const parts = site.devices.split('/');
+        if (parts.length > 0) {
+          const activeDevices = parseInt(parts[0], 10);
+          if (!isNaN(activeDevices)) {
+            console.log(`SiteDetailsCard: Using active devices from string "${site.devices}": ${activeDevices}`);
+            return activeDevices;
+          }
+        }
+      } else {
+        // Try parsing if it's a string containing just a number
+        const parsed = parseInt(site.devices, 10);
+        if (!isNaN(parsed)) {
+          console.log(`SiteDetailsCard: Using parsed numeric device count: ${parsed}`);
+          return parsed;
         }
       }
     }
@@ -37,15 +46,6 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
     if (typeof site.devices === 'number') {
       console.log(`SiteDetailsCard: Using direct numeric device count: ${site.devices}`);
       return site.devices;
-    }
-    
-    // Try parsing if it's a string containing just a number
-    if (typeof site.devices === 'string') {
-      const parsed = parseInt(site.devices, 10);
-      if (!isNaN(parsed)) {
-        console.log(`SiteDetailsCard: Using parsed numeric device count: ${parsed}`);
-        return parsed;
-      }
     }
     
     // Fallback to calculated count from zones if available
