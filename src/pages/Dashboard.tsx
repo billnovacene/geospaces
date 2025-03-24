@@ -49,7 +49,7 @@ export default function Dashboard() {
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
               <p className="text-muted-foreground">
-                Monitor your IoT devices and environmental metrics across all sites.
+                Welcome to Insight Nova Dashboard. Monitor your projects and activity.
               </p>
             </div>
             <div className="flex gap-3">
@@ -69,7 +69,7 @@ export default function Dashboard() {
           </div>
 
           <div className="space-y-8">
-            {/* Stats Cards with Environmental Metrics */}
+            {/* Stats Cards */}
             <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
               <StatsCards />
             </div>

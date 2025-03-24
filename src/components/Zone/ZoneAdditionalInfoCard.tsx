@@ -22,7 +22,7 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
           <p>{formatDate(zone.updatedAt)}</p>
         </div>
         
-        {zone.location && locationData && (
+        {zone.location && (
           <div>
             <h3 className="font-medium text-sm text-muted-foreground mb-1">Location Data</h3>
             <div className="border rounded-lg p-3">
