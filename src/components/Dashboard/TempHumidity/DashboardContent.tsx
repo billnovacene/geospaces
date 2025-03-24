@@ -29,7 +29,19 @@ export function DashboardContent({ data }: DashboardContentProps) {
       <div className="mb-8">
         <Card className="shadow-sm">
           <CardContent className="p-8">
-            <MonthlyChart data={data.monthly} />
+            <div className="grid grid-cols-4 gap-8">
+              <div className="col-span-1 flex flex-col justify-end">
+                <h2 className="text-xl font-medium mb-4">Monthly Overview</h2>
+                <p className="text-sm text-gray-600">
+                  The last 30 days show peak temps around 21-23°C with minimums
+                  near 8-9°C. Early morning and late evening periods typically
+                  show the largest temperature variations.
+                </p>
+              </div>
+              <div className="col-span-3">
+                <MonthlyChart data={data.monthly} />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -38,8 +50,8 @@ export function DashboardContent({ data }: DashboardContentProps) {
       <div className="mb-8">
         <Card className="shadow-sm">
           <CardContent className="p-8">
-            <div className="flex justify-between">
-              <div className="flex flex-col items-start w-1/4 pr-4">
+            <div className="grid grid-cols-4 gap-8">
+              <div className="col-span-1 flex flex-col justify-end">
                 <h2 className="text-xl font-medium mb-4">Daily Overview</h2>
                 <p className="text-sm text-gray-600">
                   Temps range from ~8°C early to ~22°C peak, with humidity near 47%.
@@ -47,7 +59,7 @@ export function DashboardContent({ data }: DashboardContentProps) {
                 </p>
               </div>
               
-              <div className="w-3/4">
+              <div className="col-span-3">
                 <div className="flex justify-end gap-2 mb-4">
                   <Button variant="outline" className="h-8">
                     1st March <ChevronDown className="ml-2 h-4 w-4" />
