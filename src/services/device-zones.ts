@@ -77,34 +77,17 @@ export const fetchDevicesCountForZone = async (zoneId: number): Promise<number> 
 // Function to fetch devices for a zone and all its sub-zones
 export const fetchDevicesForZone = async (zoneId: number, siteId?: number): Promise<Device[]> => {
   try {
-    console.log(`Fetching devices for zone ${zoneId} and its sub-zones...`);
+    console.log(`Fetching devices for zone ${zoneId} with siteId ${siteId || 'undefined'}...`);
     
-    // If no siteId is provided, first get the zone to retrieve its siteId
+    // If no siteId is provided, just fetch devices for this zone only
     if (!siteId) {
-      try {
-        const zoneResponse = await apiRequest<Zone>(`/zones/${zoneId}`);
-        if (zoneResponse && zoneResponse.siteId) {
-          siteId = zoneResponse.siteId;
-          console.log(`Retrieved siteId ${siteId} for zone ${zoneId}`);
-        } else {
-          console.warn(`Could not retrieve siteId for zone ${zoneId}`);
-          // If we can't get the siteId, just fetch devices for this zone only
-          return fetchDevicesForSingleZone(zoneId);
-        }
-      } catch (error) {
-        console.error(`Error retrieving zone ${zoneId} details:`, error);
-        // If we encounter an error, just fetch devices for this zone only
-        return fetchDevicesForSingleZone(zoneId);
-      }
+      console.log(`No siteId provided for zone ${zoneId}, fetching only this zone's devices`);
+      return fetchDevicesForSingleZone(zoneId);
     }
     
-    let zoneIds = [zoneId];
-    
-    // If we have siteId, get all sub-zones to fetch devices from all of them
-    if (siteId) {
-      zoneIds = await getAllSubZoneIds(zoneId, siteId);
-      console.log(`Will fetch devices for these zones:`, zoneIds);
-    }
+    // Get all sub-zones to fetch devices from all of them
+    const zoneIds = await getAllSubZoneIds(zoneId, siteId);
+    console.log(`Will fetch devices for these zones:`, zoneIds);
     
     // Build a comma-separated list of zone IDs for the API query
     const zoneIdsParam = zoneIds.join(',');

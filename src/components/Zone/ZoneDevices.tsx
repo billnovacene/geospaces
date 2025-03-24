@@ -54,7 +54,7 @@ export const ZoneDevices = ({ zoneId, siteId }: ZoneDevicesProps) => {
       console.log(`ZoneDevices: Fetching devices for zone ${zoneId} with siteId ${siteId}`);
       refetch();
     }
-  }, [zoneId, siteId, refetch]); // Add siteId as a dependency
+  }, [zoneId, siteId, refetch]); // Include siteId as a dependency
 
   console.log(`Devices for zone ${zoneId} (including sub-zones):`, devices);
   console.log(`Number of devices:`, devices?.length || 0);
