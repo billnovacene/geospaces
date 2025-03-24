@@ -1,3 +1,4 @@
+
 import { useState, ReactNode } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, ChevronUp, ChevronDown, Menu, MoreVertical } from "lucide-react";
@@ -8,7 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 
 interface SidebarWrapperProps {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ interface DashboardItemProps {
   name: string;
   count: number;
   checked?: boolean;
+  to?: string;
 }
 
 export function SidebarWrapper({
@@ -83,18 +85,33 @@ function ZoneItem({
 function DashboardItem({
   name,
   count,
-  checked = true
+  checked = true,
+  to
 }: DashboardItemProps) {
-  return <div className="flex items-center justify-between py-2.5 px-5 cursor-pointer bg-white sidebar-hover-item">
+  const location = useLocation();
+  const isActive = to && location.pathname === to;
+  
+  const content = (
+    <div className={cn(
+      "flex items-center justify-between py-2.5 px-5 cursor-pointer bg-white sidebar-hover-item",
+      isActive && "bg-[#F9F9FA]"
+    )}>
       <div className="flex items-center gap-2">
         <span className="text-xs text-zinc-500">▶</span>
-        <span className="text-sm font-medium text-zinc-800">{name}</span>
+        <span className={cn("text-sm font-medium", isActive ? "text-zinc-950" : "text-zinc-800")}>{name}</span>
       </div>
       <div className="flex items-center gap-2">
         <span className="text-sm text-[#8E9196]">{count}</span>
         <Checkbox checked={checked} className="rounded-[3px] border-[#8E9196] bg-neutral-200 hover:bg-neutral-100 text-zinc-400" />
       </div>
-    </div>;
+    </div>
+  );
+  
+  if (to) {
+    return <Link to={to}>{content}</Link>;
+  }
+  
+  return content;
 }
 
 function DashboardSidebar() {
@@ -137,7 +154,7 @@ function DashboardSidebar() {
               <Checkbox checked={true} className="rounded-[3px] border-[#8E9196] bg-zinc-200 hover:bg-zinc-100 text-zinc-500" />
             </div>
             <DashboardItem name="All Data" count={20} />
-            <DashboardItem name="Temperature & Humidity" count={20} />
+            <DashboardItem name="Temperature & Humidity" count={20} to="/dashboard/temp-humidity" />
             <DashboardItem name="Energy" count={20} />
             <DashboardItem name="Co2" count={3} />
           </SidebarSection>
