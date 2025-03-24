@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { format } from "date-fns";
+import { SitesList } from "@/components/Dashboard/SitesList";
 
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -98,7 +99,7 @@ const ProjectDetail = () => {
                 <h1 className="text-3xl font-bold">{project?.name}</h1>
                 <div className="flex items-center mt-2 text-muted-foreground">
                   <Calendar className="mr-2 h-4 w-4" />
-                  <span>Created on {formatDate(project?.created_at || "")}</span>
+                  <span>Created on {formatDate(project?.createdAt || "")}</span>
                 </div>
               </div>
               <Badge variant="outline" className={`${getStatusColor(project?.status || "")}`}>
@@ -106,7 +107,7 @@ const ProjectDetail = () => {
               </Badge>
             </div>
             
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2 mb-8">
               <Card>
                 <CardHeader>
                   <CardTitle>Project Details</CardTitle>
@@ -117,8 +118,8 @@ const ProjectDetail = () => {
                     <p>{project?.id}</p>
                   </div>
                   <div>
-                    <h3 className="font-medium text-sm text-muted-foreground mb-1">Team ID</h3>
-                    <p>{project?.default_team_id}</p>
+                    <h3 className="font-medium text-sm text-muted-foreground mb-1">Customer ID</h3>
+                    <p>{project?.customerId}</p>
                   </div>
                   <div>
                     <h3 className="font-medium text-sm text-muted-foreground mb-1">Description</h3>
@@ -134,7 +135,7 @@ const ProjectDetail = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {Object.entries(project || {})
-                      .filter(([key]) => !["id", "name", "created_at", "status", "default_team_id", "description"].includes(key))
+                      .filter(([key]) => !["id", "name", "createdAt", "status", "customerId", "description"].includes(key))
                       .map(([key, value]) => (
                         <div key={key}>
                           <h3 className="font-medium text-sm text-muted-foreground mb-1">
@@ -147,6 +148,9 @@ const ProjectDetail = () => {
                 </CardContent>
               </Card>
             </div>
+            
+            {/* Sites List */}
+            <SitesList projectId={project?.id} />
           </>
         )}
       </div>
