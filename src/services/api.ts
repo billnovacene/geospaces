@@ -19,6 +19,9 @@ export interface Project {
   devices?: number;
   status?: string;
   description?: string;
+  bb101?: boolean;
+  triggerDevice?: boolean;
+  notification?: boolean;
   [key: string]: any; // For any additional properties
 }
 
@@ -73,6 +76,9 @@ export const fetchProjects = async (): Promise<Project[]> => {
       devices: project.devices,
       status: project.status || "Unknown",  // Default status if not provided
       description: project.description,
+      bb101: project.bb101,
+      triggerDevice: project.triggerDevice,
+      notification: project.notification,
       ...project  // Include any other properties
     }));
   } catch (error) {
@@ -103,20 +109,25 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
     const data = await response.json();
     console.log(`Project ${id} API response:`, data);
     
-    // Transform API response to match our Project interface if needed
-    if (data) {
+    // Check if the response has a project property and use it
+    const projectData = data.project || data;
+    
+    if (projectData) {
       return {
-        id: data.id,
-        name: data.name,
-        customerId: data.customerId,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-        image: data.image,
-        sites: data.sites,
-        devices: data.devices,
-        status: data.status || "Unknown",
-        description: data.description,
-        ...data  // Include any other properties
+        id: projectData.id,
+        name: projectData.name,
+        customerId: projectData.customerId,
+        createdAt: projectData.createdAt,
+        updatedAt: projectData.updatedAt,
+        image: projectData.image,
+        sites: projectData.sites,
+        devices: projectData.devices,
+        status: projectData.status || "Unknown",
+        description: projectData.description,
+        bb101: projectData.bb101,
+        triggerDevice: projectData.triggerDevice,
+        notification: projectData.notification,
+        ...projectData  // Include any other properties
       };
     }
     

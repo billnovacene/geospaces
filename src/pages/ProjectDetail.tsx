@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar } from "lucide-react";
+import { ArrowLeft, Calendar, Monitor, ServerIcon } from "lucide-react";
 import { format } from "date-fns";
 import { SitesList } from "@/components/Dashboard/SitesList";
 
@@ -94,7 +94,7 @@ const ProjectDetail = () => {
           </div>
         ) : (
           <>
-            <div className="flex justify-between items-start mb-6">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6">
               <div>
                 <h1 className="text-3xl font-bold">{project?.name}</h1>
                 <div className="flex items-center mt-2 text-muted-foreground">
@@ -102,9 +102,17 @@ const ProjectDetail = () => {
                   <span>Created on {formatDate(project?.createdAt || "")}</span>
                 </div>
               </div>
-              <Badge variant="outline" className={`${getStatusColor(project?.status || "")}`}>
-                {project?.status || "Unknown"}
-              </Badge>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                {project?.notification !== undefined && (
+                  <Badge variant="outline" className={project.notification ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
+                    Notifications: {project.notification ? "Enabled" : "Disabled"}
+                  </Badge>
+                )}
+                <Badge variant="outline" className={getStatusColor(project?.status || "")}>
+                  {project?.status || "Unknown"}
+                </Badge>
+              </div>
             </div>
             
             <div className="grid gap-6 md:grid-cols-2 mb-8">
@@ -119,11 +127,33 @@ const ProjectDetail = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-sm text-muted-foreground mb-1">Customer ID</h3>
-                    <p>{project?.customerId}</p>
+                    <p>{project?.customerId || "N/A"}</p>
                   </div>
                   <div>
                     <h3 className="font-medium text-sm text-muted-foreground mb-1">Description</h3>
-                    <p>{project?.description || "No description provided"}</p>
+                    <p>{project?.description && typeof project.description === 'object' 
+                        ? (project.description.value || "No description provided") 
+                        : (project?.description || "No description provided")}</p>
+                  </div>
+                  
+                  <div className="pt-2 grid grid-cols-2 gap-4">
+                    <Card className="bg-muted/40">
+                      <CardContent className="p-4 flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium">Sites</p>
+                          <p className="text-2xl font-bold">{project?.sites || 0}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="bg-muted/40">
+                      <CardContent className="p-4 flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium">Devices</p>
+                          <p className="text-2xl font-bold">{project?.devices || 0}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 </CardContent>
               </Card>
@@ -134,8 +164,44 @@ const ProjectDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="border rounded-md p-3">
+                        <h3 className="font-medium text-sm text-muted-foreground mb-1">BB101</h3>
+                        <Badge variant={project?.bb101 ? "default" : "outline"}>
+                          {project?.bb101 ? "Enabled" : "Disabled"}
+                        </Badge>
+                      </div>
+                      
+                      <div className="border rounded-md p-3">
+                        <h3 className="font-medium text-sm text-muted-foreground mb-1">Trigger Device</h3>
+                        <Badge variant={project?.triggerDevice ? "default" : "outline"}>
+                          {project?.triggerDevice ? "Enabled" : "Disabled"}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-medium text-sm text-muted-foreground mb-1">Last Updated</h3>
+                      <p>{project?.updatedAt ? formatDate(project.updatedAt) : "N/A"}</p>
+                    </div>
+                    
+                    {project?.image && (
+                      <div>
+                        <h3 className="font-medium text-sm text-muted-foreground mb-1">Project Image</h3>
+                        <div className="mt-2 border rounded-md p-2 inline-block">
+                          <img 
+                            src={project.image} 
+                            alt={`${project.name} logo`} 
+                            className="max-h-24 max-w-full object-contain" 
+                          />
+                        </div>
+                      </div>
+                    )}
+                    
                     {Object.entries(project || {})
-                      .filter(([key]) => !["id", "name", "createdAt", "status", "customerId", "description"].includes(key))
+                      .filter(([key]) => !["id", "name", "createdAt", "updatedAt", "status", "customerId", 
+                                          "description", "sites", "devices", "image", "bb101", 
+                                          "triggerDevice", "notification"].includes(key))
                       .map(([key, value]) => (
                         <div key={key}>
                           <h3 className="font-medium text-sm text-muted-foreground mb-1">
