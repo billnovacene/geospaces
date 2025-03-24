@@ -1,4 +1,3 @@
-
 import { useState, ReactNode } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, ChevronUp, ChevronDown, Menu, MoreVertical } from "lucide-react";
@@ -28,6 +27,7 @@ interface DashboardItemProps {
   count: number;
   checked?: boolean;
 }
+
 export function SidebarWrapper({
   children
 }: SidebarWrapperProps) {
@@ -45,13 +45,14 @@ export function SidebarWrapper({
       </div>
     </SidebarProvider>;
 }
+
 function SidebarSection({
   title,
   children,
   defaultOpen = true
 }: SidebarSectionProps) {
   return <Collapsible defaultOpen={defaultOpen} className="w-full">
-      <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-white">
+      <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-white border-b border-gray-100">
         <span>{title}</span>
         <CollapsibleTrigger className="focus:outline-none hover:text-foreground">
           <span className="inline-block">
@@ -62,14 +63,15 @@ function SidebarSection({
       <CollapsibleContent>
         {children}
       </CollapsibleContent>
-      <Separator className="mx-0 w-full opacity-50" />
+      <Separator className="mx-0 w-full opacity-30" />
     </Collapsible>;
 }
+
 function ZoneItem({
   name,
   count
 }: ZoneItemProps) {
-  return <div className="flex items-center justify-between py-2 px-4 cursor-pointer bg-white">
+  return <div className="flex items-center justify-between py-2.5 px-5 cursor-pointer bg-white sidebar-hover-item">
       <div className="flex items-center gap-2">
         <span className="text-xs text-zinc-600">▶</span>
         <span className="text-sm font-medium text-gray-900">{name}</span>
@@ -77,12 +79,13 @@ function ZoneItem({
       <span className="text-sm text-[#8E9196]">{count}</span>
     </div>;
 }
+
 function DashboardItem({
   name,
   count,
   checked = true
 }: DashboardItemProps) {
-  return <div className="flex items-center justify-between py-2 px-4 cursor-pointer bg-white">
+  return <div className="flex items-center justify-between py-2.5 px-5 cursor-pointer bg-white sidebar-hover-item">
       <div className="flex items-center gap-2">
         <span className="text-xs text-zinc-500">▶</span>
         <span className="text-sm font-medium text-zinc-800">{name}</span>
@@ -93,13 +96,14 @@ function DashboardItem({
       </div>
     </div>;
 }
+
 function DashboardSidebar() {
   const { siteId } = useParams<{ siteId: string }>();
   
   return <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
       <SidebarContent className="p-0">
-        <div className="p-4 flex items-center justify-between border-b border-[#E5E7EB] bg-white">
-          <div className="space-y-1">
+        <div className="p-5 flex items-center justify-between border-b border-[#E5E7EB] bg-white">
+          <div className="space-y-1.5">
             <div className="text-sm text-[#8E9196]">Projects</div>
             <h2 className="text-xl font-bold text-zinc-950">Zircon</h2>
           </div>
@@ -108,7 +112,7 @@ function DashboardSidebar() {
           </Button>
         </div>
 
-        <div className="p-4 border-b border-[#E5E7EB] bg-white">
+        <div className="p-5 border-b border-[#E5E7EB] bg-white">
           <div className="relative">
             <Input placeholder="Search" className="pl-4 h-9 text-sm border-[#E5E7EB] bg-white text-[#8E9196]" />
             <Search className="absolute right-3 top-2.5 h-4 w-4 text-[#8E9196]" />
@@ -118,7 +122,7 @@ function DashboardSidebar() {
         <div className="overflow-y-auto flex-1">
           <SidebarSection title="Zones">
             <Link to={`/site/${siteId}`} className="block">
-              <div className="bg-[#F6F7F9] py-2 px-4 cursor-pointer hover:bg-[#F0F1F3]">
+              <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]">
                 <span className="font-medium text-sm text-zinc-950">All zones</span>
               </div>
             </Link>
@@ -128,7 +132,7 @@ function DashboardSidebar() {
           </SidebarSection>
 
           <SidebarSection title="Filter Devices">
-            <div className="bg-[#F6F7F9] py-2 px-4 cursor-pointer hover:bg-[#F0F1F3] flex items-center justify-between">
+            <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center justify-between">
               <span className="font-medium text-sm text-zinc-800">Dashboards</span>
               <Checkbox checked={true} className="rounded-[3px] border-[#8E9196] bg-zinc-200 hover:bg-zinc-100 text-zinc-500" />
             </div>
@@ -139,20 +143,20 @@ function DashboardSidebar() {
           </SidebarSection>
 
           <SidebarSection title="Annalytics">
-            <div className="py-2 px-4 text-sm text-[#8E9196] bg-white">
+            <div className="py-2.5 px-5 text-sm text-[#8E9196] bg-white">
               No analytics available
             </div>
           </SidebarSection>
 
           <SidebarSection title="Settings">
-            <div className="py-2 px-4 text-sm text-[#8E9196] bg-white">
+            <div className="py-2.5 px-5 text-sm text-[#8E9196] bg-white">
               System settings
             </div>
           </SidebarSection>
         </div>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-[#E5E7EB] p-3 bg-white">
+      <SidebarFooter className="border-t border-[#E5E7EB] p-4 bg-white">
         <div className="flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
             <Avatar className="h-9 w-9 bg-black">

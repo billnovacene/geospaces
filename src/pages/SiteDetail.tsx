@@ -78,7 +78,7 @@ const SiteDetail = () => {
 
   return (
     <SidebarWrapper>
-      <div className="container mx-auto py-6">
+      <div className="content-container">
         {siteLoading ? (
           <SiteLoadingSkeleton />
         ) : siteError || !site ? (
@@ -87,16 +87,20 @@ const SiteDetail = () => {
           <>
             <SiteHeader site={site} />
 
-            <div className="grid gap-6 md:grid-cols-2 mb-8">
+            <div className="grid gap-8 md:grid-cols-2 mb-10 section-spacing">
               <SiteDetailsCard site={site} calculatedDeviceCount={totalDevicesFromZones} />
               <SiteAdditionalInfoCard site={site} />
             </div>
 
             {/* Devices Measurements Table */}
-            <SiteDevicesMeasurementTable siteId={site.id} />
+            <div className="table-container mb-10 section-spacing">
+              <SiteDevicesMeasurementTable siteId={site.id} />
+            </div>
 
             {/* Zones Tabs */}
-            <SiteZonesTabs siteId={site.id} />
+            <div className="section-spacing">
+              <SiteZonesTabs siteId={site.id} />
+            </div>
           </>
         )}
       </div>
