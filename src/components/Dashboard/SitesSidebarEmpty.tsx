@@ -1,6 +1,7 @@
 
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface SitesSidebarEmptyProps {
   onRetry?: () => void;
@@ -15,6 +16,14 @@ export function SitesSidebarEmpty({
   isLoading, 
   error 
 }: SitesSidebarEmptyProps) {
+  // Function to handle retry with toast feedback
+  const handleRetry = () => {
+    if (onRetry) {
+      toast.info("Refreshing sites...");
+      onRetry();
+    }
+  };
+
   return (
     <div className="py-2.5 px-5 text-sm text-[#8E9196]">
       <div className="flex items-center gap-2 mb-2">
@@ -23,7 +32,7 @@ export function SitesSidebarEmpty({
       </div>
       <p className="text-xs text-zinc-400 mb-2">
         {isLoading ? "Loading sites..." : 
-         error ? "Error loading sites. Please try again." : 
+         error ? `Error loading sites: ${error.message || 'Unknown error'}` : 
          "Check your connection or refresh to try again."}
       </p>
       
@@ -31,7 +40,7 @@ export function SitesSidebarEmpty({
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={onRetry}
+          onClick={handleRetry}
           className="w-full text-xs mt-1 h-8"
         >
           <RefreshCw className="h-3 w-3 mr-1" />

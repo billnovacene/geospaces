@@ -1,4 +1,3 @@
-
 import { apiRequest } from "./api-client";
 import { Site, PaginatedResponse } from "./interfaces";
 import { toast } from "sonner";
@@ -10,15 +9,24 @@ export const siteDevicesCache: Record<number, number> = {};
 export const fetchSites = async (projectId: number): Promise<Site[]> => {
   try {
     console.log(`Fetching sites for project ${projectId} from API...`);
-    const data = await apiRequest<PaginatedResponse<Site>>(`/sites?projectid=${projectId}`);
-    console.log(`Sites for project ${projectId} API response:`, data);
+    const response = await apiRequest<PaginatedResponse<Site>>(`/sites?projectid=${projectId}`);
+    console.log(`Sites for project ${projectId} API raw response:`, response);
+    
+    if (!response || !response.list) {
+      console.error(`Invalid API response format for project ${projectId}:`, response);
+      return [];
+    }
     
     // Process the response similar to projects
-    const sites = data.list || [];
-    console.log('Number of sites received:', sites.length);
+    const sites = response.list || [];
+    console.log(`Number of sites received for project ${projectId}:`, sites.length);
+    
+    if (sites.length === 0) {
+      console.log(`No sites found for project ${projectId}`);
+    }
     
     // Transform API response to match our Site interface
-    return sites.map((site: any) => {
+    const transformedSites = sites.map((site: any) => {
       // Parse device count - make sure we have actual numbers
       let deviceCount = 0;
       if (site.devices !== undefined) {
@@ -33,6 +41,10 @@ export const fetchSites = async (projectId: number): Promise<Site[]> => {
         siteDevicesCache[site.id] = deviceCount;
       }
       
+      // Determine the status properly
+      const status = site.warning ? "Warning" : (site.isRemoved ? "Inactive" : "Active");
+      console.log(`Site ${site.id} (${site.name}) status determined as: ${status}`);
+      
       return {
         id: site.id,
         name: site.name,
@@ -42,19 +54,22 @@ export const fetchSites = async (projectId: number): Promise<Site[]> => {
         projectId: site.projectId,
         createdAt: site.createdAt,
         updatedAt: site.updatedAt,
-        status: site.warning ? "Warning" : (site.isRemoved ? "Inactive" : "Active"),
+        status: status,
         location: site.location,
-        isRemoved: site.isRemoved,
+        isRemoved: site.isRemoved || false,
         type: site.type,
         locationText: site.locationText,
         fields: site.fields,
         ...site  // Include any other properties
       };
     });
+    
+    console.log(`Transformed sites for project ${projectId}:`, transformedSites);
+    return transformedSites;
   } catch (error) {
     console.error(`Error fetching sites for project ${projectId}:`, error);
     toast.error("Failed to fetch sites. Please try again later.");
-    return [];
+    throw error; // Re-throw to let React Query handle the error
   }
 };
 
