@@ -32,6 +32,22 @@ export function DashboardContent({ data }: DashboardContentProps) {
   };
   
   const { minTemp, maxTemp } = calculateMonthlyStats();
+  
+  // Calculate the daily min/max temperatures
+  const calculateDailyStats = () => {
+    if (!data.daily || data.daily.length === 0) {
+      return { minTemp: 0, maxTemp: 0 };
+    }
+    
+    const temps = data.daily.map(point => point.temperature);
+    
+    return {
+      minTemp: Math.min(...temps).toFixed(1),
+      maxTemp: Math.max(...temps).toFixed(1)
+    };
+  };
+  
+  const dailyStats = calculateDailyStats();
 
   return (
     <>
@@ -73,51 +89,13 @@ export function DashboardContent({ data }: DashboardContentProps) {
               <div className="col-span-1">
                 <h2 className="text-xl font-medium mb-4">Daily Overview</h2>
                 <p className="text-sm text-gray-600">
-                  Temps range from ~8°C early to ~22°C peak, with humidity near 47%.
+                  Today's temperatures range from {dailyStats.minTemp}°C to {dailyStats.maxTemp}°C.
                   The building warms quickly and stays fairly stable during working hours.
                 </p>
               </div>
               
               <div className="col-span-3">
-                <div className="flex justify-end gap-2 mb-4">
-                  <Button variant="outline" className="h-8">
-                    1st March <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" className="h-8">
-                    Days <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <div className="flex justify-end gap-6 mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-sm bg-[#10B981]"></div>
-                    <span className="text-xs">Green</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-sm bg-[#F59E0B]"></div>
-                    <span className="text-xs">Amber</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-sm bg-[#EF4444]"></div>
-                    <span className="text-xs">Red</span>
-                  </div>
-                </div>
-                
                 <DailyChart data={data.daily} />
-                
-                <div className="flex justify-between items-center pt-4">
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      <ChevronLeft className="h-4 w-4 mr-1" /> 15th Dec
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      16th Dec <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    06:00 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12:00 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18:00
-                  </div>
-                </div>
               </div>
             </div>
           </CardContent>
@@ -126,4 +104,3 @@ export function DashboardContent({ data }: DashboardContentProps) {
     </>
   );
 }
-
