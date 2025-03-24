@@ -17,12 +17,12 @@ export const ProjectDetailsCard = ({ project }: ProjectDetailsCardProps) => {
     return String(description);
   };
 
-  // Helper function to safely get numeric values
+  // Helper function to safely get numeric values with improved cache lookup
   const getNumericValue = (value: any, fieldName?: string): number => {
-    // For devices field specifically, check the cache first
+    // For devices field specifically, always check cache first if project ID exists
     if (fieldName === 'devices' && project?.id) {
       const cachedValue = projectDevicesCache[project.id];
-      if (cachedValue !== undefined) {
+      if (cachedValue !== undefined && cachedValue > 0) {
         console.log(`Using cached device count in card: ${cachedValue}`);
         return cachedValue;
       }
@@ -37,10 +37,16 @@ export const ProjectDetailsCard = ({ project }: ProjectDetailsCardProps) => {
     return 0;
   };
 
+  // For devices specifically, we prioritize the cached value
+  const deviceCount = project?.id && projectDevicesCache[project.id] !== undefined
+    ? projectDevicesCache[project.id]
+    : getNumericValue(project?.devices);
+
   console.log("Project details in card:", project);
   // Log both the direct value and cached value for debugging
   console.log("Devices count directly from project:", project?.devices);
   console.log("Cached devices count:", project?.id ? projectDevicesCache[project.id] : undefined);
+  console.log("Final device count to display:", deviceCount);
 
   return (
     <Card>
@@ -75,7 +81,7 @@ export const ProjectDetailsCard = ({ project }: ProjectDetailsCardProps) => {
             <CardContent className="p-4 flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">Devices</p>
-                <p className="text-2xl font-bold">{getNumericValue(project?.devices, 'devices')}</p>
+                <p className="text-2xl font-bold">{deviceCount}</p>
               </div>
             </CardContent>
           </Card>
