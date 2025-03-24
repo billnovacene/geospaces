@@ -1,6 +1,6 @@
 
 import { TempHumidityResponse } from "./interfaces/temp-humidity";
-import { TEMP_SENSORS, HUMIDITY_SENSORS } from "./sensors/sensor-maps";
+import { TEMP_SENSORS, HUMIDITY_SENSORS, SITE_SENSOR_DETAILS } from "./sensors/sensor-maps";
 import { fetchRealDeviceData } from "./sensors/device-data";
 import { generateMockData } from "./sensors/stats";
 import { findZoneSensors } from "./sensors/zone-sensors";
@@ -25,11 +25,20 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
       
       if (zoneSensors.temperature.length > 0 || zoneSensors.humidity.length > 0) {
         console.log(`Using zone sensors for zone ${zoneId}:`, zoneSensors);
-        return await fetchRealDeviceData(
+        const response = await fetchRealDeviceData(
           zoneData.siteId.toString(),
           zoneSensors.temperature,
           zoneSensors.humidity
         );
+        
+        // Add source information to the response
+        return {
+          ...response,
+          sourceData: {
+            temperatureSensors: zoneSensors.temperatureSensors,
+            humiditySensors: zoneSensors.humiditySensors
+          }
+        };
       } else {
         console.log(`No temperature or humidity sensors found in zone ${zoneId}, falling back to site sensors`);
         siteId = zoneData.siteId.toString();
@@ -39,11 +48,20 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
     // Handle site-specific data fetch
     if (siteId && TEMP_SENSORS[siteId]) {
       console.log(`Fetching real temperature data for site ${siteId}`);
-      return await fetchRealDeviceData(
+      const response = await fetchRealDeviceData(
         siteId, 
         TEMP_SENSORS[siteId] || [],
         HUMIDITY_SENSORS[siteId] || []
       );
+      
+      // Add site sensor information
+      return {
+        ...response,
+        sourceData: SITE_SENSOR_DETAILS[siteId] || {
+          temperatureSensors: [],
+          humiditySensors: []
+        }
+      };
     }
     
     // For zones or sites without known sensors, construct the API endpoint 
@@ -69,6 +87,13 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
     
     // If the API request fails, fall back to the mock data
     console.warn('Falling back to mock temperature and humidity data');
-    return generateMockData();
+    const mockData = generateMockData();
+    return {
+      ...mockData,
+      sourceData: {
+        temperatureSensors: [],
+        humiditySensors: []
+      }
+    };
   }
 };

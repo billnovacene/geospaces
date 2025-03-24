@@ -9,6 +9,7 @@ import { LoadingState } from "@/components/Dashboard/TempHumidity/LoadingState";
 import { ErrorState } from "@/components/Dashboard/TempHumidity/ErrorState";
 import { DashboardContent } from "@/components/Dashboard/TempHumidity/DashboardContent";
 import { PageHeader } from "@/components/Dashboard/TempHumidity/PageHeader";
+import { SensorSourceInfo } from "@/components/Dashboard/TempHumidity/SensorSourceInfo";
 import { useParams } from "react-router-dom";
 import { fetchSite } from "@/services/sites";
 import { fetchZone } from "@/services/zones";
@@ -79,6 +80,15 @@ export default function TempHumidityDashboard() {
     return "Data from all sensors";
   };
 
+  // Count total sensors used
+  const getTotalSensorsCount = () => {
+    if (!data || !data.sourceData) return 0;
+    return (
+      data.sourceData.temperatureSensors.length +
+      data.sourceData.humiditySensors.length
+    );
+  };
+
   return (
     <SidebarWrapper>
       <div className="container mx-auto py-8 px-6 md:px-8 lg:px-12">
@@ -94,10 +104,16 @@ export default function TempHumidityDashboard() {
         </div>
         
         {!isLoading && !error && data && (
-          <div className="mb-8">
-            <h3 className="text-lg font-medium mb-3">Live Metrics</h3>
-            <TempHumidityStats stats={data.stats} />
-          </div>
+          <>
+            <div className="mb-8">
+              <h3 className="text-lg font-medium mb-3">Live Metrics</h3>
+              <TempHumidityStats stats={data.stats} />
+            </div>
+            
+            <div className="mb-8">
+              <SensorSourceInfo sourceData={data.sourceData} />
+            </div>
+          </>
         )}
 
         {isLoading ? (

@@ -40,7 +40,11 @@ export async function fetchRealDeviceData(siteId: string,
     return {
       stats,
       daily: dailyData,
-      monthly: monthlyData
+      monthly: monthlyData,
+      sourceData: {
+        temperatureSensors: [],  // This will be populated by the calling function
+        humiditySensors: []      // This will be populated by the calling function
+      }
     };
   } catch (error) {
     console.error('Error fetching real device data:', error);

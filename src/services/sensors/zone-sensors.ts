@@ -1,11 +1,14 @@
 
 import { fetchDevicesForZone } from "../device-zones";
 import { ZONE_SENSORS_CACHE } from "./sensor-maps";
+import { SensorInfo } from "../interfaces/temp-humidity";
 
 // Function to find temperature and humidity sensors in a zone
 export async function findZoneSensors(zoneId: number, siteId: number): Promise<{
   temperature: string[];
   humidity: string[];
+  temperatureSensors: SensorInfo[];
+  humiditySensors: SensorInfo[];
 }> {
   // Check if we already have cached sensors for this zone
   const cacheKey = `${zoneId}`;
@@ -22,19 +25,45 @@ export async function findZoneSensors(zoneId: number, siteId: number): Promise<{
   const temperatureSensors: string[] = [];
   const humiditySensors: string[] = [];
   
+  // Arrays to store detailed sensor info
+  const temperatureSensorDetails: SensorInfo[] = [];
+  const humiditySensorDetails: SensorInfo[] = [];
+  
   // Loop through devices to find temperature and humidity sensors
   devices.forEach(device => {
     if (device.sensors && Array.isArray(device.sensors)) {
       device.sensors.forEach(sensor => {
         const sensorName = sensor.name.toLowerCase();
+        
         // Check for temperature sensors
         if (sensorName.includes('temperature') && sensor.id) {
           temperatureSensors.push(sensor.id);
+          
+          // Add detailed sensor info
+          temperatureSensorDetails.push({
+            id: sensor.id,
+            name: sensor.name,
+            deviceName: device.name || `Device ${device.id}`,
+            deviceId: device.id?.toString() || '',
+            lastUpdated: sensor.lastReceivedDataTime || new Date().toISOString()
+          });
+          
           console.log(`Found temperature sensor: ${sensor.id} (${sensor.name}) in device ${device.name}`);
         }
+        
         // Check for humidity sensors
         if (sensorName.includes('humid') && sensor.id) {
           humiditySensors.push(sensor.id);
+          
+          // Add detailed sensor info
+          humiditySensorDetails.push({
+            id: sensor.id,
+            name: sensor.name,
+            deviceName: device.name || `Device ${device.id}`,
+            deviceId: device.id?.toString() || '',
+            lastUpdated: sensor.lastReceivedDataTime || new Date().toISOString()
+          });
+          
           console.log(`Found humidity sensor: ${sensor.id} (${sensor.name}) in device ${device.name}`);
         }
       });
@@ -44,7 +73,9 @@ export async function findZoneSensors(zoneId: number, siteId: number): Promise<{
   // Create result object
   const result = {
     temperature: temperatureSensors,
-    humidity: humiditySensors
+    humidity: humiditySensors,
+    temperatureSensors: temperatureSensorDetails,
+    humiditySensors: humiditySensorDetails
   };
   
   // Cache the result

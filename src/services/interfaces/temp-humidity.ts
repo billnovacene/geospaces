@@ -27,10 +27,24 @@ export interface StatsData {
   };
 }
 
+export interface SensorInfo {
+  id: string;
+  name: string;
+  deviceName: string;
+  deviceId: string;
+  lastUpdated: string;
+}
+
+export interface SensorSourceData {
+  temperatureSensors: SensorInfo[];
+  humiditySensors: SensorInfo[];
+}
+
 export interface TempHumidityResponse {
   stats: StatsData;
   daily: DailyOverviewPoint[];
   monthly: MonthlyOverviewPoint[];
+  sourceData: SensorSourceData;
 }
 
 export interface PointsDataResponse {
