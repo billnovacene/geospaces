@@ -1,4 +1,3 @@
-
 import { apiRequest } from "./api-client";
 import { toast } from "sonner";
 
@@ -102,6 +101,45 @@ export const fetchDevicesCountForZone = async (zoneId: number): Promise<number> 
   }
 };
 
+// Function to fetch devices for a zone
+export const fetchDevicesForZone = async (zoneId: number): Promise<Device[]> => {
+  try {
+    console.log(`Fetching devices for zone ${zoneId} from API...`);
+    
+    const response = await apiRequest<DevicesResponse>(
+      `/devices?zoneids=${zoneId}&limit=100&nodeveui=false`
+    );
+    
+    console.log(`Devices API response for zone ${zoneId}:`, response);
+    
+    if (response && response.list && Array.isArray(response.list)) {
+      // Store the count in cache
+      deviceCountsByZone[zoneId] = response.total;
+      console.log(`Caching device count ${response.total} for zone ${zoneId}`);
+      
+      // Transform the response into the Device interface
+      return response.list.map(device => ({
+        id: device.id,
+        name: device.name || `Device ${device.id}`,
+        type: device.type,
+        zoneId: device.zoneId,
+        siteId: device.siteId,
+        projectId: device.projectId,
+        createdAt: device.createdAt,
+        updatedAt: device.updatedAt,
+        status: device.isRemoved ? "Inactive" : "Active",
+        isRemoved: device.isRemoved,
+        ...device // Include any other properties
+      }));
+    }
+    
+    return [];
+  } catch (error) {
+    console.error(`Error fetching devices for zone ${zoneId}:`, error);
+    toast.error("Failed to fetch devices. Please try again later.");
+    return [];
+  }
+};
+
 // Export devices API
 export { fetchDevicesCountForSite as fetchDevicesCount };
-

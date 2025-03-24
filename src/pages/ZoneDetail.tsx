@@ -9,6 +9,7 @@ import { ZoneDetailsCard } from "@/components/Zone/ZoneDetailsCard";
 import { ZoneAdditionalInfoCard } from "@/components/Zone/ZoneAdditionalInfoCard";
 import { ZoneLoadingSkeleton } from "@/components/Zone/ZoneLoadingSkeleton";
 import { ZoneErrorState } from "@/components/Zone/ZoneErrorState";
+import { ZoneDevices } from "@/components/Zone/ZoneDevices";
 import { useZoneArea } from "@/hooks/useZoneArea";
 
 const ZoneDetail = () => {
@@ -53,6 +54,11 @@ const ZoneDetail = () => {
               />
               <ZoneAdditionalInfoCard zone={zone} />
             </div>
+            
+            {/* Add the new ZoneDevices component */}
+            {zoneId && (
+              <ZoneDevices zoneId={Number(zoneId)} />
+            )}
           </>
         )}
       </div>
