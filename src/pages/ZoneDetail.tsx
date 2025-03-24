@@ -34,6 +34,7 @@ const ZoneDetail = () => {
   // Effect to refresh data when zoneId changes
   useEffect(() => {
     if (zoneId) {
+      console.log(`ZoneDetail: Fetching data for zone ${zoneId}`);
       refetchZone();
       refetchDeviceCount();
     }
@@ -81,8 +82,11 @@ const ZoneDetail = () => {
               <ZoneAdditionalInfoCard zone={zone} />
             </div>
             
-            {/* Devices Table and Cards - Default to not including sub-zones */}
-            <ZoneDevices zoneId={Number(zoneId)} siteId={zone.siteId} />
+            {/* ZoneDevices - Pass zoneId and siteId */}
+            <ZoneDevices 
+              zoneId={Number(zoneId)} 
+              siteId={zone.siteId} 
+            />
             
             {/* Sub-Zones List - Pass siteId from zone */}
             <SubZonesList 
