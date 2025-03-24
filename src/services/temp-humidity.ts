@@ -9,6 +9,12 @@ export interface MonthlyOverviewPoint {
   avgHumidity: number;
 }
 
+export interface DailyOverviewPoint {
+  time: string;
+  temperature: number;
+  humidity: number;
+}
+
 interface TempHumidityResponse {
   stats: {
     avgTemp: number;
@@ -23,7 +29,7 @@ interface TempHumidityResponse {
       avgHumidity: 'good' | 'caution' | 'warning';
     };
   };
-  daily: any[];
+  daily: DailyOverviewPoint[];
   monthly: MonthlyOverviewPoint[];
 }
 
