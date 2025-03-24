@@ -110,7 +110,7 @@ export const fetchDevicesForZone = async (zoneId: number): Promise<Device[]> => 
     console.log(`Fetching devices for zone ${zoneId} from API...`);
     
     const response = await apiRequest<DevicesResponse>(
-      `/devices?zoneids=${zoneId}&limit=100&nodeveui=false`
+      `/devices?zoneids=${zoneId}&limit=100&nodeveui=false&includeSensors=true`
     );
     
     console.log(`Devices API response for zone ${zoneId}:`, response);

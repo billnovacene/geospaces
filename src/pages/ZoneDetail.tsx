@@ -57,7 +57,7 @@ const ZoneDetail = () => {
               <ZoneAdditionalInfoCard zone={zone} />
             </div>
             
-            {/* Devices Table */}
+            {/* Devices Table and Cards */}
             <ZoneDevices zoneId={Number(zoneId)} />
             
             {/* Sub-Zones List - Pass siteId from zone */}
