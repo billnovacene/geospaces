@@ -1,3 +1,4 @@
+
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSite, fetchZones } from "@/services/api";
@@ -125,14 +126,14 @@ const SiteDetail = () => {
               <SiteAdditionalInfoCard site={site} />
             </div>
 
-            {/* Devices Measurements Table */}
+            {/* Zones Tabs - Moved up to be below site details */}
             <div className="settings-card mb-10 section-spacing">
-              <SiteDevicesMeasurementTable siteId={site.id} />
+              <SiteZonesTabs siteId={site.id} />
             </div>
 
-            {/* Zones Tabs */}
+            {/* Devices Measurements Table */}
             <div className="settings-card section-spacing">
-              <SiteZonesTabs siteId={site.id} />
+              <SiteDevicesMeasurementTable siteId={site.id} />
             </div>
           </>
         )}
