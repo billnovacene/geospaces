@@ -15,7 +15,9 @@ export function SitesSidebar() {
   // The default project ID is 1 - we could make this configurable in the future
   const projectId = 1;
   
-  const { activeSites, isLoading, error, refetch } = useSitesList(projectId);
+  const { activeSites, sites, isLoading, error, refetch } = useSitesList(projectId);
+  
+  console.log(`SitesSidebar: Rendering with ${sites.length} total sites, ${activeSites.length} active sites`);
 
   if (isLoading) {
     return (
@@ -31,9 +33,14 @@ export function SitesSidebar() {
     return <SitesSidebarError onRetry={refetch} />;
   }
 
-  // If no sites are available, show empty state
+  // If no sites are available, show empty state with more context
   if (activeSites.length === 0) {
-    return <SitesSidebarEmpty onRetry={refetch} />;
+    return <SitesSidebarEmpty 
+      onRetry={refetch} 
+      projectId={projectId}
+      isLoading={isLoading}
+      error={error}
+    />;
   }
 
   return (
