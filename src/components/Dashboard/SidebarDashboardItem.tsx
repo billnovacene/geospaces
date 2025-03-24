@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +18,17 @@ export function SidebarDashboardItem({
   to
 }: DashboardItemProps) {
   const location = useLocation();
-  const isActive = to && location.pathname === to;
+  const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
+  
+  // Determine the correct URL based on current context
+  let contextualTo = to;
+  if (to && zoneId) {
+    contextualTo = `/zone/${zoneId}${to}`;
+  } else if (to && siteId) {
+    contextualTo = `/site/${siteId}${to}`;
+  }
+  
+  const isActive = contextualTo && location.pathname === contextualTo;
   
   const content = (
     <div className={cn(
@@ -36,8 +46,8 @@ export function SidebarDashboardItem({
     </div>
   );
   
-  if (to) {
-    return <Link to={to}>{content}</Link>;
+  if (contextualTo) {
+    return <Link to={contextualTo}>{content}</Link>;
   }
   
   return content;

@@ -9,10 +9,15 @@ import { LoadingState } from "@/components/Dashboard/TempHumidity/LoadingState";
 import { ErrorState } from "@/components/Dashboard/TempHumidity/ErrorState";
 import { DashboardContent } from "@/components/Dashboard/TempHumidity/DashboardContent";
 import { PageHeader } from "@/components/Dashboard/TempHumidity/PageHeader";
+import { useParams } from "react-router-dom";
 
 export default function TempHumidityDashboard() {
+  const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
+  
+  // We'll use the zone and site params in the future to fetch specific temperature data
+  // For now, we're using the mock data service
   const { data, isLoading, error } = useQuery({
-    queryKey: ["temp-humidity-data"],
+    queryKey: ["temp-humidity-data", siteId, zoneId],
     queryFn: fetchTempHumidityData,
   });
 
@@ -20,8 +25,10 @@ export default function TempHumidityDashboard() {
   useEffect(() => {
     if (data) {
       console.log("Temperature and humidity data:", data);
+      if (siteId) console.log(`For site: ${siteId}`);
+      if (zoneId) console.log(`For zone: ${zoneId}`);
     }
-  }, [data]);
+  }, [data, siteId, zoneId]);
 
   return (
     <SidebarWrapper>

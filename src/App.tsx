@@ -35,6 +35,8 @@ const App = () => (
             <Route path="/site/:siteId" element={<SiteDetail />} />
             <Route path="/zone/:zoneId" element={<ZoneDetail />} />
             <Route path="/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
+            <Route path="/site/:siteId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
+            <Route path="/zone/:zoneId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
