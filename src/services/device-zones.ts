@@ -82,7 +82,9 @@ export const fetchDevicesForZone = async (zoneId: number, siteId?: number, inclu
     // If we don't want subzones or no siteId is provided, just fetch for this zone only
     if (!includeSubZones || !siteId) {
       console.log(`Fetching only direct devices for zone ${zoneId}`);
-      return fetchDevicesForSingleZone(zoneId);
+      const devices = await fetchDevicesForSingleZone(zoneId);
+      console.log(`Found ${devices.length} devices directly in zone ${zoneId}`);
+      return devices;
     }
     
     // Get all sub-zones to fetch devices from all of them
@@ -92,7 +94,9 @@ export const fetchDevicesForZone = async (zoneId: number, siteId?: number, inclu
     // Build a comma-separated list of zone IDs for the API query
     const zoneIdsParam = zoneIds.join(',');
     
-    return fetchDevicesWithZoneIds(zoneIdsParam, zoneId);
+    const devices = await fetchDevicesWithZoneIds(zoneIdsParam, zoneId);
+    console.log(`Found ${devices.length} devices in zone ${zoneId} and its subzones`);
+    return devices;
   } catch (error) {
     console.error(`Error fetching devices for zone ${zoneId}:`, error);
     toast.error("Failed to fetch devices. Please try again later.");
@@ -117,7 +121,12 @@ const fetchDevicesForSingleZone = async (zoneId: number): Promise<Device[]> => {
     
     if (response && response.devices && Array.isArray(response.devices)) {
       // Filter the devices to make sure they actually belong to this zone
-      const filteredDevices = response.devices.filter(device => device.zoneId === zoneId);
+      const filteredDevices = response.devices.filter(device => {
+        const matches = device.zoneId === zoneId;
+        console.log(`Device ${device.id} (${device.name}) - zoneId: ${device.zoneId}, matches ${zoneId}: ${matches}`);
+        return matches;
+      });
+      
       console.log(`Filtered ${response.devices.length} devices to ${filteredDevices.length} for zone ${zoneId}`);
       
       // Store the count in cache
@@ -162,6 +171,8 @@ const fetchDevicesWithZoneIds = async (zoneIdsParam: string, primaryZoneId: numb
     console.log(`Devices API response for zones [${zoneIdsParam}]:`, response);
     
     if (response && response.devices && Array.isArray(response.devices)) {
+      console.log(`Found ${response.devices.length} devices for zones [${zoneIdsParam}]`);
+      
       // Store the count in cache
       deviceCountsByZone[primaryZoneId] = response.total;
       console.log(`Caching device count ${response.total} for zone ${primaryZoneId}`);

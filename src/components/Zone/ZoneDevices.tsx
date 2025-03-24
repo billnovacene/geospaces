@@ -45,19 +45,19 @@ export const ZoneDevices = ({ zoneId, siteId }: ZoneDevicesProps) => {
 
   // Query for devices with the includeSubZones parameter
   const { data: devices, isLoading, error, refetch } = useQuery({
-    queryKey: ["zone-devices-list", zoneId, includeSubZones],
+    queryKey: ["zone-devices-list", zoneId, includeSubZones, siteId],
     queryFn: () => fetchDevicesForZone(zoneId, siteId, includeSubZones),
-    enabled: !!zoneId, // Run query when zoneId is available
+    enabled: !!zoneId && !!siteId, // Run query when zoneId and siteId are available
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Effect to refetch when zoneId changes or includeSubZones changes
+  // Effect to refetch when zoneId, siteId or includeSubZones changes
   useEffect(() => {
-    if (zoneId) {
-      console.log(`ZoneDevices: Fetching devices for zone ${zoneId}, includeSubZones: ${includeSubZones}`);
+    if (zoneId && siteId) {
+      console.log(`ZoneDevices: Fetching devices for zone ${zoneId}, siteId: ${siteId}, includeSubZones: ${includeSubZones}`);
       refetch();
     }
-  }, [zoneId, includeSubZones, refetch]);
+  }, [zoneId, siteId, includeSubZones, refetch]);
 
   console.log(`Devices for zone ${zoneId}:`, devices);
   console.log(`Number of devices:`, devices?.length || 0);
