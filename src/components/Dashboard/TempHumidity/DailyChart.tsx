@@ -67,7 +67,7 @@ export function DailyChart({ data }: DailyChartProps) {
     }
   };
   
-  // Transform data to include color information
+  // Transform data to include color information without assigning it directly to the Bar fill prop
   const enhancedData = data.map(point => ({
     ...point,
     temperatureColor: point.status === 'good' ? '#10B981' : 
@@ -147,9 +147,9 @@ export function DailyChart({ data }: DailyChartProps) {
               <Bar 
                 dataKey="temperature" 
                 yAxisId="temp" 
-                fill={(data) => data.temperatureColor} 
-                radius={[4, 4, 0, 0]}
+                fill="#ea384c"
                 name="Temperature"
+                radius={[4, 4, 0, 0]}
               />
               <Bar 
                 dataKey="humidity" 

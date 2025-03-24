@@ -108,7 +108,7 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
               <Area 
                 type="monotone" 
                 dataKey="minTemp" 
-                fill={(data) => data.bgColor} 
+                fill="#F2FCE2"
                 stroke="none"
                 name="Range"
               />
