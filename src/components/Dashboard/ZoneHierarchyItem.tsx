@@ -40,13 +40,15 @@ export function ZoneHierarchyItem({
   });
   
   useEffect(() => {
+    // Only apply filtering when explicitly requested AND sensor data is loaded
     if (hideZonesWithoutSensors && !sensorsLoading && zoneSensors) {
       const hasSensors = zoneSensors.temperature.length > 0 || zoneSensors.humidity.length > 0;
+      console.log(`Zone ${zone.name} (ID: ${zone.id}) has sensors: ${hasSensors}`, zoneSensors);
       setShouldRender(hasSensors);
     } else {
       setShouldRender(true);
     }
-  }, [hideZonesWithoutSensors, sensorsLoading, zoneSensors]);
+  }, [hideZonesWithoutSensors, sensorsLoading, zoneSensors, zone.id, zone.name]);
 
   const hasChildren = zone.children && zone.children.length > 0;
   const isExpanded = expandedZones.includes(zone.id);
@@ -55,7 +57,10 @@ export function ZoneHierarchyItem({
   
   // If we need to hide zones without sensors and this zone has no sensors
   if (hideZonesWithoutSensors && !shouldRender && !sensorsLoading) {
-    return null;
+    // If this zone has children, we still want to render it even if it doesn't have sensors directly
+    if (!hasChildren) {
+      return null;
+    }
   }
   
   // Create zone link with dashboard path if needed
@@ -63,7 +68,7 @@ export function ZoneHierarchyItem({
     ? `/zone/${zone.id}${dashboardPath}`
     : `/zone/${zone.id}`;
   
-  console.log(`Zone: ${zone.name}, ID: ${zone.id}, isActive: ${isActive}, Link: ${zoneLink}`);
+  console.log(`Zone: ${zone.name}, ID: ${zone.id}, isActive: ${isActive}, Link: ${zoneLink}, shouldRender: ${shouldRender}`);
   
   return (
     <div key={zone.id}>

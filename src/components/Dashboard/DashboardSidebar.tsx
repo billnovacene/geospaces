@@ -33,6 +33,10 @@ export function DashboardSidebar() {
 
   const effectiveSiteId = validSiteId || (zoneData?.siteId ? zoneData.siteId : null);
   
+  // Log important information for debugging
+  console.log(`DashboardSidebar: siteId=${validSiteId}, zoneId=${validZoneId}, effectiveSiteId=${effectiveSiteId}`);
+  console.log(`DashboardSidebar: isDashboardRoute=${isDashboardRoute}, isTempHumidityRoute=${isTempHumidityRoute}`);
+  
   return (
     <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
       <SidebarContent className="p-0 flex flex-col h-full">
@@ -91,7 +95,7 @@ export function DashboardSidebar() {
                 siteId={effectiveSiteId} 
                 preserveDashboardRoute={isDashboardRoute}
                 currentDashboard={isTempHumidityRoute ? "temp-humidity" : ""}
-                hideZonesWithoutSensors={true}
+                hideZonesWithoutSensors={isTempHumidityRoute}
               />
             ) : validZoneId && zoneData ? (
               <div className="py-2.5 px-5 text-sm bg-white">

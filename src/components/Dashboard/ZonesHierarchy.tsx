@@ -29,6 +29,7 @@ export function ZonesHierarchy({
   
   console.log("ZonesHierarchy: Passed siteId:", propsSiteId);
   console.log("ZonesHierarchy: Current activeZoneId:", activeZoneId);
+  console.log("ZonesHierarchy: hideZonesWithoutSensors:", hideZonesWithoutSensors);
   
   const {
     effectiveSiteId,
@@ -85,19 +86,21 @@ export function ZonesHierarchy({
       ) : zones.length === 0 ? (
         <EmptyZonesState />
       ) : (
-        zones.map(zone => (
-          <ZoneHierarchyItem
-            key={zone.id}
-            zone={zone}
-            activeZoneId={activeZoneId}
-            expandedZones={expandedZones}
-            toggleExpanded={toggleExpanded}
-            preserveDashboardRoute={preserveDashboardRoute}
-            dashboardPath={dashboardPath}
-            effectiveSiteId={effectiveSiteId}
-            hideZonesWithoutSensors={hideZonesWithoutSensors}
-          />
-        ))
+        <div>
+          {zones.map(zone => (
+            <ZoneHierarchyItem
+              key={zone.id}
+              zone={zone}
+              activeZoneId={activeZoneId}
+              expandedZones={expandedZones}
+              toggleExpanded={toggleExpanded}
+              preserveDashboardRoute={preserveDashboardRoute}
+              dashboardPath={dashboardPath}
+              effectiveSiteId={effectiveSiteId}
+              hideZonesWithoutSensors={hideZonesWithoutSensors}
+            />
+          ))}
+        </div>
       )}
     </>
   );
