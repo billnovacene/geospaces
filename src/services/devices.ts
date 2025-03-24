@@ -1,3 +1,4 @@
+
 import { apiRequest } from "./api-client";
 import { toast } from "sonner";
 
@@ -14,12 +15,14 @@ export interface Device {
   updatedAt?: string;
   isRemoved?: boolean;
   status?: string;
+  sensors?: any[];
+  modelId?: any;
   [key: string]: any; // For any additional properties
 }
 
 // Interface for Device response
 export interface DevicesResponse {
-  list: Device[];
+  devices: Device[];
   total: number;
   totalPages: number;
   itemTo: number;
@@ -112,21 +115,23 @@ export const fetchDevicesForZone = async (zoneId: number): Promise<Device[]> => 
     
     console.log(`Devices API response for zone ${zoneId}:`, response);
     
-    if (response && response.list && Array.isArray(response.list)) {
+    if (response && response.devices && Array.isArray(response.devices)) {
       // Store the count in cache
       deviceCountsByZone[zoneId] = response.total;
       console.log(`Caching device count ${response.total} for zone ${zoneId}`);
       
       // Transform the response into the Device interface
-      return response.list.map(device => ({
+      return response.devices.map(device => ({
         id: device.id,
         name: device.name || `Device ${device.id}`,
         type: device.type,
         zoneId: device.zoneId,
         siteId: device.siteId,
         projectId: device.projectId,
+        modelId: device.modelId,
         createdAt: device.createdAt,
         updatedAt: device.updatedAt,
+        sensors: device.sensors,
         status: device.isRemoved ? "Inactive" : "Active",
         isRemoved: device.isRemoved,
         ...device // Include any other properties
