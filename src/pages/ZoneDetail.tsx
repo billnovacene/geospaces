@@ -60,8 +60,11 @@ const ZoneDetail = () => {
             {/* Devices Table */}
             <ZoneDevices zoneId={Number(zoneId)} />
             
-            {/* Sub-Zones List */}
-            <SubZonesList parentZoneId={Number(zoneId)} />
+            {/* Sub-Zones List - Pass siteId from zone */}
+            <SubZonesList 
+              parentZoneId={Number(zoneId)} 
+              siteId={zone.siteId}
+            />
           </>
         )}
       </div>

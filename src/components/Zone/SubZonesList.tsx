@@ -14,23 +14,24 @@ import { Button } from "@/components/ui/button";
 import { getStatusInfo, getDeviceCount } from "@/utils/zones";
 import { ZonesErrorState } from "@/components/Zone/ZonesErrorState";
 import { ZonesEmptyState } from "@/components/Zone/ZonesEmptyState";
+import { Zone } from "@/services/interfaces";
 
 interface SubZonesListProps {
   parentZoneId: number;
+  siteId: number;
 }
 
-export function SubZonesList({ parentZoneId }: SubZonesListProps) {
+export function SubZonesList({ parentZoneId, siteId }: SubZonesListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   
   const { data: allZones = [], isLoading, error } = useQuery({
-    queryKey: ["zones-by-parent", parentZoneId],
+    queryKey: ["zones-by-parent", parentZoneId, siteId],
     queryFn: async () => {
-      // Fetch all zones for the site
-      const zones = await fetchZones(0, parentZoneId);
-      // Filter zones to only include those with the specified parent
+      // Fetch sub-zones with both parent zone ID and site ID
+      const zones = await fetchZones(siteId, parentZoneId);
       return zones.filter(zone => zone.parent === parentZoneId);
     },
-    enabled: !!parentZoneId,
+    enabled: !!parentZoneId && !!siteId,
   });
 
   // Filter zones based on search term

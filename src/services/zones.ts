@@ -41,14 +41,14 @@ export const fetchZones = async (siteId: number, parentZoneId?: number): Promise
   try {
     // Determine the API endpoint based on whether we're fetching by site or parent zone
     let endpoint = '';
-    if (parentZoneId) {
-      console.log(`Fetching sub-zones for parent zone ${parentZoneId} from API...`);
-      endpoint = `/zones?parent=${parentZoneId}`;
+    if (parentZoneId && siteId) {
+      console.log(`Fetching sub-zones for parent zone ${parentZoneId} from site ${siteId} from API...`);
+      endpoint = `/zones?parent=${parentZoneId}&siteid=${siteId}`;
     } else if (siteId) {
       console.log(`Fetching zones for site ${siteId} from API...`);
       endpoint = `/zones?siteid=${siteId}`;
     } else {
-      console.error('Either siteId or parentZoneId must be provided');
+      console.error('siteId must be provided');
       return [];
     }
     
