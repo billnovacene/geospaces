@@ -1,5 +1,5 @@
 
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, ChevronUp, ChevronDown, Menu, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Link, useParams, useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { fetchZonesHierarchy } from "@/services/zones";
+import { Zone } from "@/services/interfaces";
 
 interface SidebarWrapperProps {
   children: React.ReactNode;
@@ -22,6 +25,8 @@ interface SidebarSectionProps {
 interface ZoneItemProps {
   name: string;
   count: number;
+  id: number;
+  isActive?: boolean;
 }
 interface DashboardItemProps {
   name: string;
@@ -71,15 +76,24 @@ function SidebarSection({
 
 function ZoneItem({
   name,
-  count
+  count,
+  id,
+  isActive = false
 }: ZoneItemProps) {
-  return <div className="flex items-center justify-between py-2.5 px-5 cursor-pointer bg-white sidebar-hover-item">
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-zinc-600">▶</span>
-        <span className="text-sm font-medium text-gray-900">{name}</span>
+  return (
+    <Link to={`/zone/${id}`} className="block">
+      <div className={cn(
+        "flex items-center justify-between py-2.5 px-5 cursor-pointer bg-white sidebar-hover-item",
+        isActive && "bg-[#F9F9FA]"
+      )}>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-zinc-600">▶</span>
+          <span className="text-sm font-medium text-gray-900">{name}</span>
+        </div>
+        <span className="text-sm text-[#8E9196]">{count}</span>
       </div>
-      <span className="text-sm text-[#8E9196]">{count}</span>
-    </div>;
+    </Link>
+  );
 }
 
 function DashboardItem({
@@ -116,6 +130,71 @@ function DashboardItem({
 
 function DashboardSidebar() {
   const { siteId } = useParams<{ siteId: string }>();
+  const [expandedZones, setExpandedZones] = useState<number[]>([]);
+  const location = useLocation();
+  const zoneId = location.pathname.includes('/zone/') ? Number(location.pathname.split('/zone/')[1]) : null;
+  
+  // Fetch zones hierarchy data for the sidebar
+  const { data: zones = [], isLoading } = useQuery({
+    queryKey: ["zones-hierarchy", siteId],
+    queryFn: () => siteId ? fetchZonesHierarchy(Number(siteId)) : Promise.resolve([]),
+    enabled: !!siteId,
+  });
+  
+  // Toggle expanded state of parent zones
+  const toggleExpanded = (zoneId: number) => {
+    setExpandedZones(prev => 
+      prev.includes(zoneId) 
+        ? prev.filter(id => id !== zoneId)
+        : [...prev, zoneId]
+    );
+  };
+  
+  // Render zone items recursively
+  const renderZoneItems = (zones: Zone[], depth = 0) => {
+    return zones.map(zone => {
+      const hasChildren = zone.children && zone.children.length > 0;
+      const isExpanded = expandedZones.includes(zone.id);
+      const isActive = zoneId === zone.id;
+      const deviceCount = typeof zone.devices === 'number' ? zone.devices : parseInt(String(zone.devices), 10) || 0;
+      
+      return (
+        <div key={zone.id}>
+          <div 
+            className={cn(
+              "flex items-center justify-between py-2.5 px-5 cursor-pointer bg-white sidebar-hover-item",
+              isActive && "bg-[#F9F9FA]",
+              depth > 0 && "pl-8"
+            )}
+            style={{ paddingLeft: depth > 0 ? `${depth * 12 + 20}px` : undefined }}
+            onClick={() => hasChildren && toggleExpanded(zone.id)}
+          >
+            <div className="flex items-center gap-2">
+              {hasChildren && (
+                <span className="text-xs text-zinc-600">
+                  {isExpanded ? '▼' : '▶'}
+                </span>
+              )}
+              <Link 
+                to={`/zone/${zone.id}`}
+                className="text-sm font-medium text-gray-900"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {zone.name}
+              </Link>
+            </div>
+            <span className="text-sm text-[#8E9196]">{deviceCount}</span>
+          </div>
+          
+          {hasChildren && isExpanded && (
+            <div className="zone-children">
+              {renderZoneItems(zone.children, depth + 1)}
+            </div>
+          )}
+        </div>
+      );
+    });
+  };
   
   return <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
       <SidebarContent className="p-0">
@@ -143,9 +222,14 @@ function DashboardSidebar() {
                 <span className="font-medium text-sm text-zinc-950">All zones</span>
               </div>
             </Link>
-            <ZoneItem name="Grounds Floor" count={4} />
-            <ZoneItem name="1st Floor" count={16} />
-            <ZoneItem name="2nd Floor" count={3} />
+            
+            {isLoading ? (
+              <div className="py-2.5 px-5 text-sm text-[#8E9196]">Loading zones...</div>
+            ) : zones.length === 0 ? (
+              <div className="py-2.5 px-5 text-sm text-[#8E9196]">No zones available</div>
+            ) : (
+              renderZoneItems(zones)
+            )}
           </SidebarSection>
 
           <SidebarSection title="Filter Devices">
@@ -191,3 +275,4 @@ function DashboardSidebar() {
       </SidebarFooter>
     </Sidebar>;
 }
+
