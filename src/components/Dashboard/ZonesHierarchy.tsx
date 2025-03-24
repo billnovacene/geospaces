@@ -1,6 +1,6 @@
 
 import { useParams, useLocation, Link } from "react-router-dom";
-import { Home } from "lucide-react";
+import { Package } from "lucide-react";
 import { useZonesHierarchy } from "@/hooks/useZonesHierarchy";
 import { ZoneHierarchyItem } from "./ZoneHierarchyItem";
 import { NoSiteSelected } from "./NoSiteSelected";
@@ -40,7 +40,10 @@ export function ZonesHierarchy({ siteId: propsSiteId }: ZonesHierarchyProps) {
     <>
       <Link to={`/site/${effectiveSiteId}`} className="block">
         <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]">
-          <span className="font-medium text-sm text-zinc-950">All zones</span>
+          <div className="flex items-center gap-1.5">
+            <Package className="h-4 w-4" />
+            <span className="font-medium text-sm text-zinc-950">All zones</span>
+          </div>
         </div>
       </Link>
       

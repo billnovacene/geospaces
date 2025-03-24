@@ -1,7 +1,7 @@
 
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { HomeIcon, Building } from "lucide-react";
+import { HomeIcon, Building, Package } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSite } from "@/services/sites";
 import { fetchZone } from "@/services/zones";
@@ -63,7 +63,12 @@ export function BreadcrumbNav() {
           <>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to={`/zone/${parentZone.id}`}>{parentZone.name}</Link>
+                <Link to={`/zone/${parentZone.id}`}>
+                  <span className="flex items-center gap-1">
+                    <Package className="h-3.5 w-3.5" />
+                    <span>{parentZone.name}</span>
+                  </span>
+                </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -74,7 +79,12 @@ export function BreadcrumbNav() {
           <>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to={`/zone/${zone.id}`}>{zone.name}</Link>
+                <Link to={`/zone/${zone.id}`}>
+                  <span className="flex items-center gap-1">
+                    <Package className="h-3.5 w-3.5" />
+                    <span>{zone.name}</span>
+                  </span>
+                </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

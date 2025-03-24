@@ -11,13 +11,29 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { HomeIcon } from "lucide-react";
+import { HomeIcon, Building, Package } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchSite } from "@/services/sites";
 
 interface ZoneDetailHeaderProps {
   zone: Zone;
 }
 
 export const ZoneDetailHeader = ({ zone }: ZoneDetailHeaderProps) => {
+  // Fetch site data for the zone
+  const { data: site } = useQuery({
+    queryKey: ["site-for-zone", zone.siteId],
+    queryFn: () => fetchSite(Number(zone.siteId)),
+    enabled: !!zone.siteId,
+  });
+
+  // Fetch parent zone if current zone has a parent
+  const { data: parentZone } = useQuery({
+    queryKey: ["parent-zone", zone.parent],
+    queryFn: () => fetchZone(Number(zone.parent)),
+    enabled: !!zone.parent,
+  });
+
   return (
     <>
       <div className="mb-8">
@@ -31,16 +47,46 @@ export const ZoneDetailHeader = ({ zone }: ZoneDetailHeaderProps) => {
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
+            
+            {site && (
+              <>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/site/${site.id}`}>
+                      <span className="flex items-center gap-1">
+                        <Building className="h-3.5 w-3.5" />
+                        <span>{site.name}</span>
+                      </span>
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+              </>
+            )}
+            
+            {parentZone && (
+              <>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/zone/${parentZone.id}`}>
+                      <span className="flex items-center gap-1">
+                        <Package className="h-3.5 w-3.5" />
+                        <span>{parentZone.name}</span>
+                      </span>
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+              </>
+            )}
+            
             <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to={`/site/${zone.siteId}`}>
-                  Site
-                </Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{zone.name}</BreadcrumbPage>
+              <BreadcrumbPage>
+                <span className="flex items-center gap-1">
+                  <Package className="h-3.5 w-3.5" />
+                  <span>{zone.name}</span>
+                </span>
+              </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

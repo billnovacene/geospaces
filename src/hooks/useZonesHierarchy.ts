@@ -47,7 +47,7 @@ export function useZonesHierarchy(propsSiteId: number | null, activeZoneId: numb
   
   // Expand parent zones of the active zone automatically
   useEffect(() => {
-    if (activeZoneId && zones) {
+    if (activeZoneId && zones && zones.length > 0) {
       // Find parent zones of the active zone
       const findParentZones = (zonesList: Zone[], targetId: number, parents: number[] = []): number[] => {
         for (const zone of zonesList) {

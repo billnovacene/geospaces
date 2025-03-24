@@ -15,6 +15,7 @@ import { fetchSite } from "@/services/sites";
 import { fetchZone } from "@/services/zones";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { Package, Building } from "lucide-react";
 
 export default function TempHumidityDashboard() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
@@ -70,12 +71,22 @@ export default function TempHumidityDashboard() {
     }
   }, [data, siteId, zoneId, siteData, zoneData]);
 
-  // Determine data source description
+  // Determine data source description with icons
   const getDataSourceDescription = () => {
-    if (zoneId) {
-      return `Data from sensors in zone ${zoneData?.name || zoneId}`;
-    } else if (siteId) {
-      return `Data from sensors in site ${siteData?.name || siteId}`;
+    if (zoneId && zoneData) {
+      return (
+        <span className="flex items-center gap-1.5">
+          <Package className="h-3.5 w-3.5" />
+          Data from sensors in zone {zoneData.name}
+        </span>
+      );
+    } else if (siteId && siteData) {
+      return (
+        <span className="flex items-center gap-1.5">
+          <Building className="h-3.5 w-3.5" />
+          Data from sensors in site {siteData.name}
+        </span>
+      );
     }
     return "Data from all sensors";
   };
