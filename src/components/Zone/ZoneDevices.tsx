@@ -40,19 +40,21 @@ export const ZoneDevices = ({ zoneId, siteId }: ZoneDevicesProps) => {
     }
   };
 
+  // Ensure queryKey is accurate and dependent on both zoneId and siteId
   const { data: devices, isLoading, error, refetch } = useQuery({
-    queryKey: ["zone-devices-list", zoneId],
+    queryKey: ["zone-devices-list", zoneId, siteId],
     queryFn: () => fetchDevicesForZone(zoneId, siteId),
-    enabled: !!zoneId,
+    enabled: !!zoneId && !!siteId, // Only run query when both IDs are available
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Effect to refetch when zoneId changes
+  // Effect to refetch when zoneId or siteId changes
   useEffect(() => {
-    if (zoneId) {
+    if (zoneId && siteId) {
+      console.log(`ZoneDevices: Fetching devices for zone ${zoneId} with siteId ${siteId}`);
       refetch();
     }
-  }, [zoneId, refetch]);
+  }, [zoneId, siteId, refetch]); // Add siteId as a dependency
 
   console.log(`Devices for zone ${zoneId} (including sub-zones):`, devices);
   console.log(`Number of devices:`, devices?.length || 0);
@@ -61,15 +63,19 @@ export const ZoneDevices = ({ zoneId, siteId }: ZoneDevicesProps) => {
   const devicesData = prepareDeviceData(devices || []);
   const sortedDevicesData = getSortedData(devicesData, sortField, sortDirection);
 
-  console.log("Prepared device data:", devicesData);
-  console.log("Sorted device data:", sortedDevicesData);
-
   // Add a refresh handler
   const handleRefresh = async () => {
     setIsRefreshing(true);
     toast.info("Refreshing devices data...");
-    await refetch();
-    setIsRefreshing(false);
+    try {
+      await refetch();
+      toast.success("Devices refreshed successfully");
+    } catch (error) {
+      toast.error("Failed to refresh devices");
+      console.error("Error refreshing devices:", error);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   return (
@@ -92,7 +98,7 @@ export const ZoneDevices = ({ zoneId, siteId }: ZoneDevicesProps) => {
               size="sm"
               onClick={handleRefresh} 
               className="text-xs flex items-center gap-1"
-              disabled={isRefreshing}
+              disabled={isRefreshing || isLoading}
             >
               <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
               Refresh

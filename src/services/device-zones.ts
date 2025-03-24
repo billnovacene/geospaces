@@ -9,6 +9,7 @@ import { Device, DevicesResponse } from "./device-types";
 // Helper function to get all sub-zone IDs recursively
 export const getAllSubZoneIds = async (zoneId: number, siteId: number): Promise<number[]> => {
   try {
+    console.log(`Getting sub-zones for zone ${zoneId} in site ${siteId}`);
     // First, get direct sub-zones
     const zones = await fetchZones(siteId, zoneId);
     
@@ -85,9 +86,15 @@ export const fetchDevicesForZone = async (zoneId: number, siteId?: number): Prom
         if (zoneResponse && zoneResponse.siteId) {
           siteId = zoneResponse.siteId;
           console.log(`Retrieved siteId ${siteId} for zone ${zoneId}`);
+        } else {
+          console.warn(`Could not retrieve siteId for zone ${zoneId}`);
+          // If we can't get the siteId, just fetch devices for this zone only
+          return fetchDevicesForSingleZone(zoneId);
         }
       } catch (error) {
         console.error(`Error retrieving zone ${zoneId} details:`, error);
+        // If we encounter an error, just fetch devices for this zone only
+        return fetchDevicesForSingleZone(zoneId);
       }
     }
     
@@ -102,6 +109,23 @@ export const fetchDevicesForZone = async (zoneId: number, siteId?: number): Prom
     // Build a comma-separated list of zone IDs for the API query
     const zoneIdsParam = zoneIds.join(',');
     
+    return fetchDevicesWithZoneIds(zoneIdsParam, zoneId);
+  } catch (error) {
+    console.error(`Error fetching devices for zone ${zoneId} and sub-zones:`, error);
+    toast.error("Failed to fetch devices. Please try again later.");
+    return [];
+  }
+};
+
+// Helper function to fetch devices for a single zone only
+const fetchDevicesForSingleZone = async (zoneId: number): Promise<Device[]> => {
+  console.log(`Fetching devices for single zone ${zoneId} only`);
+  return fetchDevicesWithZoneIds(String(zoneId), zoneId);
+};
+
+// Helper function to fetch devices with zone IDs parameter
+const fetchDevicesWithZoneIds = async (zoneIdsParam: string, primaryZoneId: number): Promise<Device[]> => {
+  try {
     // Add nocache parameter to avoid caching issues
     const nocache = new Date().getTime();
     const response = await apiRequest<DevicesResponse>(
@@ -112,8 +136,8 @@ export const fetchDevicesForZone = async (zoneId: number, siteId?: number): Prom
     
     if (response && response.devices && Array.isArray(response.devices)) {
       // Store the count in cache
-      deviceCountsByZone[zoneId] = response.total;
-      console.log(`Caching device count ${response.total} for zone ${zoneId}`);
+      deviceCountsByZone[primaryZoneId] = response.total;
+      console.log(`Caching device count ${response.total} for zone ${primaryZoneId}`);
       
       // Transform the response into the Device interface
       return response.devices.map(device => ({
@@ -136,8 +160,7 @@ export const fetchDevicesForZone = async (zoneId: number, siteId?: number): Prom
     
     return [];
   } catch (error) {
-    console.error(`Error fetching devices for zone ${zoneId} and sub-zones:`, error);
-    toast.error("Failed to fetch devices. Please try again later.");
-    return [];
+    console.error(`Error fetching devices with zone IDs [${zoneIdsParam}]:`, error);
+    throw error; // Let the caller handle the error
   }
 };
