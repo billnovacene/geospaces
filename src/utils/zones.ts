@@ -1,9 +1,8 @@
 
 import { zoneDevicesCache } from "@/services/zones";
 import { Zone } from "@/services/interfaces";
-import { AlertTriangle } from "lucide-react";
 
-// Get status color and icon
+// Get status color and icon name
 export const getStatusInfo = (status: string) => {
   switch (status.toLowerCase()) {
     case "active":
@@ -14,7 +13,7 @@ export const getStatusInfo = (status: string) => {
     case "warning":
       return {
         color: "bg-yellow-100 text-yellow-800",
-        icon: <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+        icon: "AlertTriangle" // Return icon name instead of JSX
       };
     case "inactive":
       return {

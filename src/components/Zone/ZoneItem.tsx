@@ -21,6 +21,14 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
   const statusInfo = getStatusInfo(zone.status || "Unknown");
   const deviceCount = getDeviceCount(zone);
   
+  // Render the appropriate status icon based on the icon name
+  const renderStatusIcon = () => {
+    if (statusInfo.icon === "AlertTriangle") {
+      return <AlertTriangle className="h-3.5 w-3.5 mr-1" />;
+    }
+    return null;
+  };
+  
   return (
     <div className="border-b last:border-b-0">
       <div 
@@ -51,7 +59,7 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground">{deviceCount} devices</span>
           <Badge variant="outline" className={statusInfo.color}>
-            {statusInfo.icon}
+            {renderStatusIcon()}
             {zone.status || "Unknown"}
           </Badge>
           <Button variant="outline" size="sm" asChild onClick={e => e.stopPropagation()}>

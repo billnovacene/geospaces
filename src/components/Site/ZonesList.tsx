@@ -12,6 +12,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { zoneDevicesCache } from "@/services/zones";
+import { getStatusInfo, getDeviceCount } from "@/utils/zones";
+import { ZonesErrorState } from "@/components/Zone/ZonesErrorState";
+import { ZonesEmptyState } from "@/components/Zone/ZonesEmptyState";
 
 interface ZonesListProps {
   siteId?: number;
@@ -32,32 +35,6 @@ export function ZonesList({ siteId }: ZonesListProps) {
     (zone.type && zone.type.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  // Get status color and icon
-  const getStatusInfo = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "active":
-        return {
-          color: "bg-green-100 text-green-800",
-          icon: null
-        };
-      case "warning":
-        return {
-          color: "bg-yellow-100 text-yellow-800",
-          icon: <AlertTriangle className="h-3.5 w-3.5 mr-1" />
-        };
-      case "inactive":
-        return {
-          color: "bg-red-100 text-red-800",
-          icon: null
-        };
-      default:
-        return {
-          color: "bg-gray-100 text-gray-800",
-          icon: null
-        };
-    }
-  };
-
   // Format date
   const formatDate = (dateString: string) => {
     try {
@@ -67,25 +44,16 @@ export function ZonesList({ siteId }: ZonesListProps) {
     }
   };
 
-  // Get device count (prioritize cache)
-  const getDeviceCount = (zone: any) => {
-    if (zone.id && zoneDevicesCache[zone.id] !== undefined && zoneDevicesCache[zone.id] > 0) {
-      return zoneDevicesCache[zone.id];
+  // Render the appropriate status icon based on the icon name
+  const renderStatusIcon = (iconName: string | null) => {
+    if (iconName === "AlertTriangle") {
+      return <AlertTriangle className="h-3.5 w-3.5 mr-1" />;
     }
-    return typeof zone.devices === 'number' ? zone.devices : parseInt(String(zone.devices), 10) || 0;
+    return null;
   };
 
   if (error) {
-    return (
-      <Card className="dashboard-card">
-        <CardContent className="pt-6">
-          <div className="flex flex-col items-center justify-center h-40 text-center">
-            <p className="text-destructive mb-2">Failed to load zones</p>
-            <p className="text-muted-foreground text-sm">Please try again later or check your connection</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <ZonesErrorState />;
   }
 
   return (
@@ -126,19 +94,9 @@ export function ZonesList({ siteId }: ZonesListProps) {
             ))}
           </div>
         ) : !siteId ? (
-          <div className="flex flex-col items-center justify-center h-40 text-center">
-            <p className="text-lg font-medium mb-2">No site selected</p>
-            <p className="text-muted-foreground text-sm">
-              Select a site to view its zones
-            </p>
-          </div>
+          <ZonesEmptyState siteId={siteId} searchTerm={searchTerm} />
         ) : filteredZones.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-center">
-            <p className="text-lg font-medium mb-2">No zones found</p>
-            <p className="text-muted-foreground text-sm">
-              {searchTerm ? "Try a different search term" : "This site doesn't have any zones yet"}
-            </p>
-          </div>
+          <ZonesEmptyState siteId={siteId} searchTerm={searchTerm} />
         ) : (
           <Table>
             <TableHeader>
@@ -169,7 +127,7 @@ export function ZonesList({ siteId }: ZonesListProps) {
                     <TableCell>{formatDate(zone.createdAt)}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={statusInfo.color}>
-                        {statusInfo.icon}
+                        {renderStatusIcon(statusInfo.icon)}
                         {zone.status || "Unknown"}
                       </Badge>
                     </TableCell>
