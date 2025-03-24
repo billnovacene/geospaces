@@ -4,17 +4,28 @@ import { DailyOverviewPoint, PointsDataResponse } from "../interfaces/temp-humid
 
 export async function fetchSensorDataForDay(
   siteId: string, 
-  temperatureSensor: string, 
+  temperatureSensor: string | undefined, 
   humiditySensor: string | undefined,
   date: string
 ): Promise<DailyOverviewPoint[]> {
   try {
-    // Fetch temperature data for the day
-    const tempEndpoint = `/devices/points-data?siteid=${siteId}&sensor=${temperatureSensor}&start=${date}&end=${date}`;
-    const tempResponse = await apiRequest<PointsDataResponse>(tempEndpoint);
+    let tempData: Array<{timestamp: string, value: number | string}> = [];
+    let humidityData: Array<{timestamp: string, value: number | string}> = [];
+    
+    // Fetch temperature data if sensor is available
+    if (temperatureSensor) {
+      const tempEndpoint = `/devices/points-data?siteid=${siteId}&sensor=${temperatureSensor}&start=${date}&end=${date}`;
+      try {
+        const tempResponse = await apiRequest<PointsDataResponse>(tempEndpoint);
+        if (tempResponse.data && tempResponse.data.length > 0 && tempResponse.data[0].pointData) {
+          tempData = tempResponse.data[0].pointData || [];
+        }
+      } catch (err) {
+        console.warn('Could not fetch temperature data, proceeding with humidity only', err);
+      }
+    }
     
     // Get humidity data if sensor is available
-    let humidityData: Array<{timestamp: string, value: number | string}> = [];
     if (humiditySensor) {
       const humidityEndpoint = `/devices/points-data?siteid=${siteId}&sensor=${humiditySensor}&start=${date}&end=${date}`;
       try {
@@ -25,14 +36,6 @@ export async function fetchSensorDataForDay(
       } catch (err) {
         console.warn('Could not fetch humidity data, proceeding with temperature only', err);
       }
-    }
-    
-    // Map temperature data points to hourly intervals
-    const hourlyData: DailyOverviewPoint[] = [];
-    let tempData: Array<{timestamp: string, value: number | string}> = [];
-    
-    if (tempResponse.data && tempResponse.data.length > 0 && tempResponse.data[0].pointData) {
-      tempData = tempResponse.data[0].pointData || [];
     }
     
     // Group data by hour
@@ -72,6 +75,7 @@ export async function fetchSensorDataForDay(
     });
     
     // Create hourly data points with averages
+    const hourlyData: DailyOverviewPoint[] = [];
     for (let i = 0; i < 24; i++) {
       const hour = `${i}:00`;
       const tempValues = hourlyTemperatures[hour] || [];

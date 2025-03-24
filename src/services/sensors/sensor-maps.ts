@@ -8,3 +8,9 @@ export const TEMP_SENSORS: Record<string, string[]> = {
 export const HUMIDITY_SENSORS: Record<string, string[]> = {
   "471": ["e4dd6e3f-8572-4036-84e9-4c6e79cfcb18"]
 };
+
+// Cache for sensors found in zones
+export const ZONE_SENSORS_CACHE: Record<string, {
+  temperature: string[],
+  humidity: string[]
+}> = {};

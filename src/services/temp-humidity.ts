@@ -3,11 +3,39 @@ import { TempHumidityResponse } from "./interfaces/temp-humidity";
 import { TEMP_SENSORS, HUMIDITY_SENSORS } from "./sensors/sensor-maps";
 import { fetchRealDeviceData } from "./sensors/device-data";
 import { generateMockData } from "./sensors/stats";
+import { findZoneSensors } from "./sensors/zone-sensors";
+import { fetchZone } from "./zones";
 
 export * from "./interfaces/temp-humidity";
 
 export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): Promise<TempHumidityResponse> => {
   try {
+    // For zone-specific data
+    if (zoneId) {
+      console.log(`Fetching temperature data for zone ${zoneId}`);
+      
+      // Get zone data to find its site
+      const zoneData = await fetchZone(Number(zoneId));
+      if (!zoneData || !zoneData.siteId) {
+        throw new Error(`Cannot fetch zone ${zoneId} or its site ID is missing`);
+      }
+      
+      // Find temperature and humidity sensors in this zone
+      const zoneSensors = await findZoneSensors(Number(zoneId), zoneData.siteId);
+      
+      if (zoneSensors.temperature.length > 0 || zoneSensors.humidity.length > 0) {
+        console.log(`Using zone sensors for zone ${zoneId}:`, zoneSensors);
+        return await fetchRealDeviceData(
+          zoneData.siteId.toString(),
+          zoneSensors.temperature,
+          zoneSensors.humidity
+        );
+      } else {
+        console.log(`No temperature or humidity sensors found in zone ${zoneId}, falling back to site sensors`);
+        siteId = zoneData.siteId.toString();
+      }
+    }
+    
     // Handle site-specific data fetch
     if (siteId && TEMP_SENSORS[siteId]) {
       console.log(`Fetching real temperature data for site ${siteId}`);

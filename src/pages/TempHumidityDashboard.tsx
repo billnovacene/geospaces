@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { fetchSite } from "@/services/sites";
 import { fetchZone } from "@/services/zones";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 export default function TempHumidityDashboard() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
@@ -68,6 +69,16 @@ export default function TempHumidityDashboard() {
     }
   }, [data, siteId, zoneId, siteData, zoneData]);
 
+  // Determine data source description
+  const getDataSourceDescription = () => {
+    if (zoneId) {
+      return `Data from sensors in zone ${zoneData?.name || zoneId}`;
+    } else if (siteId) {
+      return `Data from sensors in site ${siteData?.name || siteId}`;
+    }
+    return "Data from all sensors";
+  };
+
   return (
     <SidebarWrapper>
       <div className="container mx-auto py-8 px-6 md:px-8 lg:px-12">
@@ -75,8 +86,11 @@ export default function TempHumidityDashboard() {
           <BreadcrumbNav />
         </div>
 
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <PageHeader customTitle={`Temperature & Humidity - ${getContextName()}`} />
+          <Badge variant="outline" className="text-xs px-3 py-1">
+            {getDataSourceDescription()}
+          </Badge>
         </div>
         
         {!isLoading && !error && data && (
