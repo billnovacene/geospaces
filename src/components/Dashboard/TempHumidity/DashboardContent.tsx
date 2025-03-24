@@ -29,8 +29,8 @@ export function DashboardContent({ data }: DashboardContentProps) {
       <div className="mb-8">
         <Card className="shadow-sm">
           <CardContent className="p-8">
-            <div className="grid grid-cols-4 gap-8">
-              <div className="col-span-1 flex flex-col justify-end">
+            <div className="grid grid-cols-4 gap-8 items-center">
+              <div className="col-span-1">
                 <h2 className="text-xl font-medium mb-4">Monthly Overview</h2>
                 <p className="text-sm text-gray-600">
                   The last 30 days show peak temps around 21-23°C with minimums
@@ -50,8 +50,8 @@ export function DashboardContent({ data }: DashboardContentProps) {
       <div className="mb-8">
         <Card className="shadow-sm">
           <CardContent className="p-8">
-            <div className="grid grid-cols-4 gap-8">
-              <div className="col-span-1 flex flex-col justify-end">
+            <div className="grid grid-cols-4 gap-8 items-center">
+              <div className="col-span-1">
                 <h2 className="text-xl font-medium mb-4">Daily Overview</h2>
                 <p className="text-sm text-gray-600">
                   Temps range from ~8°C early to ~22°C peak, with humidity near 47%.
