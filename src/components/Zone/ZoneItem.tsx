@@ -10,6 +10,7 @@ import { getStatusInfo } from "@/utils/zones";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesCountForZone } from "@/services/devices";
 import { Skeleton } from "@/components/ui/skeleton";
+import { calculateTotalZoneDevices } from "@/utils/zoneUtils";
 
 interface ZoneItemProps {
   zone: Zone;
@@ -23,8 +24,11 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
   const hasChildren = zone.children && zone.children.length > 0;
   const statusInfo = getStatusInfo(zone.status || "Unknown");
   
-  // Fetch actual device count from API
-  const { data: deviceCount, isLoading: deviceCountLoading } = useQuery({
+  // Calculate total devices from this zone and all its children
+  const totalDeviceCount = calculateTotalZoneDevices(zone);
+  
+  // Fetch actual device count from API for this zone only (for comparison)
+  const { data: directDeviceCount, isLoading: deviceCountLoading } = useQuery({
     queryKey: ["zone-devices", zone.id],
     queryFn: () => fetchDevicesCountForZone(zone.id),
     enabled: !!zone.id,
@@ -71,7 +75,17 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
           {deviceCountLoading ? (
             <Skeleton className="h-4 w-16" />
           ) : (
-            <span className="text-sm text-muted-foreground">{deviceCount || 0} devices</span>
+            <div className="text-sm text-muted-foreground">
+              {hasChildren ? (
+                // For parent zones with children, show total/direct count
+                <span title="Total devices / Direct devices">
+                  {totalDeviceCount} / {directDeviceCount || 0} devices
+                </span>
+              ) : (
+                // For leaf zones, just show device count
+                <span>{directDeviceCount || 0} devices</span>
+              )}
+            </div>
           )}
           <Badge variant="outline" className={statusInfo.color}>
             {renderStatusIcon()}
