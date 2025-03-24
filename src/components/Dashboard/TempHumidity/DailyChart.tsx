@@ -11,10 +11,9 @@ import {
   XAxis, 
   YAxis, 
   CartesianGrid, 
-  ResponsiveContainer,
-  ReferenceLine,
   Tooltip,
-  Legend
+  ReferenceLine,
+  ResponsiveContainer
 } from "recharts";
 import { DailyOverviewPoint } from "@/services/temp-humidity";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -33,29 +32,6 @@ export function DailyChart({ data }: DailyChartProps) {
     return time;
   };
   
-  const chartConfig = {
-    temperature: {
-      label: "Temperature (°C)",
-      color: "#ea384c"
-    },
-    humidity: {
-      label: "Humidity (%)",
-      color: "#D3E4FD"
-    },
-    green: {
-      label: "Good",
-      color: "#10B981"
-    },
-    amber: {
-      label: "Caution",
-      color: "#F59E0B"
-    },
-    red: {
-      label: "Warning",
-      color: "#EF4444"
-    }
-  };
-
   const handlePrevDay = () => {
     setSelectedDate(prev => subDays(prev, 1));
   };
@@ -67,11 +43,11 @@ export function DailyChart({ data }: DailyChartProps) {
     }
   };
   
-  // Transform data to include color information without assigning it directly to the Bar fill prop
+  // Transform data to include color information
   const enhancedData = data.map(point => ({
     ...point,
-    temperatureColor: point.status === 'good' ? '#10B981' : 
-                      point.status === 'caution' ? '#F59E0B' : '#EF4444',
+    barColor: point.status === 'good' ? '#10B981' : 
+              point.status === 'caution' ? '#F59E0B' : '#EF4444',
   }));
 
   return (
@@ -110,54 +86,57 @@ export function DailyChart({ data }: DailyChartProps) {
         </div>
         
         <div className="h-[300px]">
-          <ChartContainer config={chartConfig}>
+          <ChartContainer config={{}}>
             <BarChart 
               data={enhancedData} 
-              margin={{ top: 20, right: 30, left: 0, bottom: 30 }}
+              margin={{ top: 5, right: 30, left: 0, bottom: 30 }}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
               <XAxis 
                 dataKey="time" 
                 tickFormatter={formatTime}
                 axisLine={false}
                 tickLine={false}
                 minTickGap={20}
+                height={30}
               />
               <YAxis 
-                yAxisId="temp"
-                domain={[0, 30]} 
+                domain={[0, 25]} 
                 axisLine={false}
                 tickLine={false}
-                label={{ value: "Temperature (°C)", angle: -90, position: "insideLeft" }} 
-              />
-              <YAxis 
-                yAxisId="humidity"
-                orientation="right" 
-                domain={[0, 100]} 
-                axisLine={false}
-                tickLine={false}
-                label={{ value: "Humidity (%)", angle: 90, position: "insideRight" }} 
+                tick={{ fontSize: 12 }}
+                width={25}
               />
               <Tooltip 
                 content={<ChartTooltipContent />}
               />
-              <Legend />
-              <ReferenceLine y={18} yAxisId="temp" stroke="#F59E0B" strokeDasharray="3 3" />
-              <ReferenceLine y={22} yAxisId="temp" stroke="#EF4444" strokeDasharray="3 3" />
+              <ReferenceLine y={20} stroke="#ddd" strokeDasharray="3 3" />
+              <ReferenceLine y={15} stroke="#ddd" strokeDasharray="3 3" />
+              <ReferenceLine y={10} stroke="#ddd" strokeDasharray="3 3" />
+              <ReferenceLine y={5} stroke="#ddd" strokeDasharray="3 3" />
+              
+              {/* Use Bar with fill based on status */}
               <Bar 
                 dataKey="temperature" 
-                yAxisId="temp" 
-                fill="#ea384c"
+                radius={[2, 2, 0, 0]}
+                barSize={16}
+                fill="#D3D3D3"
                 name="Temperature"
-                radius={[4, 4, 0, 0]}
-              />
-              <Bar 
-                dataKey="humidity" 
-                yAxisId="humidity" 
-                fill="#D3E4FD" 
-                radius={[4, 4, 0, 0]}
-                name="Humidity"
-              />
+              >
+                {
+                  enhancedData.map((entry, index) => (
+                    <rect 
+                      key={`rect-${index}`} 
+                      x={0} 
+                      y={0} 
+                      width={10} 
+                      height={10} 
+                      fill={entry.barColor} 
+                      fillOpacity={0.9}
+                    />
+                  ))
+                }
+              </Bar>
             </BarChart>
           </ChartContainer>
         </div>
