@@ -36,6 +36,11 @@ export interface Site {
   createdAt: string;
   updatedAt?: string;
   status?: string;
+  location?: any[];
+  isRemoved?: boolean;
+  type?: string;
+  locationText?: string;
+  fields?: any[];
   [key: string]: any; // For any additional properties
 }
 
@@ -175,6 +180,11 @@ export const fetchSites = async (projectId: number): Promise<Site[]> => {
       createdAt: site.createdAt,
       updatedAt: site.updatedAt,
       status: site.status || "Unknown",
+      location: site.location,
+      isRemoved: site.isRemoved,
+      type: site.type,
+      locationText: site.locationText,
+      fields: site.fields,
       ...site  // Include any other properties
     }));
   } catch (error) {
