@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
@@ -17,34 +16,37 @@ import { toast } from "sonner";
 export default function TempHumidityDashboard() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
   
-  // Fetch site data if we have a siteId
   const { data: siteData } = useQuery({
     queryKey: ["site-for-temp-dashboard", siteId],
     queryFn: () => fetchSite(Number(siteId)),
     enabled: !!siteId,
   });
 
-  // Fetch zone data if we have a zoneId
   const { data: zoneData } = useQuery({
     queryKey: ["zone-for-temp-dashboard", zoneId],
     queryFn: () => fetchZone(Number(zoneId)),
     enabled: !!zoneId,
   });
 
-  // Get the contextual name for the header
   const getContextName = () => {
     if (zoneData) return zoneData.name;
     if (siteData) return siteData.name;
     return "All Locations";
   };
 
-  // Fetch the temperature and humidity data for the current context
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["temp-humidity-data", siteId, zoneId],
     queryFn: fetchTempHumidityData,
   });
 
-  // Log data for debugging
+  useEffect(() => {
+    const liveDataInterval = setInterval(() => {
+      refetch();
+    }, 30000);
+    
+    return () => clearInterval(liveDataInterval);
+  }, [refetch]);
+
   useEffect(() => {
     if (data) {
       console.log("Temperature and humidity data:", data);
@@ -57,7 +59,6 @@ export default function TempHumidityDashboard() {
         console.log(`For zone: ${zoneId} (${zoneData?.name || 'unknown'})`);
       }
       
-      // Show a toast notification to improve user feedback
       const contextType = zoneId ? "zone" : (siteId ? "site" : "dashboard");
       toast.success(`Temperature data loaded for ${contextType}`, {
         id: "temp-data-loaded",
@@ -73,13 +74,16 @@ export default function TempHumidityDashboard() {
           <BreadcrumbNav />
         </div>
 
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex items-center justify-between mb-8">
           <PageHeader customTitle={`Temperature & Humidity - ${getContextName()}`} />
-          
-          {!isLoading && !error && data && (
-            <TempHumidityStats stats={data.stats} />
-          )}
         </div>
+        
+        {!isLoading && !error && data && (
+          <div className="mb-8">
+            <h3 className="text-lg font-medium mb-3">Live Metrics</h3>
+            <TempHumidityStats stats={data.stats} />
+          </div>
+        )}
 
         {isLoading ? (
           <LoadingState />

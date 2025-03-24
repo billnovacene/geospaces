@@ -30,6 +30,10 @@ export interface StatsData {
   minTemp: number;
   maxTemp: number;
   avgHumidity: number;
+  coldestDay: {
+    date: string;
+    temperature: number;
+  };
   status: {
     avgTemp: 'good' | 'caution' | 'warning';
     minTemp: 'good' | 'caution' | 'warning';
@@ -118,11 +122,19 @@ export const generateStatsData = (): StatsData => {
   const maxTemp = getRandomNumber(21, 23);
   const avgHumidity = getRandomNumber(45, 50);
   
+  // Generate coldest day data
+  const today = new Date();
+  const coldestDayDate = subDays(today, getRandomNumber(1, 15));
+  
   return {
     avgTemp,
     minTemp,
     maxTemp,
     avgHumidity,
+    coldestDay: {
+      date: format(coldestDayDate, "MMM dd"),
+      temperature: minTemp
+    },
     status: {
       avgTemp: getStatus(avgTemp, 45),
       minTemp: getStatus(minTemp, 45),
