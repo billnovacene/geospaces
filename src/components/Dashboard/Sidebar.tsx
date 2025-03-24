@@ -1,7 +1,7 @@
 
 import { useState, ReactNode, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
-import { Settings, Search, ChevronUp, ChevronDown, Menu, MoreVertical } from "lucide-react";
+import { Settings, Search, ChevronUp, ChevronDown, Menu, MoreVertical, Home, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -134,11 +134,14 @@ function DashboardSidebar() {
   const location = useLocation();
   const zoneId = location.pathname.includes('/zone/') ? Number(location.pathname.split('/zone/')[1]) : null;
   
+  // Check if we have a valid siteId
+  const validSiteId = siteId && !isNaN(Number(siteId)) ? Number(siteId) : null;
+  
   // Fetch zones hierarchy data for the sidebar
-  const { data: zones = [], isLoading } = useQuery({
-    queryKey: ["zones-hierarchy", siteId],
-    queryFn: () => siteId ? fetchZonesHierarchy(Number(siteId)) : Promise.resolve([]),
-    enabled: !!siteId,
+  const { data: zones = [], isLoading, error } = useQuery({
+    queryKey: ["zones-hierarchy", validSiteId],
+    queryFn: () => validSiteId ? fetchZonesHierarchy(validSiteId) : Promise.resolve([]),
+    enabled: !!validSiteId,
   });
   
   // Toggle expanded state of parent zones
@@ -217,18 +220,38 @@ function DashboardSidebar() {
 
         <div className="overflow-y-auto flex-1">
           <SidebarSection title="Zones">
-            <Link to={`/site/${siteId}`} className="block">
-              <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]">
-                <span className="font-medium text-sm text-zinc-950">All zones</span>
-              </div>
-            </Link>
-            
-            {isLoading ? (
-              <div className="py-2.5 px-5 text-sm text-[#8E9196]">Loading zones...</div>
-            ) : zones.length === 0 ? (
-              <div className="py-2.5 px-5 text-sm text-[#8E9196]">No zones available</div>
+            {validSiteId ? (
+              <>
+                <Link to={`/site/${validSiteId}`} className="block">
+                  <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]">
+                    <span className="font-medium text-sm text-zinc-950">All zones</span>
+                  </div>
+                </Link>
+                
+                {isLoading ? (
+                  <div className="py-2.5 px-5 text-sm text-[#8E9196]">Loading zones...</div>
+                ) : error ? (
+                  <div className="py-2.5 px-5 text-sm text-red-500 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span>Error loading zones</span>
+                  </div>
+                ) : zones.length === 0 ? (
+                  <div className="py-2.5 px-5 text-sm text-[#8E9196]">No zones available</div>
+                ) : (
+                  renderZoneItems(zones)
+                )}
+              </>
             ) : (
-              renderZoneItems(zones)
+              <div className="py-2.5 px-5 text-sm text-zinc-500 flex flex-col gap-2">
+                <div className="flex items-center gap-2 text-amber-600">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span>No site selected</span>
+                </div>
+                <p className="text-xs text-zinc-400">Select a site to view its zones</p>
+                <Link to="/" className="text-xs text-primary hover:underline mt-1">
+                  Go to dashboard
+                </Link>
+              </div>
             )}
           </SidebarSection>
 
@@ -275,4 +298,3 @@ function DashboardSidebar() {
       </SidebarFooter>
     </Sidebar>;
 }
-
