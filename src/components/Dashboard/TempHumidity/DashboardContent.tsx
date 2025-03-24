@@ -13,9 +13,10 @@ interface DashboardContentProps {
     monthly: MonthlyOverviewPoint[];
     stats: any;
   };
+  contextName?: string;
 }
 
-export function DashboardContent({ data }: DashboardContentProps) {
+export function DashboardContent({ data, contextName = "All Locations" }: DashboardContentProps) {
   // Calculate the min/max temperatures from monthly data
   const calculateMonthlyStats = () => {
     if (!data.monthly || data.monthly.length === 0) {
@@ -66,7 +67,7 @@ export function DashboardContent({ data }: DashboardContentProps) {
           <CardContent className="p-8">
             <div className="grid grid-cols-4 gap-8 items-center">
               <div className="col-span-1">
-                <h2 className="text-xl font-medium mb-4">Monthly Overview</h2>
+                <h2 className="text-xl font-medium mb-4">Monthly Overview - {contextName}</h2>
                 <p className="text-sm text-gray-600">
                   The last 30 days show peak temps around {maxTemp}°C with minimums
                   near {minTemp}°C. Early morning and late evening periods typically
@@ -87,7 +88,7 @@ export function DashboardContent({ data }: DashboardContentProps) {
           <CardContent className="p-8">
             <div className="grid grid-cols-4 gap-8 items-center">
               <div className="col-span-1">
-                <h2 className="text-xl font-medium mb-4">Daily Overview</h2>
+                <h2 className="text-xl font-medium mb-4">Daily Overview - {contextName}</h2>
                 <p className="text-sm text-gray-600">
                   Today's temperatures range from {dailyStats.minTemp}°C to {dailyStats.maxTemp}°C.
                   The building warms quickly and stays fairly stable during working hours.

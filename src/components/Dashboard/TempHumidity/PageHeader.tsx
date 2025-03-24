@@ -1,11 +1,19 @@
 
-import { Thermometer } from "lucide-react";
+import { AreaChart } from "lucide-react";
 
-export function PageHeader() {
+interface PageHeaderProps {
+  customTitle?: string;
+}
+
+export function PageHeader({ customTitle }: PageHeaderProps) {
   return (
-    <h1 className="text-3xl font-normal text-gray-800 flex items-center">
-      <Thermometer className="mr-2 h-6 w-6 text-gray-700" />
-      <span>Temperature & Humidity</span>
-    </h1>
+    <div className="flex items-center space-x-3">
+      <div className="rounded-lg bg-primary/10 p-2">
+        <AreaChart className="h-6 w-6 text-primary" />
+      </div>
+      <h1 className="text-2xl font-semibold">
+        {customTitle || "Temperature & Humidity Dashboard"}
+      </h1>
+    </div>
   );
 }
