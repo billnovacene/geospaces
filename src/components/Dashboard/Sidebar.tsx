@@ -5,6 +5,7 @@ import { DashboardSidebar } from "./DashboardSidebar";
 import { SidebarSection } from "./SidebarSection";
 import { SidebarZoneItem } from "./SidebarZoneItem";
 import { SidebarDashboardItem } from "./SidebarDashboardItem";
+import { ZonesHierarchy } from "./ZonesHierarchy";
 
 // Export the wrapper as default for backward compatibility
 export { SidebarWrapper };
@@ -14,5 +15,6 @@ export {
   DashboardSidebar,
   SidebarSection,
   SidebarZoneItem as ZoneItem,
-  SidebarDashboardItem as DashboardItem
+  SidebarDashboardItem as DashboardItem,
+  ZonesHierarchy
 };
