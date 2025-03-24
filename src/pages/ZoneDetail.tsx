@@ -10,7 +10,6 @@ import { ZoneAdditionalInfoCard } from "@/components/Zone/ZoneAdditionalInfoCard
 import { ZoneLoadingSkeleton } from "@/components/Zone/ZoneLoadingSkeleton";
 import { ZoneErrorState } from "@/components/Zone/ZoneErrorState";
 import { useZoneArea } from "@/hooks/useZoneArea";
-import { formatZoneLocation } from "@/utils/zoneUtils";
 
 const ZoneDetail = () => {
   const { zoneId } = useParams<{ zoneId: string }>();
@@ -52,10 +51,7 @@ const ZoneDetail = () => {
                 deviceCountLoading={deviceCountLoading} 
                 areaValue={areaValue} 
               />
-              <ZoneAdditionalInfoCard 
-                zone={zone} 
-                formatLocation={() => formatZoneLocation(zone)} 
-              />
+              <ZoneAdditionalInfoCard zone={zone} />
             </div>
           </>
         )}

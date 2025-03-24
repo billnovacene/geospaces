@@ -2,13 +2,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Zone } from "@/services/interfaces";
 import { formatDate } from "@/utils/formatting";
+import { formatZoneLocation } from "@/utils/zoneUtils";
 
 interface ZoneAdditionalInfoCardProps {
   zone: Zone;
-  formatLocation: () => React.ReactNode;
 }
 
-export const ZoneAdditionalInfoCard = ({ zone, formatLocation }: ZoneAdditionalInfoCardProps) => {
+export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) => {
+  const locationData = formatZoneLocation(zone);
+  
   return (
     <Card>
       <CardHeader>
@@ -23,7 +25,11 @@ export const ZoneAdditionalInfoCard = ({ zone, formatLocation }: ZoneAdditionalI
         {zone.location && (
           <div>
             <h3 className="font-medium text-sm text-muted-foreground mb-1">Location Data</h3>
-            {formatLocation()}
+            <div className="border rounded-lg p-3">
+              <pre className="text-xs overflow-auto max-h-48">
+                {locationData}
+              </pre>
+            </div>
           </div>
         )}
         
