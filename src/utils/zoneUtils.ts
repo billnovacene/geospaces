@@ -15,22 +15,30 @@ export const formatZoneLocation = (zone: Zone | null) => {
 
 // Calculate total devices for a zone including all its sub-zones
 export const calculateTotalZoneDevices = (zone: Zone): number => {
-  // Start with the zone's own direct device count - ensure we're getting a number
-  let deviceCount = typeof zone.devices === 'number' 
+  let totalCount = 0;
+  
+  // Get direct device count from the API data if available
+  const directCount = typeof zone.devices === 'number' 
     ? zone.devices 
     : parseInt(String(zone.devices), 10) || 0;
+    
+  // Add direct devices
+  totalCount += directCount;
   
-  console.log(`Zone ${zone.name} (ID: ${zone.id}) direct device count: ${deviceCount}`);
-  
-  // Add devices from all child zones recursively
+  // Add devices from child zones
   if (zone.children && zone.children.length > 0) {
+    // We DON'T recursively call calculateTotalZoneDevices here
+    // Instead, we directly add the device counts from each child
     zone.children.forEach(childZone => {
-      const childDeviceCount = calculateTotalZoneDevices(childZone);
-      console.log(`Child zone ${childZone.name} (ID: ${childZone.id}) contributes ${childDeviceCount} devices`);
-      deviceCount += childDeviceCount;
+      const childDirectCount = typeof childZone.devices === 'number'
+        ? childZone.devices
+        : parseInt(String(childZone.devices), 10) || 0;
+        
+      console.log(`Child zone ${childZone.name} (ID: ${childZone.id}) has ${childDirectCount} direct devices`);
+      totalCount += childDirectCount;
     });
   }
   
-  console.log(`Zone ${zone.name} (ID: ${zone.id}) total device count: ${deviceCount}`);
-  return deviceCount;
+  console.log(`Zone ${zone.name} (ID: ${zone.id}) calculated total: ${totalCount} devices`);
+  return totalCount;
 };

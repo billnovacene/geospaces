@@ -24,10 +24,7 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
   const hasChildren = zone.children && zone.children.length > 0;
   const statusInfo = getStatusInfo(zone.status || "Unknown");
   
-  // Calculate total devices from this zone and all its children
-  const totalDeviceCount = calculateTotalZoneDevices(zone);
-  
-  // Fetch actual device count from API for this zone only (for comparison)
+  // Get direct device count for this zone via API
   const { data: directDeviceCount, isLoading: deviceCountLoading } = useQuery({
     queryKey: ["zone-devices", zone.id],
     queryFn: () => fetchDevicesCountForZone(zone.id),
@@ -39,6 +36,21 @@ export function ZoneItem({ zone, depth = 0, expandedZones, toggleExpand }: ZoneI
   // Log device count when it changes - outside the useQuery options
   if (directDeviceCount !== undefined) {
     console.log(`Direct device count for zone ${zone.id} (${zone.name}): ${directDeviceCount}`);
+  }
+  
+  // Calculate total devices from this zone and its children
+  let totalDeviceCount = 0;
+  if (hasChildren) {
+    totalDeviceCount = calculateTotalZoneDevices(zone);
+    console.log(`Total device count (including children) for ${zone.name}: ${totalDeviceCount}`);
+    
+    // Debug log for child zones
+    if (zone.children) {
+      console.log(`${zone.name} has ${zone.children.length} children:`);
+      zone.children.forEach(child => {
+        console.log(`- ${child.name}: ${child.devices || 0} devices`);
+      });
+    }
   }
   
   // Render the appropriate status icon based on the icon name
