@@ -20,8 +20,10 @@ const SiteDetail = () => {
     enabled: !!siteId,
   });
 
-  console.log("Site data in SiteDetail:", site);
-  console.log("Cached device count for this site:", site?.id ? siteDevicesCache[site.id] : "No cache");
+  // Enhanced debugging
+  console.log(`Site ${siteId} - Complete site data:`, site);
+  console.log(`Site ${siteId} - Original devices property:`, site?.devices);
+  console.log(`Site ${siteId} - Cached device count:`, site?.id ? siteDevicesCache[site.id] : "No cache");
 
   return (
     <SidebarWrapper>

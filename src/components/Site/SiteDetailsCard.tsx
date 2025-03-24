@@ -14,23 +14,32 @@ export function SiteDetailsCard({ site }: SiteDetailsCardProps) {
   const getDeviceCount = () => {
     if (!site) return 0;
     
-    if (site.id && siteDevicesCache[site.id] !== undefined && siteDevicesCache[site.id] > 0) {
-      console.log(`Using cached device count in detail page: ${siteDevicesCache[site.id]}`);
-      return siteDevicesCache[site.id];
-    }
-    
-    // Fall back to the site's direct device count
+    // First check if the site has a direct devices property that's a positive number
     const directCount = typeof site.devices === 'number' 
       ? site.devices 
       : parseInt(String(site.devices), 10) || 0;
     
-    console.log(`Using direct device count in detail page: ${directCount}`);
+    console.log(`Direct device count from API: ${directCount}`);
+    
+    // Then check if there's a cached count that's higher (might be more up-to-date)
+    if (site.id && siteDevicesCache[site.id] !== undefined) {
+      const cachedCount = siteDevicesCache[site.id];
+      console.log(`Cached device count: ${cachedCount}`);
+      
+      // Return the higher value between direct count and cached count
+      if (cachedCount > directCount) {
+        console.log(`Using cached count ${cachedCount} (higher than direct ${directCount})`);
+        return cachedCount;
+      }
+    }
+    
+    console.log(`Using direct count ${directCount}`);
     return directCount;
   };
 
   // Calculate the device count once
   const deviceCount = getDeviceCount();
-  console.log("Final device count to display:", deviceCount);
+  console.log(`Site ${site.id} - Final device count to display: ${deviceCount}`);
 
   return (
     <Card>

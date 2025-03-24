@@ -77,16 +77,27 @@ export const fetchSite = async (siteId: number): Promise<Site | null> => {
       deviceCount = typeof data.devices === 'number' 
         ? data.devices 
         : parseInt(String(data.devices), 10) || 0;
+      
+      console.log(`Direct device count from API for site ${siteId}: ${deviceCount}`);
     }
     
-    // Use cached device count if available and greater than current count
-    if (siteDevicesCache[siteId] !== undefined && siteDevicesCache[siteId] > 0) {
-      console.log(`Using cached device count for site ${siteId}: ${siteDevicesCache[siteId]}`);
-      deviceCount = siteDevicesCache[siteId];
-    } else if (deviceCount > 0) {
-      // Update cache with this count if better than what we had
-      console.log(`Updating cache with device count ${deviceCount} for site ${siteId}`);
-      siteDevicesCache[siteId] = deviceCount;
+    // Check cache for device count
+    let finalDeviceCount = deviceCount;
+    if (siteDevicesCache[siteId] !== undefined) {
+      const cachedCount = siteDevicesCache[siteId];
+      console.log(`Cached device count for site ${siteId}: ${cachedCount}`);
+      
+      // Use the higher value between cached and direct
+      if (cachedCount > deviceCount) {
+        console.log(`Using cached count ${cachedCount} for site ${siteId} (higher than direct ${deviceCount})`);
+        finalDeviceCount = cachedCount;
+      }
+    }
+    
+    // Always update cache with the best count we have
+    if (finalDeviceCount > 0) {
+      console.log(`Updating cache with device count ${finalDeviceCount} for site ${siteId}`);
+      siteDevicesCache[siteId] = finalDeviceCount;
     }
     
     return {
@@ -94,7 +105,7 @@ export const fetchSite = async (siteId: number): Promise<Site | null> => {
       name: data.name,
       address: data.locationText || data.address,
       description: data.description,
-      devices: deviceCount, // Make sure we're returning the numeric value
+      devices: finalDeviceCount, // Use the final count we calculated
       projectId: data.projectId,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
