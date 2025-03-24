@@ -32,7 +32,7 @@ const SiteDetail = () => {
       <SidebarWrapper>
         <div className="container mx-auto py-8 px-6 md:px-8 lg:px-12">
           <div className="max-w-2xl mx-auto mt-20 text-center">
-            <Card className="border shadow-sm">
+            <Card className="shadow-sm">
               <CardContent className="p-8">
                 <div className="flex justify-center mb-4">
                   <AlertTriangle className="h-12 w-12 text-amber-500" />
