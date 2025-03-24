@@ -32,6 +32,11 @@ const SiteDetail = () => {
   // Calculate total devices from zones when zones data is available
   useEffect(() => {
     if (zones) {
+      // Check each zone and log its device count for debugging
+      zones.forEach(zone => {
+        console.log(`Zone ${zone.id} - Device count: ${zone.devices}`);
+      });
+      
       const deviceTotal = zones.reduce((total, zone) => {
         const zoneDevices = typeof zone.devices === 'number' 
           ? zone.devices 
@@ -43,9 +48,19 @@ const SiteDetail = () => {
       setTotalDevicesFromZones(deviceTotal);
       
       // Update the cache with this more accurate count
-      if (site?.id && deviceTotal > 0) {
+      if (site?.id) {
         console.log(`Updating device cache for site ${site.id} with calculated total: ${deviceTotal}`);
-        siteDevicesCache[site.id] = deviceTotal;
+        // Only update the cache if the site doesn't already have a higher direct device count
+        const directCount = typeof site.devices === 'number' 
+          ? site.devices 
+          : parseInt(String(site.devices), 10) || 0;
+          
+        if (deviceTotal > directCount) {
+          siteDevicesCache[site.id] = deviceTotal;
+        } else if (directCount > 0) {
+          console.log(`Using direct count ${directCount} from API instead of zone total ${deviceTotal}`);
+          siteDevicesCache[site.id] = directCount;
+        }
       }
     }
   }, [zones, siteId, site]);

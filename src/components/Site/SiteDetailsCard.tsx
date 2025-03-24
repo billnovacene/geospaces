@@ -11,37 +11,39 @@ interface SiteDetailsCardProps {
 }
 
 export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCardProps) {
-  // Get device count (prioritize calculated count from zones)
+  // Get device count with improved priority logic
   const getDeviceCount = () => {
     if (!site) return 0;
     
-    // First check if we have a calculated count from the zones (most accurate)
+    // Get the direct device count from API response
+    const directCount = typeof site.devices === 'number' 
+      ? site.devices 
+      : parseInt(String(site.devices), 10) || 0;
+    
+    console.log(`Direct device count from API for site ${site.id}: ${directCount}`);
+    
+    // Check if we have a reliable device count from the API
+    if (directCount > 0) {
+      console.log(`Using reliable direct count from API: ${directCount}`);
+      return directCount;
+    }
+    
+    // Next, check if we have a calculated count from zones (if available and positive)
     if (calculatedDeviceCount !== null && calculatedDeviceCount > 0) {
       console.log(`Using calculated device count from zones: ${calculatedDeviceCount}`);
       return calculatedDeviceCount;
     }
     
-    // Next check if the site has a direct devices property that's a positive number
-    const directCount = typeof site.devices === 'number' 
-      ? site.devices 
-      : parseInt(String(site.devices), 10) || 0;
-    
-    console.log(`Direct device count from API: ${directCount}`);
-    
-    // Then check if there's a cached count that's higher (might be more up-to-date)
-    if (site.id && siteDevicesCache[site.id] !== undefined) {
+    // Lastly, check the cache as fallback
+    if (site.id && siteDevicesCache[site.id] !== undefined && siteDevicesCache[site.id] > 0) {
       const cachedCount = siteDevicesCache[site.id];
-      console.log(`Cached device count: ${cachedCount}`);
-      
-      // Return the higher value between direct count and cached count
-      if (cachedCount > directCount) {
-        console.log(`Using cached count ${cachedCount} (higher than direct ${directCount})`);
-        return cachedCount;
-      }
+      console.log(`Using cached device count: ${cachedCount}`);
+      return cachedCount;
     }
     
-    console.log(`Using direct count ${directCount}`);
-    return directCount;
+    // If all else fails, return 0
+    console.log(`No reliable device count found, using 0`);
+    return 0;
   };
 
   // Calculate the device count once
