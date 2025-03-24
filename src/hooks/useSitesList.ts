@@ -11,9 +11,10 @@ export function useSitesList(projectId: number) {
     error, 
     refetch
   } = useQuery({
-    queryKey: ["sites-sidebar"],
+    queryKey: ["sites-sidebar", projectId],
     queryFn: () => fetchSites(projectId),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!projectId, // Only run the query if projectId is valid
   });
 
   // Filter out sites with status "Inactive" or "Removed"
@@ -22,9 +23,13 @@ export function useSitesList(projectId: number) {
   );
 
   useEffect(() => {
-    console.log("SitesSidebar: Sites fetched", sites);
+    console.log(`SitesSidebar: Sites fetched for projectId=${projectId}`, sites);
     console.log("SitesSidebar: Active sites", activeSites);
-  }, [sites, activeSites]);
+    
+    if (sites.length === 0) {
+      console.log("SitesSidebar: No sites found for this project");
+    }
+  }, [sites, activeSites, projectId]);
 
   return {
     sites,

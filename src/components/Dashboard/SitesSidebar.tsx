@@ -33,7 +33,7 @@ export function SitesSidebar() {
 
   // If no sites are available, show empty state
   if (activeSites.length === 0) {
-    return <SitesSidebarEmpty />;
+    return <SitesSidebarEmpty onRetry={refetch} />;
   }
 
   return (
