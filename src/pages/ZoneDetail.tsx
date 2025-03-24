@@ -21,6 +21,49 @@ const ZoneDetail = () => {
   });
 
   console.log("Zone data in ZoneDetail:", zone);
+  console.log("Zone location data:", zone?.location);
+
+  // Calculate area if location coordinates are available
+  const calculateArea = () => {
+    if (!zone?.location || !Array.isArray(zone.location) || zone.location.length < 3) {
+      return null;
+    }
+
+    try {
+      // Assuming location is an array of [x, y] coordinates forming a polygon
+      // Using the Shoelace formula to calculate the area
+      let area = 0;
+      const coordinates = zone.location;
+      
+      // Log the format of coordinates for debugging
+      console.log("Coordinates format:", coordinates);
+      
+      // Check if coordinates are in the expected format
+      if (!coordinates.every(coord => Array.isArray(coord) && coord.length >= 2)) {
+        console.log("Coordinates not in expected format");
+        return null;
+      }
+      
+      for (let i = 0; i < coordinates.length; i++) {
+        const j = (i + 1) % coordinates.length;
+        area += coordinates[i][0] * coordinates[j][1];
+        area -= coordinates[j][0] * coordinates[i][1];
+      }
+      
+      area = Math.abs(area) / 2;
+      console.log("Calculated area:", area);
+      
+      // If area is too small, it might be in a different unit (like degrees)
+      if (area < 0.000001) {
+        return null;
+      }
+      
+      return area.toFixed(2);
+    } catch (error) {
+      console.error("Error calculating area:", error);
+      return null;
+    }
+  };
 
   // Format date
   const formatDate = (dateString: string | undefined) => {
@@ -53,6 +96,26 @@ const ZoneDetail = () => {
         return "bg-gray-100 text-gray-800";
     }
   };
+
+  // Format location data if available
+  const formatLocation = () => {
+    if (!zone?.location) return null;
+    
+    try {
+      return (
+        <div className="border rounded-lg p-3">
+          <pre className="text-xs overflow-auto max-h-48">
+            {JSON.stringify(zone.location, null, 2)}
+          </pre>
+        </div>
+      );
+    } catch (e) {
+      return "Error displaying location data";
+    }
+  };
+
+  // Calculate and display area
+  const areaValue = calculateArea();
 
   return (
     <SidebarWrapper>
@@ -133,6 +196,17 @@ const ZoneDetail = () => {
                       </CardContent>
                     </Card>
                   </div>
+                  
+                  {areaValue && (
+                    <Card className="bg-muted/40">
+                      <CardContent className="p-4">
+                        <div>
+                          <p className="text-sm font-medium">Area</p>
+                          <p className="text-2xl font-bold">{areaValue} m²</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
                 </CardContent>
               </Card>
 
@@ -145,6 +219,13 @@ const ZoneDetail = () => {
                     <h3 className="font-medium text-sm text-muted-foreground mb-1">Last Updated</h3>
                     <p>{formatDate(zone.updatedAt)}</p>
                   </div>
+                  
+                  {zone.location && (
+                    <div>
+                      <h3 className="font-medium text-sm text-muted-foreground mb-1">Location Data</h3>
+                      {formatLocation()}
+                    </div>
+                  )}
                   
                   {zone.fields && zone.fields.length > 0 && (
                     <div>
