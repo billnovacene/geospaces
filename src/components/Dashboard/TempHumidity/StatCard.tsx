@@ -1,5 +1,8 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { getSensorValueColor } from "@/utils/sensorThresholds";
+
 interface StatCardProps {
   title: string;
   value: number | string;
@@ -7,27 +10,40 @@ interface StatCardProps {
   status: 'good' | 'caution' | 'warning';
   description?: string;
   large?: boolean;
+  sensorType?: string;
+  sensorValue?: number;
 }
+
 export function StatCard({
   title,
   value,
   unit,
   status,
   description,
-  large
+  large,
+  sensorType = "temperature",
+  sensorValue
 }: StatCardProps) {
-  const getStatusColor = (status: 'good' | 'caution' | 'warning') => {
+  // Get color based on the same method as charts
+  const getStatusColor = (status: 'good' | 'caution' | 'warning', sensorType: string, sensorValue?: number) => {
+    // If we have a sensor value and type, use the utility function
+    if (sensorValue !== undefined && sensorType) {
+      return getSensorValueColor(sensorType, sensorValue);
+    }
+    
+    // Fallback to status-based colors
     switch (status) {
       case 'good':
-        return 'text-green-500';
+        return '#3cc774';
       case 'caution':
-        return 'text-amber-500';
+        return '#ebc651';
       case 'warning':
-        return 'text-red-500';
+        return '#db4f6a';
       default:
-        return 'text-gray-500';
+        return '#a1a1aa';
     }
   };
+  
   const getStatusText = (status: 'good' | 'caution' | 'warning') => {
     switch (status) {
       case 'good':
@@ -40,7 +56,10 @@ export function StatCard({
         return 'Unknown';
     }
   };
-  return <Card className="overflow-hidden border-0 h-full">
+  
+  const statusColor = getStatusColor(status, sensorType, sensorValue);
+  
+  return <Card className="overflow-hidden border-0 h-full rounded-none">
       <CardContent className="p-0 h-full flex flex-col">
         <div className="px-[5px] mx-[5px] flex-grow flex flex-col justify-center">
           <div className="flex flex-col items-center text-center">
@@ -50,12 +69,12 @@ export function StatCard({
             </div>
             <div className="mt-1 text-sm text-muted-foreground">{title}</div>
             
-            <div className={cn("mt-3 text-sm font-medium", getStatusColor(status))}>
+            <div className={cn("mt-3 text-sm font-medium")} style={{ color: statusColor }}>
               {getStatusText(status)}
             </div>
           </div>
         </div>
-        <div className={cn("h-1 w-full rounded-none", status === 'good' ? "bg-green-500" : status === 'caution' ? "bg-amber-500" : "bg-red-500")} />
+        <div className="h-1 w-full rounded-none" style={{ backgroundColor: statusColor }} />
       </CardContent>
     </Card>;
 }
