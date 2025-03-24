@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
@@ -48,6 +49,19 @@ export function DashboardSidebar() {
           </div>
         </div>
 
+        {/* Sticky Dashboards Section at the top */}
+        <div className="sticky top-0 z-10 bg-white border-b border-[#E5E7EB]">
+          <SidebarSection title="Dashboards" defaultOpen={true}>
+            <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center">
+              <span className="font-medium text-sm text-zinc-800">Dashboards</span>
+            </div>
+            <SidebarDashboardItem name="All Data" to="/dashboard" />
+            <SidebarDashboardItem name="Temperature & Humidity" to="/dashboard/temp-humidity" />
+            <SidebarDashboardItem name="Energy" />
+            <SidebarDashboardItem name="Co2" />
+          </SidebarSection>
+        </div>
+
         <div className="overflow-y-auto flex-1">
           <SidebarSection title="Sites">
             <SitesSidebar />
@@ -71,16 +85,6 @@ export function DashboardSidebar() {
                 Select a site to view zones
               </div>
             )}
-          </SidebarSection>
-
-          <SidebarSection title="Filter Devices">
-            <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center">
-              <span className="font-medium text-sm text-zinc-800">Dashboards</span>
-            </div>
-            <SidebarDashboardItem name="All Data" to="/dashboard" />
-            <SidebarDashboardItem name="Temperature & Humidity" to="/dashboard/temp-humidity" />
-            <SidebarDashboardItem name="Energy" />
-            <SidebarDashboardItem name="Co2" />
           </SidebarSection>
 
           <SidebarSection title="Annalytics">
