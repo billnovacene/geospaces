@@ -1,7 +1,7 @@
 
 // Helper function for sorting device data
 export const getSortedData = (data: any[], sortField: string | null, sortDirection: 'asc' | 'desc') => {
-  if (!sortField || !data) return data;
+  if (!sortField || !data || data.length === 0) return data;
 
   return [...data].sort((a, b) => {
     let aValue, bValue;
@@ -13,14 +13,14 @@ export const getSortedData = (data: any[], sortField: string | null, sortDirecti
       aValue = a.location;
       bValue = b.location;
     } else if (sortField === 'co2') {
-      aValue = a.co2.value || 0;
-      bValue = b.co2.value || 0;
+      aValue = a.co2?.value || 0;
+      bValue = b.co2?.value || 0;
     } else if (sortField === 'temperature') {
-      aValue = a.temperature.value || 0;
-      bValue = b.temperature.value || 0;
+      aValue = a.temperature?.value || 0;
+      bValue = b.temperature?.value || 0;
     } else if (sortField === 'humidity') {
-      aValue = a.humidity.value || 0;
-      bValue = b.humidity.value || 0;
+      aValue = a.humidity?.value || 0;
+      bValue = b.humidity?.value || 0;
     } else {
       return 0;
     }
@@ -34,14 +34,14 @@ export const getSortedData = (data: any[], sortField: string | null, sortDirecti
     
     // For string values
     return sortDirection === 'asc' 
-      ? String(aValue).localeCompare(String(bValue))
-      : String(bValue).localeCompare(String(aValue));
+      ? String(aValue || '').localeCompare(String(bValue || ''))
+      : String(bValue || '').localeCompare(String(aValue || ''));
   });
 };
 
 // Prepare sensor data from the device for the table
 export const prepareDeviceData = (devices: any[]) => {
-  if (!devices) return [];
+  if (!devices || devices.length === 0) return [];
   
   return devices.map(device => {
     // Extract sensor data
@@ -95,9 +95,7 @@ export const prepareDeviceData = (devices: any[]) => {
       }
     };
   }).filter(device => 
-    // Only show devices that have at least one sensor reading
-    device.co2.value !== undefined || 
-    device.temperature.value !== undefined || 
-    device.humidity.value !== undefined
+    // Filter condition - show all devices if they have sensors, even if they don't have readings yet
+    device.id !== undefined
   );
 };

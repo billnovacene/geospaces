@@ -1,10 +1,9 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesForZone } from "@/services/devices";
-import { Wifi } from "lucide-react";
+import { Wifi, Table2, LayoutGrid } from "lucide-react";
 import { ErrorDevicesState } from "@/components/Site/ErrorDevicesState";
 import { EmptyDevicesState } from "@/components/Site/EmptyDevicesState";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -46,7 +45,7 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
   console.log(`Devices for zone ${zoneId}:`, devices);
 
   // Prepare and sort device data
-  const devicesData = prepareDeviceData(devices);
+  const devicesData = prepareDeviceData(devices || []);
   const sortedDevicesData = getSortedData(devicesData, sortField, sortDirection);
 
   return (
@@ -63,8 +62,14 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
           
           <Tabs value={view} onValueChange={(v) => setView(v as "table" | "cards")} className="w-auto">
             <TabsList className="grid w-[200px] grid-cols-2">
-              <TabsTrigger value="table">Table</TabsTrigger>
-              <TabsTrigger value="cards">Cards</TabsTrigger>
+              <TabsTrigger value="table">
+                <Table2 className="h-4 w-4 mr-2" />
+                Table
+              </TabsTrigger>
+              <TabsTrigger value="cards">
+                <LayoutGrid className="h-4 w-4 mr-2" />
+                Cards
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
