@@ -20,6 +20,8 @@ const ProjectDetail = () => {
     enabled: !!projectId,
   });
 
+  console.log("Project data:", project); // Debug log to see what's coming from API
+
   // Format date
   const formatDate = (dateString: string) => {
     try {
@@ -50,6 +52,17 @@ const ProjectDetail = () => {
       return description.value;
     }
     return String(description);
+  };
+
+  // Helper function to safely get numeric values
+  const getNumericValue = (value: any): number => {
+    if (value === null || value === undefined) return 0;
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string') {
+      const parsed = parseInt(value, 10);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+    return 0;
   };
 
   if (error) {
@@ -148,7 +161,7 @@ const ProjectDetail = () => {
                       <CardContent className="p-4 flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium">Sites</p>
-                          <p className="text-2xl font-bold">{project?.sites || 0}</p>
+                          <p className="text-2xl font-bold">{getNumericValue(project?.sites)}</p>
                         </div>
                       </CardContent>
                     </Card>
@@ -157,7 +170,7 @@ const ProjectDetail = () => {
                       <CardContent className="p-4 flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium">Devices</p>
-                          <p className="text-2xl font-bold">{project?.devices || 0}</p>
+                          <p className="text-2xl font-bold">{getNumericValue(project?.devices)}</p>
                         </div>
                       </CardContent>
                     </Card>
