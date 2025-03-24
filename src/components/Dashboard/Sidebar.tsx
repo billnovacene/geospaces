@@ -1,3 +1,4 @@
+
 import { useState, ReactNode } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, ChevronUp, ChevronDown, Menu, MoreVertical } from "lucide-react";
@@ -8,6 +9,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Link, useParams } from "react-router-dom";
+
 interface SidebarWrapperProps {
   children: React.ReactNode;
 }
@@ -91,6 +94,8 @@ function DashboardItem({
     </div>;
 }
 function DashboardSidebar() {
+  const { siteId } = useParams<{ siteId: string }>();
+  
   return <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
       <SidebarContent className="p-0">
         <div className="p-4 flex items-center justify-between border-b border-[#E5E7EB] bg-zinc-50">
@@ -112,9 +117,11 @@ function DashboardSidebar() {
 
         <div className="overflow-y-auto flex-1">
           <SidebarSection title="Zones">
-            <div className="bg-[#F6F7F9] py-2 px-4 cursor-pointer hover:bg-[#F0F1F3]">
-              <span className="font-medium text-sm text-zinc-950">All zones</span>
-            </div>
+            <Link to={`/site/${siteId}`} className="block">
+              <div className="bg-[#F6F7F9] py-2 px-4 cursor-pointer hover:bg-[#F0F1F3]">
+                <span className="font-medium text-sm text-zinc-950">All zones</span>
+              </div>
+            </Link>
             <ZoneItem name="Grounds Floor" count={4} />
             <ZoneItem name="1st Floor" count={16} />
             <ZoneItem name="2nd Floor" count={3} />
