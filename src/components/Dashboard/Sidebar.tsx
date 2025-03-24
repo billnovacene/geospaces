@@ -55,7 +55,9 @@ function SidebarSection({ title, children, defaultOpen = true }: SidebarSectionP
       <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between">
         <span>{title}</span>
         <CollapsibleTrigger className="focus:outline-none hover:text-foreground">
-          {({ open }) => open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          {({ open }: { open: boolean }) => (
+            open ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+          )}
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent>
@@ -139,11 +141,15 @@ function DashboardSidebar() {
           </SidebarSection>
 
           <SidebarSection title="Annalytics">
-            {/* Analytics content would go here */}
+            <div className="py-2 px-4 text-sm text-[#8E9196]">
+              No analytics available
+            </div>
           </SidebarSection>
 
           <SidebarSection title="Settings">
-            {/* Settings content would go here */}
+            <div className="py-2 px-4 text-sm text-[#8E9196]">
+              System settings
+            </div>
           </SidebarSection>
         </div>
       </SidebarContent>
