@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
@@ -18,18 +17,15 @@ import { fetchZone } from "@/services/zones";
 export function DashboardSidebar() {
   const { siteId, zoneId } = useParams<{ siteId: string, zoneId: string }>();
   
-  // Check if we have a valid siteId
   const validSiteId = siteId && !isNaN(Number(siteId)) ? Number(siteId) : null;
   const validZoneId = zoneId && !isNaN(Number(zoneId)) ? Number(zoneId) : null;
   
-  // Fetch zone data if zoneId is present
   const { data: zoneData } = useQuery({
     queryKey: ["zone-for-sidebar", validZoneId],
     queryFn: () => fetchZone(Number(validZoneId)),
     enabled: !!validZoneId,
   });
 
-  // Use zone's siteId if available but no siteId in URL
   const effectiveSiteId = validSiteId || (zoneData?.siteId ? zoneData.siteId : null);
   
   return (
@@ -78,14 +74,13 @@ export function DashboardSidebar() {
           </SidebarSection>
 
           <SidebarSection title="Filter Devices">
-            <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center justify-between">
+            <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center">
               <span className="font-medium text-sm text-zinc-800">Dashboards</span>
-              <Checkbox checked={true} className="rounded-[3px] border-[#8E9196] bg-zinc-200 hover:bg-zinc-100 text-zinc-500" />
             </div>
-            <SidebarDashboardItem name="All Data" count={20} />
-            <SidebarDashboardItem name="Temperature & Humidity" count={20} to="/dashboard/temp-humidity" />
-            <SidebarDashboardItem name="Energy" count={20} />
-            <SidebarDashboardItem name="Co2" count={3} />
+            <SidebarDashboardItem name="All Data" to="/dashboard" />
+            <SidebarDashboardItem name="Temperature & Humidity" to="/dashboard/temp-humidity" />
+            <SidebarDashboardItem name="Energy" />
+            <SidebarDashboardItem name="Co2" />
           </SidebarSection>
 
           <SidebarSection title="Annalytics">

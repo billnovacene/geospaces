@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Zone } from "@/services/interfaces";
 import { getStatusColor } from "@/utils/formatting";
@@ -14,6 +13,7 @@ import {
 import { HomeIcon, Building, Package } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSite } from "@/services/sites";
+import { fetchZone } from "@/services/zones";
 
 interface ZoneDetailHeaderProps {
   zone: Zone;
