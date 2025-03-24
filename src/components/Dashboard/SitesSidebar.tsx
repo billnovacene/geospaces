@@ -56,13 +56,6 @@ export function SitesSidebar() {
           isActive={activeSiteId === site.id}
         />
       ))}
-
-      <div className="mt-3 px-5 py-2 border-t border-zinc-100">
-        <Link to="/" className="flex items-center gap-1.5 text-xs text-primary hover:underline">
-          <ExternalLink className="h-3 w-3" />
-          <span>View all projects</span>
-        </Link>
-      </div>
     </div>
   );
 }
