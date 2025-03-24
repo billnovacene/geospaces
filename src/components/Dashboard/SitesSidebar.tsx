@@ -49,6 +49,7 @@ export function SitesSidebar() {
     );
   }
 
+  // If no sites are available, show this instead of using example sites
   if (activeSites.length === 0) {
     return (
       <div className="py-2.5 px-5 text-sm text-[#8E9196]">
@@ -61,13 +62,19 @@ export function SitesSidebar() {
     );
   }
 
+  // Example sites for the Zircon project - only shown when API doesn't return sites
+  const zirconSites = activeSites.length > 0 ? activeSites : [
+    { id: 101, name: "Office", devices: 12 },
+    { id: 102, name: "Sandbox", devices: 8 }
+  ];
+
   return (
     <div className="site-listing">
       <div className="py-2 px-5 mb-2 text-sm font-medium text-zinc-500">
-        Project: Zircon ({activeSites.length} sites)
+        Project: Zircon ({zirconSites.length} sites)
       </div>
       
-      {activeSites.map(site => (
+      {zirconSites.map(site => (
         <Link key={site.id} to={`/site/${site.id}`}>
           <div className={cn(
             "flex items-center justify-between py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
