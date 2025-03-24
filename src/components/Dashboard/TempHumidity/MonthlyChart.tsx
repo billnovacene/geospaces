@@ -18,12 +18,9 @@ export function MonthlyChart({
 }: MonthlyChartProps) {
   const [month, setMonth] = useState("March");
   
-  // Get the temperature thresholds from our config
   const temperatureConfig = sensorTypes.temperature;
   
-  // Transform data to include color information based on our threshold system
   const enhancedData = data.map(point => {
-    // Get the appropriate color for the temperature value
     const barColor = getSensorValueColor("temperature", point.avgTemp);
     
     return {
@@ -32,13 +29,16 @@ export function MonthlyChart({
     };
   });
 
-  // Calculate the actual min and max temperature values in our data
   const actualMinTemp = Math.min(...data.map(d => d.minTemp));
   const actualMaxTemp = Math.max(...data.map(d => d.maxTemp));
   
-  // Create a buffer zone of 2 degrees above and below the actual min/max
   const yAxisMin = Math.floor(actualMinTemp - 2);
   const yAxisMax = Math.ceil(actualMaxTemp + 2);
+  
+  // Filter out the thresholds we want to display
+  const relevantThresholds = temperatureConfig.thresholds
+    .filter(threshold => threshold >= yAxisMin && threshold <= yAxisMax)
+    .filter(threshold => threshold !== 28); // Exclude 28°C threshold
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -89,10 +89,7 @@ export function MonthlyChart({
             />
             <Tooltip content={<ChartTooltipContent />} />
             
-            {/* Add reference lines for temperature thresholds that fall within our chart range */}
-            {temperatureConfig.thresholds
-              .filter(threshold => threshold >= yAxisMin && threshold <= yAxisMax)
-              .map((threshold, i) => (
+            {relevantThresholds.map((threshold, i) => (
                 <ReferenceLine 
                   key={`threshold-${i}`}
                   y={threshold} 
@@ -116,7 +113,7 @@ export function MonthlyChart({
       </div>
       
       <div className="flex justify-between items-center pt-4 border-t mt-4">
-        <div></div> {/* Empty div to push download button to the right */}
+        <div></div>
         <TooltipProvider>
           <UITooltip>
             <TooltipTrigger asChild>

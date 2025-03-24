@@ -1,3 +1,4 @@
+
 import { 
   BarChart, 
   Bar, 
@@ -55,6 +56,11 @@ export function DailyChart({ data }: DailyChartProps) {
   const yAxisMin = Math.floor(actualMinTemp - 2);
   const yAxisMax = Math.ceil(actualMaxTemp + 2);
 
+  // Filter out the thresholds we want to display
+  const relevantThresholds = temperatureConfig.thresholds
+    .filter(threshold => threshold >= yAxisMin && threshold <= yAxisMax)
+    .filter(threshold => threshold !== 28); // Exclude 28°C threshold
+
   return (
     <div className="w-full h-full">
       <div className="flex justify-end gap-2 mb-4">
@@ -104,16 +110,14 @@ export function DailyChart({ data }: DailyChartProps) {
             />
             <Tooltip content={<ChartTooltipContent />} />
             
-            {temperatureConfig.thresholds
-              .filter(threshold => threshold >= yAxisMin && threshold <= yAxisMax)
-              .map((threshold, i) => (
-                <ReferenceLine 
-                  key={`threshold-${i}`}
-                  y={threshold} 
-                  stroke="#ddd" 
-                  strokeDasharray="3 3" 
-                />
-              ))}
+            {relevantThresholds.map((threshold, i) => (
+              <ReferenceLine 
+                key={`threshold-${i}`}
+                y={threshold} 
+                stroke="#ddd" 
+                strokeDasharray="3 3" 
+              />
+            ))}
             
             <Bar 
               dataKey="temperature" 
