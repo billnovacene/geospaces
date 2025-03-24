@@ -1,15 +1,17 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSites, Site } from "@/services/api";
+import { fetchSites } from "@/services/api";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, AlertTriangle, Building2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { siteDevicesCache } from "@/services/sites";
 
 interface SitesListProps {
   projectId?: number;
@@ -26,20 +28,34 @@ export function SitesList({ projectId }: SitesListProps) {
 
   // Filter sites based on search term
   const filteredSites = sites.filter(site => 
-    site.name.toLowerCase().includes(searchTerm.toLowerCase())
+    site.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (site.type && site.type.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (site.locationText && site.locationText.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  // Get status color
-  const getStatusColor = (status: string) => {
+  // Get status color and icon
+  const getStatusInfo = (status: string) => {
     switch (status.toLowerCase()) {
       case "active":
-        return "bg-green-100 text-green-800";
+        return {
+          color: "bg-green-100 text-green-800",
+          icon: null
+        };
+      case "warning":
+        return {
+          color: "bg-yellow-100 text-yellow-800",
+          icon: <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+        };
       case "inactive":
-        return "bg-yellow-100 text-yellow-800";
-      case "offline":
-        return "bg-red-100 text-red-800";
+        return {
+          color: "bg-red-100 text-red-800",
+          icon: null
+        };
       default:
-        return "bg-gray-100 text-gray-800";
+        return {
+          color: "bg-gray-100 text-gray-800",
+          icon: null
+        };
     }
   };
 
@@ -50,6 +66,14 @@ export function SitesList({ projectId }: SitesListProps) {
     } catch (e) {
       return dateString;
     }
+  };
+
+  // Get device count (prioritize cache)
+  const getDeviceCount = (site: any) => {
+    if (site.id && siteDevicesCache[site.id] !== undefined && siteDevicesCache[site.id] > 0) {
+      return siteDevicesCache[site.id];
+    }
+    return typeof site.devices === 'number' ? site.devices : parseInt(String(site.devices), 10) || 0;
   };
 
   if (error) {
@@ -121,28 +145,56 @@ export function SitesList({ projectId }: SitesListProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Address</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Location</TableHead>
                 <TableHead>Devices</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredSites.map((site, index) => (
-                <TableRow key={site.id}>
-                  <TableCell className="font-medium">{site.name}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {site.address || "No address provided"}
-                  </TableCell>
-                  <TableCell>{site.devices || 0}</TableCell>
-                  <TableCell>{formatDate(site.createdAt)}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={`${getStatusColor(site.status || "Unknown")}`}>
-                      {site.status || "Unknown"}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filteredSites.map((site) => {
+                const statusInfo = getStatusInfo(site.status || "Unknown");
+                const deviceCount = getDeviceCount(site);
+                
+                return (
+                  <TableRow key={site.id}>
+                    <TableCell className="font-medium">{site.name}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <Building2 className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                        <span>{site.type || "N/A"}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {site.locationText ? (
+                        <div className="flex items-center">
+                          <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                          <span className="text-muted-foreground truncate max-w-[200px]" title={site.locationText}>
+                            {site.locationText}
+                          </span>
+                        </div>
+                      ) : (
+                        "No location"
+                      )}
+                    </TableCell>
+                    <TableCell>{deviceCount}</TableCell>
+                    <TableCell>{formatDate(site.createdAt)}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={statusInfo.color}>
+                        {statusInfo.icon}
+                        {site.status || "Unknown"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to={`/site/${site.id}`}>View Details</Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         )}
