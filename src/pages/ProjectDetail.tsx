@@ -3,8 +3,6 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProject } from "@/services/projects";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { SitesList } from "@/components/Dashboard/SitesList";
 import { ProjectHeader } from "@/components/Project/ProjectHeader";
 import { ProjectDetailsCard } from "@/components/Project/ProjectDetailsCard";
@@ -34,13 +32,6 @@ const ProjectDetail = () => {
   return (
     <SidebarWrapper>
       <div className="container mx-auto py-6">
-        <Button variant="outline" size="sm" asChild className="mb-6">
-          <a href="/">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </a>
-        </Button>
-        
         {isLoading ? (
           <ProjectLoadingState />
         ) : (
