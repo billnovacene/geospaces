@@ -14,7 +14,7 @@ import { ZonesHierarchy } from "./ZonesHierarchy";
 import { SitesSidebar } from "./SitesSidebar";
 
 export function DashboardSidebar() {
-  const { siteId } = useParams<{ siteId: string }>();
+  const { siteId, zoneId } = useParams<{ siteId: string, zoneId: string }>();
   
   // Check if we have a valid siteId
   const validSiteId = siteId && !isNaN(Number(siteId)) ? Number(siteId) : null;

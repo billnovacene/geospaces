@@ -4,7 +4,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Home, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { fetchZonesHierarchy } from "@/services/zones";
+import { fetchZonesHierarchy, fetchZone } from "@/services/zones";
 import { Zone } from "@/services/interfaces";
 import { toast } from "sonner";
 
@@ -12,20 +12,44 @@ interface ZonesHierarchyProps {
   siteId: number | null;
 }
 
-export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
+export function ZonesHierarchy({ siteId: propsSiteId }: ZonesHierarchyProps) {
   const [expandedZones, setExpandedZones] = useState<number[]>([]);
   const location = useLocation();
   const { zoneId } = useParams<{ zoneId: string }>();
   const activeZoneId = zoneId ? Number(zoneId) : null;
+  const [effectiveSiteId, setEffectiveSiteId] = useState<number | null>(propsSiteId);
   
-  console.log("ZonesHierarchy: Current siteId:", siteId);
+  // If we have a zoneId but no siteId, fetch the zone to get its siteId
+  const { data: zoneData } = useQuery({
+    queryKey: ["zone-for-sidebar", activeZoneId],
+    queryFn: () => fetchZone(Number(activeZoneId)),
+    enabled: !!activeZoneId && !propsSiteId,
+    onSuccess: (data) => {
+      if (data && data.siteId && data.siteId !== effectiveSiteId) {
+        console.log("Setting effective siteId from zone data:", data.siteId);
+        setEffectiveSiteId(data.siteId);
+      }
+    }
+  });
+  
+  // Update effectiveSiteId when propsSiteId changes
+  useEffect(() => {
+    if (propsSiteId) {
+      setEffectiveSiteId(propsSiteId);
+    } else if (zoneData && zoneData.siteId) {
+      setEffectiveSiteId(zoneData.siteId);
+    }
+  }, [propsSiteId, zoneData]);
+  
+  console.log("ZonesHierarchy: Passed siteId:", propsSiteId);
+  console.log("ZonesHierarchy: Effective siteId:", effectiveSiteId);
   console.log("ZonesHierarchy: Current activeZoneId:", activeZoneId);
   
   // Fetch zones hierarchy data for the sidebar
   const { data: zones = [], isLoading, error } = useQuery({
-    queryKey: ["zones-hierarchy", siteId],
-    queryFn: () => siteId ? fetchZonesHierarchy(siteId) : Promise.resolve([]),
-    enabled: !!siteId,
+    queryKey: ["zones-hierarchy", effectiveSiteId],
+    queryFn: () => effectiveSiteId ? fetchZonesHierarchy(effectiveSiteId) : Promise.resolve([]),
+    enabled: !!effectiveSiteId,
   });
   
   // Log zones data for debugging
@@ -131,7 +155,7 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
     });
   };
   
-  if (!siteId) {
+  if (!effectiveSiteId) {
     return (
       <div className="py-2.5 px-5 text-sm text-zinc-500 flex flex-col gap-2">
         <div className="flex items-center gap-2 text-amber-600">
@@ -151,7 +175,7 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
   
   return (
     <>
-      <Link to={`/site/${siteId}`} className="block">
+      <Link to={`/site/${effectiveSiteId}`} className="block">
         <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]">
           <span className="font-medium text-sm text-zinc-950">All zones</span>
         </div>
