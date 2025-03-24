@@ -72,7 +72,7 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
           <div 
             className={cn(
               "flex items-center justify-between py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
-              isActive && "bg-[#F9F9FA] font-medium",
+              isActive && "bg-[#F9F9FA] font-bold border-l-4 border-primary text-primary", // Enhanced active state
               depth > 0 && "pl-8"
             )}
             style={{ paddingLeft: depth > 0 ? `${depth * 12 + 20}px` : undefined }}
@@ -88,11 +88,11 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
                 to={`/zone/${zone.id}`}
                 className={cn(
                   "text-sm text-gray-900",
-                  isActive && "font-medium"
+                  isActive && "font-bold" // Bold text for active zone
                 )}
                 onClick={(e) => e.stopPropagation()}
               >
-                {zone.name}
+                {isActive ? `📍 ${zone.name}` : zone.name} {/* Add pin emoji to active zone */}
               </Link>
             </div>
             <span className="text-sm text-[#8E9196]">{deviceCount}</span>
@@ -146,3 +146,4 @@ export function ZonesHierarchy({ siteId }: ZonesHierarchyProps) {
     </>
   );
 }
+
