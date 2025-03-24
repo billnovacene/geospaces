@@ -1,9 +1,8 @@
-
 import { useParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SiteListItem } from "./SiteListItem";
+import { SiteListItem } from "@/components/Site/SiteListItem";
 import { SitesSidebarError } from "./SitesSidebarError";
 import { SitesSidebarEmpty } from "./SitesSidebarEmpty";
 import { useSitesList } from "@/hooks/useSitesList";
@@ -21,7 +20,6 @@ export function SitesSidebar({
   const location = useLocation();
   const activeSiteId = siteId ? Number(siteId) : null;
   
-  // Get the current dashboard path if needed
   const getDashboardPath = () => {
     if (!preserveDashboardRoute) return '';
     
@@ -36,7 +34,6 @@ export function SitesSidebar({
   
   const dashboardPath = getDashboardPath();
   
-  // Use project ID 145 instead of 1
   const projectId = 145;
   
   const { activeSites, sites, isLoading, error, refetch } = useSitesList(projectId);
@@ -58,7 +55,6 @@ export function SitesSidebar({
     return <SitesSidebarError onRetry={refetch} />;
   }
 
-  // If no sites are available, show empty state with more context
   if (activeSites.length === 0) {
     return <SitesSidebarEmpty 
       onRetry={refetch} 
