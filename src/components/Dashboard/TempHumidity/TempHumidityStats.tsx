@@ -7,6 +7,7 @@ interface StatsData {
   minTemp: number;
   maxTemp: number;
   avgHumidity: number;
+  lastSeen?: string;
   status: {
     avgTemp: 'good' | 'caution' | 'warning';
     minTemp: 'good' | 'caution' | 'warning';
@@ -31,6 +32,7 @@ export function TempHumidityStats({
         status={stats.status.avgTemp} 
         sensorType="temperature" 
         sensorValue={stats.avgTemp}
+        lastSeen={stats.lastSeen}
       />
       <StatCard 
         title="Min Temperature" 
@@ -39,6 +41,7 @@ export function TempHumidityStats({
         status={stats.status.minTemp} 
         sensorType="temperature" 
         sensorValue={stats.minTemp}
+        lastSeen={stats.lastSeen}
       />
       <StatCard 
         title="Max Temperature" 
@@ -47,6 +50,7 @@ export function TempHumidityStats({
         status={stats.status.maxTemp} 
         sensorType="temperature" 
         sensorValue={stats.maxTemp}
+        lastSeen={stats.lastSeen}
       />
       <StatCard 
         title="Avg Humidity" 
@@ -55,6 +59,7 @@ export function TempHumidityStats({
         status={stats.status.avgHumidity} 
         sensorType="humidity" 
         sensorValue={stats.avgHumidity}
+        lastSeen={stats.lastSeen}
       />
       <LiveDataMetrics />
     </div>

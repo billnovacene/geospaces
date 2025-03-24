@@ -2,6 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getSensorValueColor } from "@/utils/sensorThresholds";
+import { formatDistanceToNow } from "date-fns";
 
 interface StatCardProps {
   title: string;
@@ -12,6 +13,7 @@ interface StatCardProps {
   large?: boolean;
   sensorType?: string;
   sensorValue?: number;
+  lastSeen?: string | Date;
 }
 
 export function StatCard({
@@ -22,7 +24,8 @@ export function StatCard({
   description,
   large,
   sensorType = "temperature",
-  sensorValue
+  sensorValue,
+  lastSeen
 }: StatCardProps) {
   // Get color based on the same method as charts
   const getStatusColor = (status: 'good' | 'caution' | 'warning', sensorType: string, sensorValue?: number) => {
@@ -59,6 +62,9 @@ export function StatCard({
   
   const statusColor = getStatusColor(status, sensorType, sensorValue);
   
+  // Format the last seen timestamp if provided
+  const lastSeenText = lastSeen ? formatDistanceToNow(new Date(lastSeen), { addSuffix: true }) : 'N/A';
+  
   return <Card className="overflow-hidden border-0 h-full rounded-none">
       <CardContent className="p-0 h-full flex flex-col">
         <div className="px-[5px] mx-[5px] flex-grow flex flex-col justify-center">
@@ -72,6 +78,12 @@ export function StatCard({
             <div className={cn("mt-3 text-sm font-medium")} style={{ color: statusColor }}>
               {getStatusText(status)}
             </div>
+            
+            {lastSeen && (
+              <div className="mt-1 text-xs text-muted-foreground">
+                Last seen: {lastSeenText}
+              </div>
+            )}
           </div>
         </div>
         <div className="h-1 w-full rounded-none" style={{ backgroundColor: statusColor }} />
