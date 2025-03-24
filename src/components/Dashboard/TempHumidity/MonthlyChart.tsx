@@ -33,7 +33,7 @@ export function MonthlyChart({
   });
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex flex-col">
       <div className="flex justify-end gap-2 mb-4">
         <Button variant="outline" className="h-8">
           {month} <ChevronDown className="ml-2 h-4 w-4" />
@@ -58,7 +58,7 @@ export function MonthlyChart({
         </div>
       </div>
       
-      <div className="w-full h-[300px]">
+      <div className="w-full h-[300px] flex-grow">
         <ChartContainer config={{}}>
           <BarChart 
             data={enhancedData} 
@@ -109,6 +109,7 @@ export function MonthlyChart({
       </div>
       
       <div className="flex justify-between items-center pt-4 border-t mt-4">
+        <div></div> {/* Empty div to push download button to the right */}
         <TooltipProvider>
           <UITooltip>
             <TooltipTrigger asChild>
@@ -125,3 +126,4 @@ export function MonthlyChart({
     </div>
   );
 }
+
