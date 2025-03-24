@@ -7,6 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Smartphone, Wifi, AlertTriangle, Thermometer, Droplets, Wind, Battery, Lightbulb } from "lucide-react";
 import { getStatusColor } from "@/utils/formatting";
 import { format } from "date-fns";
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
 interface ZoneDevicesProps {
   zoneId: number;
@@ -117,9 +122,10 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-3 border-t bg-muted/10">
                     {device.sensors
                       .filter(sensor => !sensor.name.includes("rssi") && !sensor.name.includes("snr"))
-                      .slice(0, 8)
                       .map(sensor => {
                         const sensorName = sensor.name.split('/').pop() || '';
+                        const sensorValue = getSensorValue(sensor);
+                        
                         return (
                           <div key={sensor.sensorToken} className="flex items-center gap-2 p-2 rounded bg-white">
                             {getSensorIcon(sensorName)}
@@ -128,7 +134,7 @@ export const ZoneDevices = ({ zoneId }: ZoneDevicesProps) => {
                                 {sensorName.replace('_', ' ')}
                               </div>
                               <div className="text-sm font-bold">
-                                {getSensorValue(sensor)}
+                                {sensorValue}
                               </div>
                             </div>
                           </div>
