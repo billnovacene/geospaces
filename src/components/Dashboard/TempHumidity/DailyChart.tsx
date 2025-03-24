@@ -7,6 +7,7 @@ import {
   CartesianGrid, 
   Tooltip,
   ReferenceLine,
+  Cell,
 } from "recharts";
 import { DailyOverviewPoint } from "@/services/temp-humidity";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
@@ -120,19 +121,9 @@ export function DailyChart({ data }: DailyChartProps) {
               radius={[2, 2, 0, 0]}
               barSize={10}
             >
-              {
-                enhancedData.map((entry, index) => (
-                  <rect 
-                    key={`rect-${index}`} 
-                    x={0} 
-                    y={0} 
-                    width={10} 
-                    height={10} 
-                    fill={entry.barColor} 
-                    fillOpacity={0.9}
-                  />
-                ))
-              }
+              {enhancedData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.barColor} />
+              ))}
             </Bar>
           </BarChart>
         </ChartContainer>

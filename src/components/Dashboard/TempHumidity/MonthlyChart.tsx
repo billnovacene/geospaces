@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer, Cell } from "recharts";
 import { MonthlyOverviewPoint } from "@/services/temp-humidity";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -100,19 +100,9 @@ export function MonthlyChart({
               radius={[2, 2, 0, 0]}
               barSize={10}
             >
-              {
-                enhancedData.map((entry, index) => (
-                  <rect 
-                    key={`rect-${index}`} 
-                    x={0} 
-                    y={0} 
-                    width={10} 
-                    height={10} 
-                    fill={entry.barColor} 
-                    fillOpacity={0.9}
-                  />
-                ))
-              }
+              {enhancedData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.barColor} />
+              ))}
             </Bar>
           </BarChart>
         </ChartContainer>
