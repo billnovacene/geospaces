@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
@@ -36,7 +37,7 @@ export default function TempHumidityDashboard() {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["temp-humidity-data", siteId, zoneId],
-    queryFn: fetchTempHumidityData,
+    queryFn: () => fetchTempHumidityData(siteId, zoneId),
   });
 
   useEffect(() => {

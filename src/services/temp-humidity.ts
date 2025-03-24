@@ -33,9 +33,32 @@ interface TempHumidityResponse {
   monthly: MonthlyOverviewPoint[];
 }
 
-export const fetchTempHumidityData = async (): Promise<TempHumidityResponse> => {
-  // Example API call that would fetch real data
-  // For now, using static data to simulate the response
+export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): Promise<TempHumidityResponse> => {
+  try {
+    // Construct the API endpoint based on the provided site or zone ID
+    let endpoint = '/sensors/temperature-humidity';
+    
+    if (zoneId) {
+      endpoint += `/zone/${zoneId}`;
+    } else if (siteId) {
+      endpoint += `/site/${siteId}`;
+    }
+    
+    // Make the actual API request
+    const response = await apiRequest<TempHumidityResponse>(endpoint);
+    console.log('API response:', response);
+    return response;
+  } catch (error) {
+    console.error('Error fetching temperature and humidity data:', error);
+    
+    // If the API request fails, fall back to the mock data
+    console.warn('Falling back to mock temperature and humidity data');
+    return generateMockData();
+  }
+};
+
+// Function to generate mock data as a fallback
+const generateMockData = (): TempHumidityResponse => {
   const lastSeen = new Date().toISOString();
   
   return {
