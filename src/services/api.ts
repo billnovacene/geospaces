@@ -9,11 +9,15 @@ const API_BASE_URL = "https://api-prod.novacene.io/api/v2";
 
 // Interface for Project data
 export interface Project {
-  id: string;
-  created_at: string;
+  id: number;  // Changed from string to number based on API response
   name: string;
-  default_team_id: string;
-  status: string;
+  customerId?: number;
+  createdAt: string;  // Changed from created_at to match API response
+  updatedAt?: string;
+  image?: string;
+  sites?: number;
+  devices?: number;
+  status?: string;
   description?: string;
   [key: string]: any; // For any additional properties
 }
@@ -38,8 +42,25 @@ export const fetchProjects = async (): Promise<Project[]> => {
     
     const data = await response.json();
     console.log('Projects API response:', data);
-    console.log('Number of projects received:', data.data?.length || 0);
-    return data.data || [];
+    
+    // Updated to use data.list instead of data.data
+    const projects = data.list || [];
+    console.log('Number of projects received:', projects.length);
+    
+    // Transform API response to match our Project interface
+    return projects.map((project: any) => ({
+      id: project.id,
+      name: project.name,
+      customerId: project.customerId,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      image: project.image,
+      sites: project.sites,
+      devices: project.devices,
+      status: project.status || "Unknown",  // Default status if not provided
+      description: project.description,
+      ...project  // Include any other properties
+    }));
   } catch (error) {
     console.error("Error fetching projects:", error);
     toast.error("Failed to fetch projects. Please try again later.");
@@ -67,7 +88,25 @@ export const fetchProject = async (id: string): Promise<Project | null> => {
     
     const data = await response.json();
     console.log(`Project ${id} API response:`, data);
-    return data || null;
+    
+    // Transform API response to match our Project interface if needed
+    if (data) {
+      return {
+        id: data.id,
+        name: data.name,
+        customerId: data.customerId,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        image: data.image,
+        sites: data.sites,
+        devices: data.devices,
+        status: data.status || "Unknown",
+        description: data.description,
+        ...data  // Include any other properties
+      };
+    }
+    
+    return null;
   } catch (error) {
     console.error(`Error fetching project ${id}:`, error);
     toast.error("Failed to fetch project details. Please try again later.");

@@ -18,7 +18,7 @@ export function RecentActivity() {
       id: project.id,
       projectName: project.name,
       action: "Project created",
-      timestamp: project.created_at,
+      timestamp: project.createdAt,
       user: "Admin User",
     }))
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());

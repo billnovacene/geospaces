@@ -118,11 +118,11 @@ export function ProjectsList() {
                     <div>
                       <h3 className="font-medium truncate">{project.name}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Created: {formatDate(project.created_at)}
+                        Created: {formatDate(project.createdAt)}
                       </p>
                     </div>
                     <div className="ml-auto">
-                      <Badge variant="outline" className={`${getStatusColor(project.status)}`}>
+                      <Badge variant="outline" className={`${getStatusColor(project.status || "Unknown")}`}>
                         {project.status || "Unknown"}
                       </Badge>
                     </div>
