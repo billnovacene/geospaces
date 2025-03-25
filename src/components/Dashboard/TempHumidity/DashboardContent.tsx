@@ -24,8 +24,7 @@ interface DashboardContentProps {
 export function DashboardContent({ 
   data, 
   contextName = "All Locations", 
-  isMockData = false,
-  operatingHours
+  isMockData = false
 }: DashboardContentProps) {
   // Calculate the min/max temperatures from monthly data
   const calculateMonthlyStats = () => {
@@ -69,7 +68,6 @@ export function DashboardContent({
         data={data.monthly}
         contextName={contextName}
         stats={monthlyStats}
-        operatingHours={operatingHours}
       />
 
       {/* Daily Overview */}
@@ -79,7 +77,6 @@ export function DashboardContent({
         contextName={contextName}
         stats={dailyStats}
         hasRealDailyData={hasRealDailyData}
-        operatingHours={operatingHours}
       />
     </>
   );

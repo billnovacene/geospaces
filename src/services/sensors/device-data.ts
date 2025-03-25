@@ -15,6 +15,10 @@ export async function fetchRealDeviceData(
     console.log(`💧 Humidity sensors: ${humiditySensors.join(', ')}`);
     console.log("⏰ Operating hours:", operatingHours);
     
+    // Override with fixed 7am to 7pm hours
+    const workingHours = { startTime: "07:00", endTime: "19:00" };
+    console.log("⏰ Using fixed working hours:", workingHours);
+    
     // Get the first available temperature and humidity sensor IDs
     const mainTempSensorId = temperatureSensors[0];
     const mainHumiditySensorId = humiditySensors[0];
@@ -30,7 +34,7 @@ export async function fetchRealDeviceData(
       mainTempSensorId, 
       mainHumiditySensorId, 
       today,
-      operatingHours
+      workingHours
     );
     
     console.log(`📅 Fetching monthly data...`);
@@ -40,7 +44,7 @@ export async function fetchRealDeviceData(
       siteId, 
       mainTempSensorId, 
       mainHumiditySensorId,
-      operatingHours
+      workingHours
     );
     
     console.log(`✅ Fetched ${dailyData.length} daily data points and ${monthlyData.length} monthly data points`);
@@ -52,7 +56,8 @@ export async function fetchRealDeviceData(
     return {
       stats,
       daily: dailyData,
-      monthly: monthlyData
+      monthly: monthlyData,
+      operatingHours: workingHours
     };
   } catch (error) {
     console.error("❌ Error fetching real device data:", error);

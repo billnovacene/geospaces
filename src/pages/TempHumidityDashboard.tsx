@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
@@ -14,7 +15,7 @@ import { fetchSite } from "@/services/sites";
 import { fetchZone } from "@/services/zones";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Package, Building, AlertTriangle, Clock } from "lucide-react";
+import { AlertTriangle, Clock } from "lucide-react";
 
 export default function TempHumidityDashboard() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
@@ -104,25 +105,6 @@ export default function TempHumidityDashboard() {
     return "All hours";
   };
 
-  const getDataSourceDescription = () => {
-    if (zoneId && zoneData) {
-      return (
-        <span className="flex items-center gap-1.5">
-          <Package className="h-3.5 w-3.5" />
-          Data from sensors in zone {zoneData.name}
-        </span>
-      );
-    } else if (siteId && siteData) {
-      return (
-        <span className="flex items-center gap-1.5">
-          <Building className="h-3.5 w-3.5" />
-          Data from sensors in site {siteData.name}
-        </span>
-      );
-    }
-    return "Data from all sensors";
-  };
-
   return (
     <SidebarWrapper>
       <div className="container mx-auto py-8 px-6 md:px-8 lg:px-12">
@@ -130,19 +112,23 @@ export default function TempHumidityDashboard() {
           <BreadcrumbNav />
         </div>
 
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-2">
           <PageHeader customTitle={`Temperature & Humidity - ${getContextName()}`} />
+        </div>
+        
+        {data?.operatingHours && (
+          <div className="flex items-center mb-6 text-blue-700">
+            <Clock className="h-4 w-4 mr-1.5" />
+            <span className="text-sm font-medium">Operating hours: {formatOperatingHours()}</span>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between mb-6">
+          <div></div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-xs px-3 py-1">
-              {getDataSourceDescription()}
+              Data from Geospaces
             </Badge>
-            
-            {data?.operatingHours && (
-              <Badge variant="outline" className="text-xs px-3 py-1 bg-blue-50 text-blue-700 border-blue-200">
-                <Clock className="h-3.5 w-3.5 mr-1" />
-                Operating hours: {formatOperatingHours()}
-              </Badge>
-            )}
             
             {isUsingMockData && !isLoading && (
               <Badge variant="outline" className="text-xs px-3 py-1 bg-amber-50 text-amber-700 border-amber-200">
@@ -176,7 +162,7 @@ export default function TempHumidityDashboard() {
         ) : null}
 
         {!isLoading && !error && data && (
-          <div className="mt-8 mb-12">
+          <div className="mt-8 mb-24">
             <SensorSourceInfo 
               sourceData={data.sourceData} 
               isLoading={false}
