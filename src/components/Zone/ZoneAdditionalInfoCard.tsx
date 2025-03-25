@@ -16,12 +16,16 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
   const [formattedCoordinates, setFormattedCoordinates] = useState<string | null>(null);
   const [calculatedArea, setCalculatedArea] = useState<string | null>(null);
   
-  // We'll calculate the area here to ensure it's displayed properly in this component
-  const areaValue = zone?.location && Array.isArray(zone.location) && zone.location.length >= 3 
+  // First check if the zone has an area field directly
+  const hasAreaField = zone.area !== undefined && zone.area !== null;
+  const areaFromField = hasAreaField ? String(zone.area) : null;
+  
+  // If not, calculate the area from location data as fallback
+  const areaValue = areaFromField || (zone?.location && Array.isArray(zone.location) && zone.location.length >= 3 
     ? calculateArea(zone.location)
     : (zone?.location && typeof zone.location === 'object' && !Array.isArray(zone.location))
       ? calculateAreaFromGeoJSON(zone.location as any)
-      : null;
+      : null);
   
   // Extract and format coordinates for display
   useEffect(() => {
@@ -51,8 +55,8 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
         
         setFormattedCoordinates(coords || null);
         
-        // Try to calculate area from extracted coordinates
-        if (extractedCoordinates && extractedCoordinates.length >= 3) {
+        // Only calculate area if we don't already have it from the zone object
+        if (!hasAreaField && extractedCoordinates && extractedCoordinates.length >= 3) {
           const area = calculateArea(extractedCoordinates);
           setCalculatedArea(area);
         }
@@ -61,7 +65,7 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
         setFormattedCoordinates(null);
       }
     }
-  }, [zone?.location]);
+  }, [zone?.location, hasAreaField]);
   
   function calculateArea(coordinates: number[][]) {
     if (!coordinates || coordinates.length < 3) {
@@ -155,10 +159,19 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
             <MapIcon className="h-5 w-5 mr-2 text-primary" />
             Zone Area
           </h3>
-          {areaValue ? (
+          {hasAreaField ? (
             <div className="flex items-center">
               <Badge variant="secondary" className="text-lg font-medium mr-2 py-1.5 px-3">
-                {areaValue} m²
+                {areaFromField}m²
+              </Badge>
+              <span className="text-sm text-muted-foreground">
+                (Zone area from data)
+              </span>
+            </div>
+          ) : areaValue ? (
+            <div className="flex items-center">
+              <Badge variant="secondary" className="text-lg font-medium mr-2 py-1.5 px-3">
+                {areaValue}m²
               </Badge>
               <span className="text-sm text-muted-foreground">
                 ({parseFloat(areaValue).toLocaleString()} square meters)
@@ -167,7 +180,7 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
           ) : calculatedArea ? (
             <div className="flex items-center">
               <Badge variant="success" className="text-lg font-medium mr-2 py-1.5 px-3">
-                {calculatedArea} m²
+                {calculatedArea}m²
               </Badge>
               <span className="text-sm text-muted-foreground">
                 (Calculated from location coordinates)

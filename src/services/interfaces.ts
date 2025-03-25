@@ -52,6 +52,7 @@ export interface Zone {
   status?: string;
   parent?: number | null; // Parent zone ID
   children?: Zone[]; // Child zones
+  area?: number | string; // Added area field
   [key: string]: any; // For any additional properties
 }
 
