@@ -1,7 +1,8 @@
+
 import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, MoreVertical, Home, Building, Package } from "lucide-react";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Link, useParams, useLocation } from "react-router-dom";
 import { SidebarSection } from "./SidebarSection";
@@ -121,8 +122,11 @@ export function DashboardSidebar() {
       <SidebarFooter className="border-t border-[#E5E7EB] p-4 bg-white">
         <div className="flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
-            <Avatar className="h-9 w-9 bg-primary">
-              <div className="text-white font-bold">Z</div>
+            <Avatar className="h-9 w-9">
+              <AvatarImage 
+                src="/lovable-uploads/f6f59774-352a-4ce5-aa56-f314fbeab500.png" 
+                alt="Zircon Logo"
+              />
             </Avatar>
             <div>
               <div className="font-semibold">Zircon</div>
