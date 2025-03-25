@@ -6,16 +6,22 @@ import { sensorTypes } from "./sensorConfigs";
  * 
  * @param sensorType The type of sensor (temperature, humidity, etc.)
  * @param value The value to get the color for
- * @returns The corresponding color based on the thresholds
+ * @returns An object with text and background color classes
  */
-export function getSensorValueColor(sensorType: string, value: number | null | undefined): string {
+export function getSensorValueColor(sensorType: string, value: number | null | undefined): { text: string; bg: string } {
   if (value === null || value === undefined) {
-    return "#a1a1aa"; // Default gray for null/undefined values
+    return { 
+      text: "text-gray-400",
+      bg: "bg-gray-200"
+    };
   }
 
   const config = sensorTypes[sensorType];
   if (!config) {
-    return "#a1a1aa"; // Default gray for unknown sensor types
+    return { 
+      text: "text-gray-400",
+      bg: "bg-gray-200"
+    };
   }
 
   // Find which threshold band the value falls into
@@ -28,5 +34,29 @@ export function getSensorValueColor(sensorType: string, value: number | null | u
     }
   }
 
-  return config.colors[band];
+  const color = config.colors[band];
+  
+  // Map color to Tailwind classes
+  switch (color) {
+    case "#db4f6a": // Red
+      return { 
+        text: "text-red-600",
+        bg: "bg-gradient-to-r from-red-300 to-red-400"
+      };
+    case "#ebc651": // Amber
+      return { 
+        text: "text-amber-600",
+        bg: "bg-gradient-to-r from-amber-300 to-amber-400"
+      };
+    case "#3cc774": // Green
+      return { 
+        text: "text-green-600",
+        bg: "bg-gradient-to-r from-green-300 to-green-400"
+      };
+    default:
+      return { 
+        text: "text-blue-600",
+        bg: "bg-gradient-to-r from-blue-300 to-blue-400"
+      };
+  }
 }
