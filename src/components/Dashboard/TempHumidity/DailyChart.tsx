@@ -42,9 +42,25 @@ export function DailyChart({ data, monthlyData = [], isMockData = false }: Daily
     // If we still don't have data, notify the user
     if (processedData.every(point => point.temperature === null)) {
       toast.error("No real data is available from the API for this view", {
-        description: "Please check your API connection or try another zone."
+        description: "No temperature data could be retrieved from any API endpoint."
       });
     }
+  }
+  
+  // Check if we have any data to display
+  const hasAnyData = processedData.some(point => point.temperature !== null);
+  
+  if (!hasAnyData) {
+    return (
+      <div className="flex items-center justify-center h-[300px] bg-gray-50 rounded-lg">
+        <div className="text-center p-6">
+          <p className="text-red-600 font-medium mb-2">No Real Temperature Data Available</p>
+          <p className="text-sm text-gray-500">
+            Could not retrieve any real temperature data from the API.
+          </p>
+        </div>
+      </div>
+    );
   }
   
   // Process data for chart rendering

@@ -17,24 +17,33 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
     
     // For zone-specific data
     if (zoneId) {
-      const zoneData = await fetchZoneTempHumidityData(zoneId);
-      if (zoneData) {
-        return zoneData;
+      try {
+        const zoneData = await fetchZoneTempHumidityData(zoneId);
+        if (zoneData) {
+          return zoneData;
+        }
+      } catch (error) {
+        console.warn(`Could not fetch zone-specific data for zone ${zoneId}:`, error);
+        // Continue to try site-specific data
       }
-      // If zone-specific data fetch fails, site ID would have been retrieved,
-      // so we'll continue to try site-specific data
     }
     
     // Handle site-specific data fetch
     if (siteId) {
-      const siteData = await fetchSiteTempHumidityData(siteId);
-      if (siteData) {
-        return siteData;
+      try {
+        const siteData = await fetchSiteTempHumidityData(siteId);
+        if (siteData) {
+          return siteData;
+        }
+      } catch (error) {
+        console.warn(`Could not fetch site-specific data for site ${siteId}:`, error);
+        // Continue to generic API
       }
     }
     
     // Try generic API as last attempt
     try {
+      console.log(`Attempting to fetch from generic API endpoint for ${siteId ? `site ${siteId}` : zoneId ? `zone ${zoneId}` : 'unknown location'}`);
       return await fetchGenericTempHumidityData(siteId, zoneId);
     } catch (error) {
       console.error('❌ Error fetching from generic API:', error);

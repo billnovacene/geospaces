@@ -1,6 +1,7 @@
 
 import { TempHumidityResponse } from "../interfaces/temp-humidity";
 import { toast } from "sonner";
+import { API_BASE_URL } from "../api-client";
 
 /**
  * Attempt to fetch temperature data from a generic API endpoint
@@ -9,7 +10,7 @@ export async function fetchGenericTempHumidityData(siteId?: string, zoneId?: str
   try {
     // For zones or sites without known sensors, construct the API endpoint 
     // based on the provided site or zone ID
-    let endpoint = '/sensors/temperature-humidity';
+    let endpoint = '/temperature-humidity';
     
     if (zoneId) {
       endpoint += `/zone/${zoneId}`;
@@ -17,13 +18,19 @@ export async function fetchGenericTempHumidityData(siteId?: string, zoneId?: str
       endpoint += `/site/${siteId}`;
     }
     
-    console.log(`🔄 Attempting generic API endpoint: ${endpoint}`);
+    console.log(`🔄 Attempting generic API endpoint: ${API_BASE_URL}${endpoint}`);
     
-    // Make the actual API request
-    const response = await fetch(endpoint);
+    // Make the actual API request with proper base URL
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      headers: {
+        'accept': 'application/json'
+      }
+    });
+    
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
     }
+    
     const data = await response.json();
     console.log('✅ API response:', data);
     return data;
