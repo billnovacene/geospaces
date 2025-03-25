@@ -6,8 +6,11 @@ import { useTempHumidityData } from "@/hooks/useTempHumidityData";
 import { useContextName } from "@/components/Dashboard/TempHumidity/useContextName";
 import { useParams } from "react-router-dom";
 import { ZonesHierarchy } from "@/components/Dashboard/ZonesHierarchy";
+import { LogPanel } from "@/components/Dashboard/TempHumidity/LogPanel";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function TempHumidityDashboard() {
   // Get route params to detect if we're viewing a zone
@@ -21,10 +24,24 @@ export default function TempHumidityDashboard() {
     isUsingMockData, 
     loadingStage, 
     apiConnectionFailed, 
-    refetch 
+    refetch,
+    logs,
+    clearLogs
   } = useTempHumidityData();
   
   const { contextName } = useContextName();
+  
+  // Handle manual refresh
+  const handleRefresh = () => {
+    toast.info("Refreshing data...", {
+      description: `Fetching latest temperature data for ${contextName}`,
+      action: {
+        label: "Cancel",
+        onClick: () => {}
+      }
+    });
+    refetch();
+  };
   
   // Refetch data when the zone or site changes
   useEffect(() => {
@@ -50,7 +67,18 @@ export default function TempHumidityDashboard() {
         {/* Sidebar showing only zones with temperature sensors */}
         <div className="hidden md:block w-64 border-r overflow-y-auto bg-[#FAFAFA]">
           <div className="py-4">
-            <h3 className="px-5 font-medium text-sm mb-2">Temperature Zones</h3>
+            <div className="px-5 flex justify-between items-center mb-2">
+              <h3 className="font-medium text-sm">Temperature Zones</h3>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 w-7 p-0" 
+                onClick={handleRefresh}
+                title="Refresh data"
+              >
+                <RefreshCw size={14} />
+              </Button>
+            </div>
             <ZonesHierarchy
               siteId={siteId ? Number(siteId) : null}
               preserveDashboardRoute={true}
@@ -79,6 +107,13 @@ export default function TempHumidityDashboard() {
               isUsingMockData={isUsingMockData}
               contextName={contextName}
               apiConnectionFailed={apiConnectionFailed}
+            />
+            
+            {/* Log panel to show API data and processing logs */}
+            <LogPanel 
+              logs={logs}
+              title={`Temperature API Logs - ${contextName}`}
+              onClearLogs={clearLogs}
             />
           </div>
         </div>

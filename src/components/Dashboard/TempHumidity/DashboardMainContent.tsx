@@ -6,6 +6,7 @@ import { SensorSourceInfo } from "@/components/Dashboard/TempHumidity/SensorSour
 import { DashboardStatsSection } from "@/components/Dashboard/TempHumidity/DashboardStatsSection";
 import { TempHumidityResponse } from "@/services/interfaces/temp-humidity";
 import { AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface DashboardMainContentProps {
   data: TempHumidityResponse | undefined;
@@ -15,6 +16,7 @@ interface DashboardMainContentProps {
   isUsingMockData: boolean;
   contextName: string;
   apiConnectionFailed?: boolean;
+  onRetry?: () => void;
 }
 
 export function DashboardMainContent({ 
@@ -24,14 +26,15 @@ export function DashboardMainContent({
   loadingStage, 
   isUsingMockData,
   contextName,
-  apiConnectionFailed = false
+  apiConnectionFailed = false,
+  onRetry
 }: DashboardMainContentProps) {
   if (isLoading || loadingStage === 'initial') {
     return <LoadingState />;
   }
   
   if (error || apiConnectionFailed) {
-    return <ErrorState />;
+    return <ErrorState onRetry={onRetry} />;
   }
   
   if (!data || data.daily.length === 0) {
@@ -46,10 +49,25 @@ export function DashboardMainContent({
           <p className="text-sm text-amber-600 mt-2">
             Try selecting a different site or zone that has temperature sensors.
           </p>
+          
+          {onRetry && (
+            <Button
+              variant="outline"
+              className="mt-4 bg-white text-amber-600 border-amber-200 hover:bg-amber-50"
+              onClick={onRetry}
+            >
+              Retry Data Fetch
+            </Button>
+          )}
         </div>
       </div>
     );
   }
+
+  // Count real data points
+  const realDataPoints = data.daily.filter(point => point.isReal?.temperature === true).length;
+  const totalDataPoints = data.daily.length;
+  const hasRealData = realDataPoints > 0;
 
   return (
     <>
@@ -70,13 +88,41 @@ export function DashboardMainContent({
       />
 
       {loadingStage === 'complete' && (
-        <div className="mt-8 mb-24">
+        <div className="mt-8 mb-8">
           <SensorSourceInfo 
             sourceData={data.sourceData} 
             isLoading={false}
             isMockData={isUsingMockData}
             operatingHours={data.operatingHours}
           />
+        </div>
+      )}
+      
+      {/* Info badge about data quality */}
+      {hasRealData && (
+        <div className="mb-8 p-3 border border-green-200 bg-green-50 rounded-lg">
+          <p className="text-sm text-green-700">
+            <span className="font-medium">Real-time data:</span> {realDataPoints} of {totalDataPoints} data points ({Math.round(realDataPoints/totalDataPoints*100)}%) 
+            are from real temperature sensor readings for {contextName}.
+          </p>
+        </div>
+      )}
+      
+      {!hasRealData && !isUsingMockData && (
+        <div className="mb-8 p-3 border border-amber-200 bg-amber-50 rounded-lg">
+          <p className="text-sm text-amber-700">
+            <span className="font-medium">Historical data only:</span> No real-time temperature readings available for {contextName}.
+            Showing historical API data instead.
+          </p>
+        </div>
+      )}
+      
+      {isUsingMockData && (
+        <div className="mb-8 p-3 border border-blue-200 bg-blue-50 rounded-lg">
+          <p className="text-sm text-blue-700">
+            <span className="font-medium">Simulated data:</span> No temperature sensors found for {contextName}.
+            All data shown is simulated.
+          </p>
         </div>
       )}
     </>

@@ -11,10 +11,19 @@ import { Button } from "@/components/ui/button";
 export function LiveDataMetrics() {
   const { zoneId, siteId } = useParams<{ zoneId: string; siteId: string }>();
   const { data, isLoading, error, apiConnectionFailed, refetch } = useTempHumidityData();
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  
+  // Update last updated time when data refreshes
+  useEffect(() => {
+    if (data) {
+      setLastUpdated(new Date());
+    }
+  }, [data]);
   
   // Handle refresh action
   const handleRefresh = () => {
     refetch();
+    setLastUpdated(new Date());
   };
   
   // Check if we have real-time data
@@ -31,15 +40,23 @@ export function LiveDataMetrics() {
   
   if (isLoading) {
     return (
-      <Card className="overflow-hidden border-0 h-full rounded-none shadow-sm animate-pulse">
-        <CardContent className="p-0 h-full">
+      <Card className="overflow-hidden border-0 h-full rounded-none shadow-sm">
+        <CardContent className="p-0 h-full flex flex-col">
           <div className="px-2 pt-2 flex justify-between items-center">
             <span className="text-sm font-medium">Live Temperature</span>
-            <div className="bg-gray-200 h-5 w-16 rounded"></div>
+            <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+              Loading
+            </Badge>
           </div>
-          <div className="h-full flex items-center justify-center p-4">
-            <div className="bg-gray-200 h-10 w-full rounded"></div>
+          
+          <div className="px-3 py-4 flex-grow flex items-center justify-center">
+            <div className="flex items-center">
+              <RefreshCw className="h-5 w-5 text-blue-500 animate-spin mr-2" />
+              <span className="text-sm text-blue-600">Fetching data...</span>
+            </div>
           </div>
+          
+          <div className="h-1 w-full bg-gradient-to-r from-blue-200 to-blue-300" />
         </CardContent>
       </Card>
     );
@@ -110,6 +127,7 @@ export function LiveDataMetrics() {
   
   // We have real temperature data
   const temperatureColor = getSensorValueColor('temperature', latestTemperature);
+  const formattedTime = lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   
   return (
     <Card className="overflow-hidden border-0 h-full rounded-none shadow-sm">
@@ -138,6 +156,13 @@ export function LiveDataMetrics() {
               </span>
             )}
           </div>
+        </div>
+        
+        <div className="flex items-center justify-between px-3 pb-1 text-xs text-gray-500">
+          <span>Updated: {formattedTime}</span>
+          <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={handleRefresh}>
+            <RefreshCw className="h-3 w-3" />
+          </Button>
         </div>
         
         <div className={`h-1 w-full ${temperatureColor.bg}`} />

@@ -1,13 +1,21 @@
 
-import { AlertCircle, AlertTriangle } from "lucide-react";
+import { AlertCircle, AlertTriangle, RefreshCw } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-export function ErrorState() {
+interface ErrorStateProps {
+  onRetry?: () => void;
+}
+
+export function ErrorState({ onRetry }: ErrorStateProps) {
   const { zoneId, siteId } = useParams<{ zoneId: string; siteId: string }>();
   
   const handleRetry = () => {
-    window.location.reload();
+    if (onRetry) {
+      onRetry();
+    } else {
+      window.location.reload();
+    }
   };
 
   return (
@@ -60,7 +68,7 @@ export function ErrorState() {
           className="mt-4 bg-white text-red-600 border-red-200 hover:bg-red-50"
           onClick={handleRetry}
         >
-          <AlertTriangle className="h-4 w-4 mr-2" />
+          <RefreshCw className="h-4 w-4 mr-2" />
           Retry Connection
         </Button>
       </div>
