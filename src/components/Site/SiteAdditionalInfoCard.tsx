@@ -4,12 +4,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/utils/formatting";
 import { Clock, Calendar } from "lucide-react";
+import { format } from "date-fns";
 
 interface SiteAdditionalInfoCardProps {
   site: Site;
 }
 
 export function SiteAdditionalInfoCard({ site }: SiteAdditionalInfoCardProps) {
+  // Function to format time only from datetime string
+  const formatTimeOnly = (dateString: string | undefined) => {
+    if (!dateString) return "N/A";
+    try {
+      return format(new Date(dateString), "h:mm a");
+    } catch (e) {
+      return "N/A";
+    }
+  };
+
   return (
     <Card className="h-full shadow-sm">
       <CardHeader className="pb-2">
@@ -59,7 +70,7 @@ export function SiteAdditionalInfoCard({ site }: SiteAdditionalInfoCardProps) {
                   return (
                     <div key={index} className="bg-muted/40 p-3 rounded-md">
                       <div className="text-xs text-muted-foreground">Start Time</div>
-                      <div className="font-medium">{formatDate(energy.operatingHoursStartTime)}</div>
+                      <div className="font-medium">{formatTimeOnly(energy.operatingHoursStartTime)}</div>
                     </div>
                   );
                 })}
@@ -70,7 +81,7 @@ export function SiteAdditionalInfoCard({ site }: SiteAdditionalInfoCardProps) {
                   return (
                     <div key={index} className="bg-muted/40 p-3 rounded-md">
                       <div className="text-xs text-muted-foreground">End Time</div>
-                      <div className="font-medium">{formatDate(energy.operatingHoursEndTime)}</div>
+                      <div className="font-medium">{formatTimeOnly(energy.operatingHoursEndTime)}</div>
                     </div>
                   );
                 })}
