@@ -11,9 +11,10 @@ interface DashboardContentProps {
     stats: StatsData;
   };
   contextName?: string;
+  isMockData?: boolean;
 }
 
-export function DashboardContent({ data, contextName = "All Locations" }: DashboardContentProps) {
+export function DashboardContent({ data, contextName = "All Locations", isMockData = false }: DashboardContentProps) {
   // Calculate the min/max temperatures from monthly data
   const calculateMonthlyStats = () => {
     if (!data.monthly || data.monthly.length === 0) {

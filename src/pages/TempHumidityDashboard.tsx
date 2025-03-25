@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BreadcrumbNav } from "@/components/Dashboard/TempHumidity/BreadcrumbNav";
 import { TempHumidityStats } from "@/components/Dashboard/TempHumidity/TempHumidityStats";
 import { LoadingState } from "@/components/Dashboard/TempHumidity/LoadingState";
@@ -15,10 +15,11 @@ import { fetchSite } from "@/services/sites";
 import { fetchZone } from "@/services/zones";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Package, Building } from "lucide-react";
+import { Package, Building, AlertTriangle } from "lucide-react";
 
 export default function TempHumidityDashboard() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
+  const [isUsingMockData, setIsUsingMockData] = useState(false);
   
   console.log("TempHumidityDashboard: Route params:", { siteId, zoneId });
   
@@ -43,6 +44,20 @@ export default function TempHumidityDashboard() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["temp-humidity-data", siteId, zoneId],
     queryFn: () => fetchTempHumidityData(siteId, zoneId),
+    onSettled: (data, error) => {
+      // Check if we're using mock data by examining the API response
+      const usingMockData = !data?.sourceData?.temperatureSensors?.length && 
+                            !data?.sourceData?.humiditySensors?.length;
+      setIsUsingMockData(usingMockData);
+      
+      if (error) {
+        console.error("Error fetching temperature data:", error);
+      }
+      
+      if (data) {
+        console.log(`Data source: ${usingMockData ? "SIMULATED" : "REAL API"} data`);
+      }
+    }
   });
 
   useEffect(() => {
@@ -93,15 +108,6 @@ export default function TempHumidityDashboard() {
     return "Data from all sensors";
   };
 
-  // Count total sensors used
-  const getTotalSensorsCount = () => {
-    if (!data || !data.sourceData) return 0;
-    return (
-      data.sourceData.temperatureSensors.length +
-      data.sourceData.humiditySensors.length
-    );
-  };
-
   return (
     <SidebarWrapper>
       <div className="container mx-auto py-8 px-6 md:px-8 lg:px-12">
@@ -111,9 +117,18 @@ export default function TempHumidityDashboard() {
 
         <div className="flex items-center justify-between mb-6">
           <PageHeader customTitle={`Temperature & Humidity - ${getContextName()}`} />
-          <Badge variant="outline" className="text-xs px-3 py-1">
-            {getDataSourceDescription()}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-xs px-3 py-1">
+              {getDataSourceDescription()}
+            </Badge>
+            
+            {isUsingMockData && !isLoading && (
+              <Badge variant="outline" className="text-xs px-3 py-1 bg-amber-50 text-amber-700 border-amber-200">
+                <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+                Simulated data
+              </Badge>
+            )}
+          </div>
         </div>
         
         {!isLoading && !error && data && (
@@ -127,6 +142,7 @@ export default function TempHumidityDashboard() {
               <SensorSourceInfo 
                 sourceData={data.sourceData} 
                 isLoading={false}
+                isMockData={isUsingMockData}
               />
             </div>
           </>
@@ -137,7 +153,11 @@ export default function TempHumidityDashboard() {
         ) : error ? (
           <ErrorState />
         ) : data ? (
-          <DashboardContent data={data} contextName={getContextName()} />
+          <DashboardContent 
+            data={data} 
+            contextName={getContextName()} 
+            isMockData={isUsingMockData}
+          />
         ) : null}
       </div>
     </SidebarWrapper>

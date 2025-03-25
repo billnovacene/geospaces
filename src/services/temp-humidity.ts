@@ -24,7 +24,7 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
       const zoneSensors = await findZoneSensors(Number(zoneId), zoneData.siteId);
       
       if (zoneSensors.temperature.length > 0 || zoneSensors.humidity.length > 0) {
-        console.log(`Using zone sensors for zone ${zoneId}:`, zoneSensors);
+        console.log(`Using REAL zone sensors for zone ${zoneId}:`, zoneSensors);
         const response = await fetchRealDeviceData(
           zoneData.siteId.toString(),
           zoneSensors.temperature,
@@ -47,7 +47,7 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
     
     // Handle site-specific data fetch
     if (siteId && TEMP_SENSORS[siteId]) {
-      console.log(`Fetching real temperature data for site ${siteId}`);
+      console.log(`Fetching REAL temperature data for site ${siteId}`);
       const response = await fetchRealDeviceData(
         siteId, 
         TEMP_SENSORS[siteId] || [],
@@ -86,7 +86,7 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
     console.error('Error fetching temperature and humidity data:', error);
     
     // If the API request fails, fall back to the mock data
-    console.warn('Falling back to mock temperature and humidity data');
+    console.warn('⚠️ Falling back to SIMULATED temperature and humidity data');
     const mockData = generateMockData();
     return {
       ...mockData,

@@ -24,6 +24,7 @@ export async function fetchRealDeviceData(siteId: string,
     console.log(`Using temperature sensor: ${tempSensor}, humidity sensor: ${humiditySensor}`);
     
     // Fetch daily data (today)
+    console.log(`Fetching daily data for ${format(today, 'yyyy-MM-dd')}`);
     const dailyData = await fetchSensorDataForDay(
       siteId,
       tempSensor,
@@ -32,10 +33,13 @@ export async function fetchRealDeviceData(siteId: string,
     );
     
     // Fetch last 30 days of data for monthly view
+    console.log(`Fetching monthly data for last 30 days`);
     const monthlyData = await fetchMonthlyData(siteId, tempSensor, humiditySensor);
     
     // Calculate statistics
     const stats = calculateStats(dailyData, monthlyData);
+    
+    console.log(`✅ Successfully fetched REAL sensor data from API`);
     
     return {
       stats,
