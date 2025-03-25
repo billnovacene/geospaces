@@ -1,7 +1,6 @@
 
 import { Link } from "react-router-dom";
 import { useLocation, useParams } from "react-router-dom";
-import { CircleDot, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DashboardItemProps {
@@ -43,12 +42,8 @@ export function SidebarDashboardItem({
       "flex items-center py-2.5 px-5 cursor-pointer bg-white sidebar-hover-item",
       (isDashboardActive || isDashboardTypeActive) && "bg-[#F9F9FA]"
     )}>
-      <div className="flex items-center gap-2.5 w-full">
-        {isDashboardActive ? (
-          <CircleDot className="h-4 w-4 text-primary flex-shrink-0" />
-        ) : (
-          <Circle className="h-4 w-4 text-zinc-400 flex-shrink-0" />
-        )}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-zinc-500">▶</span>
         <span className={cn(
           "text-sm font-medium", 
           isDashboardActive ? "text-primary font-semibold" : 

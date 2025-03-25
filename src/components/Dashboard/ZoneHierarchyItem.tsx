@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
@@ -16,7 +17,6 @@ interface ZoneHierarchyItemProps {
   dashboardPath?: string;
   effectiveSiteId?: number | null;
   hideZonesWithoutSensors?: boolean;
-  hideEmptyZones?: boolean;
 }
 
 export function ZoneHierarchyItem({ 
@@ -28,8 +28,7 @@ export function ZoneHierarchyItem({
   preserveDashboardRoute = false,
   dashboardPath = "",
   effectiveSiteId,
-  hideZonesWithoutSensors = false,
-  hideEmptyZones = false
+  hideZonesWithoutSensors = false
 }: ZoneHierarchyItemProps) {
   const [shouldRender, setShouldRender] = useState(true);
   
@@ -46,37 +45,22 @@ export function ZoneHierarchyItem({
       const hasSensors = zoneSensors.temperature.length > 0 || zoneSensors.humidity.length > 0;
       console.log(`Zone ${zone.name} (ID: ${zone.id}) has sensors: ${hasSensors}`, zoneSensors);
       setShouldRender(hasSensors);
-    } else if (hideEmptyZones) {
-      // Hide zones with fewer than 1 device, but keep parent zones visible regardless
-      const hasDevices = typeof zone.devices === 'number' 
-        ? zone.devices >= 1 
-        : (parseInt(String(zone.devices), 10) || 0) >= 1;
-      
-      const hasChildren = zone.children && zone.children.length > 0;
-      // Always render if it has children (it's a parent) regardless of device count
-      setShouldRender(hasDevices || hasChildren);
     } else {
       setShouldRender(true);
     }
-  }, [
-    hideZonesWithoutSensors, 
-    sensorsLoading, 
-    zoneSensors, 
-    zone.id, 
-    zone.name, 
-    hideEmptyZones, 
-    zone.devices, 
-    zone.children
-  ]);
+  }, [hideZonesWithoutSensors, sensorsLoading, zoneSensors, zone.id, zone.name]);
 
   const hasChildren = zone.children && zone.children.length > 0;
   const isExpanded = expandedZones.includes(zone.id);
   const isActive = activeZoneId === zone.id;
   const deviceCount = typeof zone.devices === 'number' ? zone.devices : parseInt(String(zone.devices), 10) || 0;
   
-  // If we need to hide this zone and it's not a rendering candidate, return null
-  if (!shouldRender && !sensorsLoading) {
-    return null;
+  // If we need to hide zones without sensors and this zone has no sensors
+  if (hideZonesWithoutSensors && !shouldRender && !sensorsLoading) {
+    // If this zone has children, we still want to render it even if it doesn't have sensors directly
+    if (!hasChildren) {
+      return null;
+    }
   }
   
   // Create zone link with dashboard path if needed
@@ -135,7 +119,6 @@ export function ZoneHierarchyItem({
               dashboardPath={dashboardPath}
               effectiveSiteId={effectiveSiteId}
               hideZonesWithoutSensors={hideZonesWithoutSensors}
-              hideEmptyZones={hideEmptyZones}
             />
           ))}
         </div>

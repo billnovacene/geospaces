@@ -11,17 +11,9 @@ interface DashboardContentProps {
   };
   contextName?: string;
   isMockData?: boolean;
-  isCachedData?: boolean;
-  onRefresh?: () => void;
 }
 
-export function DashboardContent({ 
-  data, 
-  contextName = "All Locations", 
-  isMockData = false,
-  isCachedData = false,
-  onRefresh
-}: DashboardContentProps) {
+export function DashboardContent({ data, contextName = "All Locations", isMockData = false }: DashboardContentProps) {
   // Calculate the min/max temperatures from monthly data
   const calculateMonthlyStats = () => {
     if (!data.monthly || data.monthly.length === 0) {
@@ -64,8 +56,6 @@ export function DashboardContent({
         data={data.monthly}
         contextName={contextName}
         stats={monthlyStats}
-        isCachedData={isCachedData}
-        onRefresh={onRefresh}
       />
 
       {/* Daily Overview */}

@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
-import { Settings, MoreVertical, Home, Building, Package } from "lucide-react";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Link, useParams, useLocation } from "react-router-dom";
 import { SidebarSection } from "./SidebarSection";
@@ -13,12 +14,11 @@ import { SitesSidebar } from "./SitesSidebar";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZone } from "@/services/zones";
 
-const BUILD_NUMBER = "1.3.0";
-
 export function DashboardSidebar() {
   const { siteId, zoneId } = useParams<{ siteId: string, zoneId: string }>();
   const location = useLocation();
   
+  // Check if we're on a dashboard route
   const isDashboardRoute = location.pathname.includes('/dashboard');
   const isTempHumidityRoute = location.pathname.includes('/dashboard/temp-humidity');
   
@@ -33,6 +33,7 @@ export function DashboardSidebar() {
 
   const effectiveSiteId = validSiteId || (zoneData?.siteId ? zoneData.siteId : null);
   
+  // Log important information for debugging
   console.log(`DashboardSidebar: siteId=${validSiteId}, zoneId=${validZoneId}, effectiveSiteId=${effectiveSiteId}`);
   console.log(`DashboardSidebar: isDashboardRoute=${isDashboardRoute}, isTempHumidityRoute=${isTempHumidityRoute}`);
   
@@ -49,6 +50,14 @@ export function DashboardSidebar() {
           </Button>
         </div>
 
+        <div className="p-5 border-b border-[#E5E7EB] bg-white">
+          <div className="relative">
+            <Input placeholder="Search" className="pl-4 h-9 text-sm border-[#E5E7EB] bg-white text-[#8E9196]" />
+            <Search className="absolute right-3 top-2.5 h-4 w-4 text-[#8E9196]" />
+          </div>
+        </div>
+
+        {/* Sticky Dashboards Section at the top */}
         <div className="sticky top-0 z-10 bg-white border-b border-[#E5E7EB]">
           <SidebarSection title="Dashboards" defaultOpen={true}>
             <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center">
@@ -122,15 +131,12 @@ export function DashboardSidebar() {
       <SidebarFooter className="border-t border-[#E5E7EB] p-4 bg-white">
         <div className="flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
-            <Avatar className="h-9 w-9">
-              <AvatarImage 
-                src="/lovable-uploads/f6f59774-352a-4ce5-aa56-f314fbeab500.png" 
-                alt="Zircon Logo"
-              />
+            <Avatar className="h-9 w-9 bg-black">
+              <div className="text-white font-bold">N</div>
             </Avatar>
             <div>
-              <div className="font-semibold">Zircon</div>
-              <div className="text-xs text-[#8E9196]">{BUILD_NUMBER}</div>
+              <div className="font-semibold">Novacene</div>
+              <div className="text-xs text-[#8E9196]">1.2.4</div>
             </div>
           </div>
           <Button variant="ghost" size="icon" className="text-[#8E9196]">

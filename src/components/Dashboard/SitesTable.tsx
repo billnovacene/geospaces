@@ -1,83 +1,138 @@
 
+import { format } from "date-fns";
+import { MapPin, Building2, Cpu } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ArrowUpDown, ExternalLink, Cpu } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { SiteStatusBadge } from "./SiteStatusBadge";
-import { formatDate } from "@/utils/formatting";
+import { siteDevicesCache } from "@/services/sites";
 import { Site } from "@/services/interfaces";
-import { useQuery } from "@tanstack/react-query";
-import { fetchDevicesCountForSite } from "@/services/device-sites";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface SitesTableProps {
   sites: Site[];
 }
 
 export function SitesTable({ sites }: SitesTableProps) {
-  return (
-    <div className="rounded-md border overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-gray-50">
-            <TableHead className="w-[350px]">
-              <div className="flex items-center">
-                <span>Site Name</span>
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-              </div>
-            </TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Devices</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sites.map((site) => (
-            <SiteTableRow key={site.id} site={site} />
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-}
+  // Format date
+  const formatDate = (dateString: string) => {
+    try {
+      return format(new Date(dateString), "MMM d, yyyy");
+    } catch (e) {
+      return dateString;
+    }
+  };
 
-// Separated into its own component to allow for per-row queries
-function SiteTableRow({ site }: { site: Site }) {
-  // Fetch device count for this site using the same pattern as in SiteListItem
-  const { data: deviceCount = 0 } = useQuery({
-    queryKey: ["devices-count-table", site.id],
-    queryFn: () => fetchDevicesCountForSite(site.id),
-    enabled: !!site.id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+  // Get device count (prioritize cache)
+  const getDeviceCount = (site: Site) => {
+    if (site.id && siteDevicesCache[site.id] !== undefined && siteDevicesCache[site.id] > 0) {
+      console.log(`Using cached device count for site ${site.id}: ${siteDevicesCache[site.id]}`);
+      return siteDevicesCache[site.id];
+    }
+    
+    // Fall back to the site's direct device count
+    const directCount = typeof site.devices === 'number' 
+      ? site.devices 
+      : parseInt(String(site.devices), 10) || 0;
+    
+    console.log(`Using direct device count for site ${site.id}: ${directCount}`);
+    return directCount;
+  };
+
+  // Get status description based on status
+  const getStatusDescription = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "active":
+        return "The site is operational and running normally.";
+      case "warning":
+        return "The site has some issues that need attention.";
+      case "inactive":
+        return "The site is currently not operational.";
+      default:
+        return "Status information is unavailable.";
+    }
+  };
 
   return (
-    <TableRow key={site.id}>
-      <TableCell className="font-medium">
-        <Link to={`/site/${site.id}`} className="text-blue-500 hover:underline">
-          {site.name}
-        </Link>
-      </TableCell>
-      <TableCell>
-        <SiteStatusBadge status={site.status || "Unknown"} />
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-1 bg-[#6CAE3E]/10 text-[#6CAE3E] border-[#6CAE3E]/20 px-2 py-1 rounded-md text-xs w-fit">
-          <Cpu className="h-3.5 w-3.5 mr-0.5" />
-          {deviceCount}
-        </div>
-      </TableCell>
-      <TableCell>{formatDate(site.createdAt)}</TableCell>
-      <TableCell className="text-right">
-        <div className="flex justify-end gap-2">
-          <Link
-            to={`/site/${site.id}`}
-            className="inline-flex h-8 items-center justify-center rounded-md border border-input p-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-          >
-            <ExternalLink className="h-4 w-4" />
-            <span className="sr-only">View Site</span>
-          </Link>
-        </div>
-      </TableCell>
-    </TableRow>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Name</TableHead>
+          <TableHead>Type</TableHead>
+          <TableHead>Location</TableHead>
+          <TableHead>Devices</TableHead>
+          <TableHead>Created</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead className="text-right">Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {sites.map((site) => {
+          const deviceCount = getDeviceCount(site);
+          
+          return (
+            <TableRow key={site.id}>
+              <TableCell className="font-medium">{site.name}</TableCell>
+              <TableCell>
+                <div className="flex items-center">
+                  <Building2 className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                  <span>{site.type || "N/A"}</span>
+                </div>
+              </TableCell>
+              <TableCell>
+                {site.locationText ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center cursor-help">
+                        <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                        <span className="text-muted-foreground truncate max-w-[200px]">
+                          {site.locationText}
+                        </span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{site.locationText}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  "No location"
+                )}
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center">
+                  <Cpu className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                  <span>{deviceCount}</span>
+                </div>
+              </TableCell>
+              <TableCell>{formatDate(site.createdAt)}</TableCell>
+              <TableCell>
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <div>
+                      <SiteStatusBadge status={site.status || "Unknown"} />
+                    </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80">
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-semibold">Site Status: {site.status || "Unknown"}</h4>
+                      <p className="text-sm">{getStatusDescription(site.status || "Unknown")}</p>
+                      {site.warning && (
+                        <p className="text-sm text-yellow-600 mt-2">Warning: {site.warning}</p>
+                      )}
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
+              </TableCell>
+              <TableCell className="text-right">
+                <Button variant="outline" size="sm" asChild>
+                  <Link to={`/site/${site.id}`}>View Details</Link>
+                </Button>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
   );
 }

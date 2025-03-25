@@ -2,16 +2,15 @@
 import { CardTitle, CardDescription } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Dispatch, SetStateAction } from "react";
 
 interface ZonesHierarchyHeaderProps {
   searchTerm: string;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
+  setSearchTerm: (value: string) => void;
 }
 
 export function ZonesHierarchyHeader({ searchTerm, setSearchTerm }: ZonesHierarchyHeaderProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
       <div>
         <CardTitle className="text-2xl font-bold">Zones Hierarchy</CardTitle>
         <CardDescription>
@@ -23,7 +22,7 @@ export function ZonesHierarchyHeader({ searchTerm, setSearchTerm }: ZonesHierarc
         <Input
           type="search"
           placeholder="Search zones..."
-          className="pl-8 w-full"
+          className="pl-8 max-w-xs"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />

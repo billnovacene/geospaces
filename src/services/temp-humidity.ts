@@ -5,20 +5,11 @@ import { fetchRealDeviceData } from "./sensors/device-data";
 import { generateMockData } from "./sensors/stats";
 import { findZoneSensors } from "./sensors/zone-sensors";
 import { fetchZone } from "./zones";
-import { getCachedTempHumidityData, cacheTempHumidityData } from "./cache/temp-humidity-cache";
 
 export * from "./interfaces/temp-humidity";
 
 export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): Promise<TempHumidityResponse> => {
   try {
-    // Check if we have cached data first
-    const cachedData = getCachedTempHumidityData(siteId, zoneId);
-    if (cachedData) {
-      return cachedData;
-    }
-    
-    console.log(`🔄 No cache found, fetching fresh temperature data for ${zoneId ? `zone ${zoneId}` : siteId ? `site ${siteId}` : 'all locations'}`);
-    
     // For zone-specific data
     if (zoneId) {
       console.log(`Fetching temperature data for zone ${zoneId}`);
@@ -41,17 +32,13 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
         );
         
         // Add source information to the response
-        const data = {
+        return {
           ...response,
           sourceData: {
             temperatureSensors: zoneSensors.temperatureSensors,
             humiditySensors: zoneSensors.humiditySensors
           }
         };
-        
-        // Cache the data
-        cacheTempHumidityData(data, siteId, zoneId);
-        return data;
       } else {
         console.log(`No temperature or humidity sensors found in zone ${zoneId}, falling back to site sensors`);
         siteId = zoneData.siteId.toString();
@@ -68,17 +55,13 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
       );
       
       // Add site sensor information
-      const data = {
+      return {
         ...response,
         sourceData: SITE_SENSOR_DETAILS[siteId] || {
           temperatureSensors: [],
           humiditySensors: []
         }
       };
-      
-      // Cache the data
-      cacheTempHumidityData(data, siteId, zoneId);
-      return data;
     }
     
     // For zones or sites without known sensors, construct the API endpoint 
@@ -98,9 +81,6 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
     }
     const data = await response.json();
     console.log('API response:', data);
-    
-    // Cache the data
-    cacheTempHumidityData(data, siteId, zoneId);
     return data;
   } catch (error) {
     console.error('Error fetching temperature and humidity data:', error);
@@ -108,16 +88,12 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
     // If the API request fails, fall back to the mock data
     console.warn('⚠️ Falling back to SIMULATED temperature and humidity data');
     const mockData = generateMockData();
-    const data = {
+    return {
       ...mockData,
       sourceData: {
         temperatureSensors: [],
         humiditySensors: []
       }
     };
-    
-    // We still cache mock data but with a shorter expiration (5 minutes)
-    cacheTempHumidityData(data, siteId, zoneId, 5 * 60 * 1000);
-    return data;
   }
 };

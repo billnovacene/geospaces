@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZones } from "@/services/api";
 import { Zone } from "@/services/interfaces";
@@ -20,75 +20,18 @@ interface ZonesHierarchyListProps {
 export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedZones, setExpandedZones] = useState<number[]>([]);
-  const hasFetchedRef = useRef(false);
-  const isLoadingRef = useRef(false);
-  const [zones, setZones] = useState<Zone[]>([]);
-  const [isError, setIsError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
   
-  // Cleanup function for any pending requests
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
-  
-  // Fetch zones once when component mounts or siteId changes
-  useEffect(() => {
-    const fetchZonesData = async () => {
-      if (!siteId || isLoadingRef.current || hasFetchedRef.current) {
-        return;
-      }
-      
-      // Abort any existing request
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-      
-      try {
-        isLoadingRef.current = true;
-        setIsLoading(true);
-        
-        console.log(`Manually fetching zones for site ${siteId}`);
-        
-        // Create a new abort controller with timeout
-        abortControllerRef.current = new AbortController();
-        const timeoutId = setTimeout(() => {
-          if (abortControllerRef.current) {
-            console.log("Zones fetch timeout - aborting");
-            abortControllerRef.current.abort();
-          }
-        }, 10000); // 10 second timeout
-        
-        // Fetch zones with the abort signal
-        const fetchedZones = await fetchZones(siteId);
-        clearTimeout(timeoutId);
-        
-        console.log(`Fetched ${fetchedZones.length} zones successfully`);
-        setZones(fetchedZones);
-        hasFetchedRef.current = true;
-      } catch (error) {
-        console.error("Error fetching zones:", error);
-        setIsError(true);
-      } finally {
-        isLoadingRef.current = false;
-        setIsLoading(false);
-      }
-    };
-    
-    fetchZonesData();
-  }, [siteId]);
+  const { data: allZones = [], isLoading, error } = useQuery({
+    queryKey: ["zones", siteId],
+    queryFn: () => siteId ? fetchZones(siteId) : Promise.resolve([]),
+    enabled: !!siteId,
+  });
 
-  // Filter zones based on search term - safely handle empty or undefined zones
-  const filteredZones = zones && zones.length > 0 
-    ? zones.filter(zone => 
-        zone && zone.name && zone.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        (zone.type && zone.type.toLowerCase().includes(searchTerm.toLowerCase()))
-      )
-    : [];
+  // Filter zones based on search term
+  const filteredZones = allZones.filter(zone => 
+    zone.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (zone.type && zone.type.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   // Toggle expanded state for a zone
   const toggleExpand = (zoneId: number) => {
@@ -99,12 +42,9 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
     );
   };
 
-  // Safely organize zones hierarchy
-  const hierarchicalZones = filteredZones.length > 0 
-    ? organizeZonesHierarchy(filteredZones)
-    : [];
+  const hierarchicalZones = organizeZonesHierarchy(filteredZones);
 
-  if (isError) {
+  if (error) {
     return <ZonesErrorState />;
   }
 
@@ -148,10 +88,10 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
           </div>
         )}
       </CardContent>
-      {siteId && zones && zones.length > 0 && (
+      {siteId && allZones.length > 0 && (
         <CardFooter className="p-4 text-sm text-muted-foreground flex justify-between items-center">
-          <div>Total zones: {zones.length}</div>
-          <div>Showing {filteredZones.length} of {zones.length}</div>
+          <div>Total zones: {allZones.length}</div>
+          <div>Showing {filteredZones.length} of {allZones.length}</div>
         </CardFooter>
       )}
     </Card>
