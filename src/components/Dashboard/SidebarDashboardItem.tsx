@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { Circle } from "lucide-react";
 
 interface DashboardItemProps {
   name: string;
@@ -63,13 +64,17 @@ export function SidebarDashboardItem({
       )}
       onClick={handleToggle}
     >
-      <div className="flex items-center gap-2">
-        <span className={cn(
-          "text-xs",
-          isSelected ? "text-primary" : "text-zinc-500"
+      <div className="flex items-center gap-3">
+        <div className={cn(
+          "flex items-center justify-center w-4 h-4 rounded-full border",
+          isSelected 
+            ? "border-primary bg-white" 
+            : "border-zinc-300 bg-white"
         )}>
-          {isSelected ? "▼" : "▶"}
-        </span>
+          {isSelected && (
+            <div className="w-2 h-2 rounded-full bg-primary" />
+          )}
+        </div>
         <span className={cn(
           "text-sm font-medium", 
           isSelected ? "text-primary font-semibold" : 
