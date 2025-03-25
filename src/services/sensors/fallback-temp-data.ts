@@ -1,6 +1,6 @@
 
 import { TempHumidityResponse } from "../interfaces/temp-humidity";
-import { generateMockData } from "./mock-data-generator";
+import { toast } from "sonner";
 
 /**
  * Attempt to fetch temperature data from a generic API endpoint
@@ -33,9 +33,34 @@ export async function fetchGenericTempHumidityData(siteId?: string, zoneId?: str
 }
 
 /**
- * Generate simulated data when all other methods fail
+ * Return empty data when no real data is available
+ * No longer generates simulated data
  */
 export function generateSimulatedTempHumidityData(): TempHumidityResponse {
-  console.warn('⚠️ Falling back to SIMULATED temperature and humidity data');
-  return generateMockData();
+  console.error('⚠️ No real temperature data available from API');
+  toast.error("No real temperature data available", {
+    description: "The system could not retrieve data from the API."
+  });
+  
+  // Return empty data structure with no simulated values
+  return {
+    stats: {
+      avgTemp: 0,
+      minTemp: 0,
+      maxTemp: 0,
+      avgHumidity: 0,
+      status: {
+        avgTemp: 'good',
+        minTemp: 'good',
+        maxTemp: 'good',
+        avgHumidity: 'good'
+      }
+    },
+    daily: [],
+    monthly: [],
+    sourceData: {
+      temperatureSensors: [],
+      humiditySensors: []
+    }
+  };
 }

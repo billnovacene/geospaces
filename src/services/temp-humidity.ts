@@ -3,16 +3,13 @@ import { TempHumidityResponse } from "./interfaces/temp-humidity";
 import { fetchZoneTempHumidityData } from "./sensors/zone-temp-data";
 import { fetchSiteTempHumidityData } from "./sensors/site-temp-data";
 import { fetchGenericTempHumidityData, generateSimulatedTempHumidityData } from "./sensors/fallback-temp-data";
+import { toast } from "sonner";
 
 export * from "./interfaces/temp-humidity";
 
 /**
  * Main entry point for fetching temperature and humidity data
- * Tries different data sources in order of preference:
- * 1. Zone-specific sensors (if zone ID provided)
- * 2. Site-specific sensors
- * 3. Generic API endpoints
- * 4. Simulated data as a last resort
+ * Only uses real data from the API
  */
 export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): Promise<TempHumidityResponse> => {
   try {
@@ -36,20 +33,25 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
       }
     }
     
-    // Try generic API as fallback
+    // Try generic API as last attempt
     try {
       return await fetchGenericTempHumidityData(siteId, zoneId);
     } catch (error) {
       console.error('❌ Error fetching from generic API:', error);
-      // Fall through to simulated data
+      toast.error("Failed to retrieve data from API", {
+        description: "Please check your network connection and try again."
+      });
+      
+      // Return empty data instead of simulated
+      return generateSimulatedTempHumidityData();
     }
-    
-    // If all else fails, return simulated data
-    return generateSimulatedTempHumidityData();
   } catch (error) {
     console.error('❌ Error in temperature and humidity data fetch chain:', error);
+    toast.error("API data fetch failed", {
+      description: "Unable to retrieve temperature data from any API endpoint."
+    });
     
-    // Final fallback is always simulated data
+    // Return empty data instead of simulated
     return generateSimulatedTempHumidityData();
   }
 };

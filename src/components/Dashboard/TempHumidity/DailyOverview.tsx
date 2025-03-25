@@ -45,8 +45,8 @@ export function DailyOverview({
       data.filter(d => d.isReal?.temperature === true).slice(0, 3)
     );
   } else {
-    console.warn("No real data points found in the daily overview data");
-    console.log("Using monthly data to show average hourly temperatures for the month");
+    console.warn("No real daily data points found");
+    console.log("Using API data from monthly endpoint to calculate averages");
   }
   
   return (
@@ -59,9 +59,9 @@ export function DailyOverview({
               <p className="text-sm text-gray-600 mb-3">
                 {realDataCount > 0 ? (
                   `Today's temperatures range from ${stats.minTemp}°C to ${stats.maxTemp}°C during operating hours.
-                  ${realDataPercentage}% of data comes from actual sensor readings.`
+                  ${realDataPercentage}% of data comes from sensor readings.`
                 ) : (
-                  `Showing average hourly temperatures for March. 
+                  `Showing API data from available temperature sensors. 
                   Typical temperatures range from ${stats.minTemp}°C to ${stats.maxTemp}°C during operating hours.`
                 )}
               </p>
@@ -75,14 +75,14 @@ export function DailyOverview({
               {isLoading && (
                 <div className="flex items-center gap-2 text-blue-600 mt-4">
                   <LoaderCircle className="h-4 w-4 animate-spin" />
-                  <span className="text-sm font-medium">Loading daily data...</span>
+                  <span className="text-sm font-medium">Loading data from API...</span>
                 </div>
               )}
               
               {realDataCount === 0 && !isLoading && (
                 <div className="p-2 bg-amber-50 border border-amber-200 rounded-md mt-2">
                   <p className="text-xs text-amber-700">
-                    No real-time sensor data is available for today. Showing average hourly temperatures for March instead.
+                    No real-time sensor data is available for today. Using available API data from monthly endpoints instead.
                   </p>
                 </div>
               )}
@@ -93,14 +93,14 @@ export function DailyOverview({
                 <div className="flex items-center justify-center h-[300px] bg-gray-50 rounded-lg">
                   <div className="flex flex-col items-center gap-2">
                     <LoaderCircle className="h-8 w-8 animate-spin text-blue-600" />
-                    <span className="text-sm text-gray-500">Loading today's temperature data...</span>
+                    <span className="text-sm text-gray-500">Loading API temperature data...</span>
                   </div>
                 </div>
               ) : (
                 <DailyChart 
                   data={data} 
                   monthlyData={monthlyData} 
-                  isMockData={isMockData && !hasRealDailyData} 
+                  isMockData={false} // Always set to false, we don't want simulated data 
                 />
               )}
             </div>

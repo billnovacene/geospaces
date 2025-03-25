@@ -41,11 +41,12 @@ export const ChartTooltipContent = ({
     return null
   }
 
-  // Check if this is data from monthly averages (all data points have isReal === false)
-  const isMonthlyAverage = payload.some(
+  // Only check for data source - we no longer want to show "monthly average"
+  // as it's still API-sourced real data
+  const isFromAPI = payload.some(
     item => item.payload && 
     item.payload.isReal && 
-    item.payload.isReal.temperature === false
+    item.payload.isReal.temperature === true
   );
 
   return (
@@ -76,9 +77,9 @@ export const ChartTooltipContent = ({
         />
       )}
       
-      {isMonthlyAverage && (
-        <div className="text-xs text-amber-600 italic mt-1 mb-1">
-          Average for March
+      {!isFromAPI && (
+        <div className="text-xs text-red-600 italic mt-1 mb-1">
+          No data available from API
         </div>
       )}
       

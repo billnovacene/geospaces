@@ -1,5 +1,5 @@
 
-import { DailyOverviewPoint, MonthlyOverviewPoint } from "@/services/temp-humidity";
+import { DailyOverviewPoint, MonthlyOverviewPoint } from "@/services/interfaces/temp-humidity";
 import { useState } from "react";
 import { subDays, addDays } from "date-fns";
 import { sensorTypes } from "@/utils/sensorThresholds";
@@ -13,6 +13,7 @@ import {
   filterRelevantThresholds 
 } from "./utils/chartUtils";
 import { calculateHourlyAveragesFromMonth } from "./utils/monthlyAverageUtils";
+import { toast } from "sonner";
 
 interface DailyChartProps {
   data: DailyOverviewPoint[];
@@ -29,15 +30,21 @@ export function DailyChart({ data, monthlyData = [], isMockData = false }: Daily
   const hasRealData = realDataPointsCount > 0;
   
   console.log(`Daily chart rendering: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}, isMockData: ${isMockData}`);
-  console.log("Sample isReal flags:", data.slice(0, 3).map(d => d.isReal));
   
   // If we have no real data and monthly data is available, 
-  // calculate hourly averages from the monthly data
+  // calculate hourly averages from the monthly data which only uses real data
   let processedData = data;
+  
   if (!hasRealData && monthlyData && monthlyData.length > 0) {
-    console.log("No real daily data available, calculating hourly averages from monthly data");
+    console.log("No real daily data available, calculating hourly averages from monthly data (API-based only)");
     processedData = calculateHourlyAveragesFromMonth(monthlyData);
-    console.log("Generated hourly averages:", processedData.slice(0, 3));
+    
+    // If we still don't have data, notify the user
+    if (processedData.every(point => point.temperature === null)) {
+      toast.error("No real data is available from the API for this view", {
+        description: "Please check your API connection or try another zone."
+      });
+    }
   }
   
   // Process data for chart rendering
@@ -73,7 +80,7 @@ export function DailyChart({ data, monthlyData = [], isMockData = false }: Daily
       
       <ChartLegend 
         colors={temperatureConfig.colors} 
-        showSimulated={!hasRealData || realDataPointsCount < totalDataPoints} 
+        showSimulated={false} // Never show simulated data label
       />
       
       <TemperatureBarChart 
