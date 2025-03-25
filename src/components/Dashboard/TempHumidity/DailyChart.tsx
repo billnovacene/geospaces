@@ -17,8 +17,8 @@ import { subDays, format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 import { sensorTypes, getSensorValueColor } from "@/utils/sensorThresholds";
-import { Tooltip as UITooltip } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { TooltipWrapper } from "@/components/UI/TooltipWrapper";
 
 interface DailyChartProps {
   data: DailyOverviewPoint[];
@@ -88,9 +88,9 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
             </Badge>
           )}
           
-          <UITooltip content="Data shown is from sensors, some hours may use simulated values when sensor readings are unavailable">
+          <TooltipWrapper content="Data shown is from sensors, some hours may use simulated values when sensor readings are unavailable">
             <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-          </UITooltip>
+          </TooltipWrapper>
         </div>
         
         <div className="flex gap-2">
