@@ -1,12 +1,12 @@
 
 import * as React from "react"
-import { ContentProps } from "recharts/types/component/Tooltip"
+import { TooltipProps } from "recharts"
 import { useChart } from "./hooks"
 import { TooltipLabel } from "./TooltipLabel"
 import { TooltipItem } from "./TooltipItem"
 
 interface ChartTooltipContentProps
-  extends Omit<ContentProps, "content" | "contentStyle"> {
+  extends Omit<TooltipProps<any, any>, "content" | "contentStyle"> {
   labelFormatter?: (label: any, payload: any[]) => React.ReactNode
   formatter?: (value: any, name: string, item: any, index: number, payload: any) => React.ReactNode
   className?: string
