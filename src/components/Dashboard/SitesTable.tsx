@@ -9,6 +9,7 @@ import { siteDevicesCache } from "@/services/sites";
 import { Site } from "@/services/interfaces";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 
 interface SitesTableProps {
   sites: Site[];
@@ -100,10 +101,10 @@ export function SitesTable({ sites }: SitesTableProps) {
                 )}
               </TableCell>
               <TableCell>
-                <div className="flex items-center">
-                  <Cpu className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                <Badge variant="outline" className="flex items-center gap-1 bg-[#6CAE3E]/10 text-[#6CAE3E] border-[#6CAE3E]/20">
+                  <Cpu className="h-3.5 w-3.5 mr-0.5" />
                   <span>{deviceCount}</span>
-                </div>
+                </Badge>
               </TableCell>
               <TableCell>{formatDate(site.createdAt)}</TableCell>
               <TableCell>
@@ -125,7 +126,7 @@ export function SitesTable({ sites }: SitesTableProps) {
                 </HoverCard>
               </TableCell>
               <TableCell className="text-right">
-                <Button variant="outline" size="sm" asChild>
+                <Button variant="outline" size="sm" asChild className="bg-[#6CAE3E]/5 hover:bg-[#6CAE3E]/10 border-[#6CAE3E]/20 text-[#6CAE3E] hover:text-[#5A972F]">
                   <Link to={`/site/${site.id}`}>View Details</Link>
                 </Button>
               </TableCell>

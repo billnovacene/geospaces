@@ -1,11 +1,13 @@
+
 import { useParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Cpu } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SiteListItem } from "@/components/Site/SiteListItem";
 import { SitesSidebarError } from "./SitesSidebarError";
 import { SitesSidebarEmpty } from "./SitesSidebarEmpty";
 import { useSitesList } from "@/hooks/useSitesList";
+import { Badge } from "@/components/ui/badge";
 
 interface SitesSidebarProps {
   preserveDashboardRoute?: boolean;
@@ -66,8 +68,11 @@ export function SitesSidebar({
 
   return (
     <div className="site-listing">
-      <div className="py-2 px-5 mb-2 text-sm font-medium text-zinc-500">
-        Project: Zircon ({activeSites.length} sites)
+      <div className="py-2 px-5 mb-2 flex justify-between items-center">
+        <span className="text-sm font-medium text-zinc-500">Project: Zircon</span>
+        <Badge variant="outline" className="bg-[#6CAE3E]/10 text-[#6CAE3E] border-[#6CAE3E]/20 text-xs">
+          {activeSites.length} {activeSites.length === 1 ? 'site' : 'sites'}
+        </Badge>
       </div>
       
       {activeSites.map(site => (

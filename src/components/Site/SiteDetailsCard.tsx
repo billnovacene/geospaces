@@ -6,6 +6,7 @@ import { formatDate, getStatusColor } from "@/utils/formatting";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesCount } from "@/services/devices";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Cpu } from "lucide-react";
 
 interface SiteDetailsCardProps {
   site: Site;
@@ -52,11 +53,14 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
           <Card className="bg-muted/40">
             <CardContent className="p-4">
               <div>
-                <p className="text-sm font-medium">Devices</p>
+                <p className="text-sm font-medium flex items-center gap-1.5">
+                  <Cpu className="h-4 w-4 text-[#6CAE3E]" />
+                  Devices
+                </p>
                 {deviceCountLoading ? (
                   <Skeleton className="h-8 w-16" />
                 ) : (
-                  <p className="text-2xl font-bold">{deviceCount || 0}</p>
+                  <p className="text-2xl font-bold text-[#6CAE3E]">{deviceCount || 0}</p>
                 )}
               </div>
             </CardContent>

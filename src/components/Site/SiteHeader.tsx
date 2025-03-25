@@ -11,13 +11,23 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { HomeIcon, Building2 } from "lucide-react";
+import { HomeIcon, Building2, Cpu } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchDevicesCountForSite } from "@/services/device-sites";
 
 interface SiteHeaderProps {
   site: Site;
 }
 
 export function SiteHeader({ site }: SiteHeaderProps) {
+  // Fetch device count for this site
+  const { data: deviceCount = 0 } = useQuery({
+    queryKey: ["devices-count", site.id],
+    queryFn: () => fetchDevicesCountForSite(site.id),
+    enabled: !!site.id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   return (
     <div className="space-y-6">
       <Breadcrumb>
@@ -47,6 +57,10 @@ export function SiteHeader({ site }: SiteHeaderProps) {
               {site.status || "Unknown"}
             </Badge>
             {site.type && <Badge variant="secondary">{site.type}</Badge>}
+            <Badge variant="outline" className="bg-[#6CAE3E]/10 text-[#6CAE3E] border-[#6CAE3E]/20 flex items-center gap-1">
+              <Cpu className="h-3.5 w-3.5 mr-0.5" />
+              <span>{deviceCount} {deviceCount === 1 ? 'Device' : 'Devices'}</span>
+            </Badge>
           </div>
         </div>
       </div>

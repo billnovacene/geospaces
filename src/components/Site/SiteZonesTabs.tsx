@@ -3,6 +3,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ZonesList } from "@/components/Site/ZonesList";
 import { ZonesHierarchyList } from "@/components/Site/ZonesHierarchyList";
 import { AlertTriangle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchDevicesCountForSite } from "@/services/device-sites";
+import { Badge } from "@/components/ui/badge";
 
 interface SiteZonesTabsProps {
   siteId: number;
@@ -11,6 +14,14 @@ interface SiteZonesTabsProps {
 export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
   // Check if we have a valid siteId
   const isValidSiteId = siteId && !isNaN(Number(siteId));
+
+  // Fetch device count for this site
+  const { data: deviceCount = 0 } = useQuery({
+    queryKey: ["devices-count", siteId],
+    queryFn: () => fetchDevicesCountForSite(siteId),
+    enabled: isValidSiteId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   if (!isValidSiteId) {
     return (
@@ -26,9 +37,14 @@ export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
 
   return (
     <Tabs defaultValue="hierarchy" className="w-full">
-      <TabsList className="mb-4 bg-gray-100">
-        <TabsTrigger value="hierarchy" className="data-[state=active]:bg-white data-[state=active]:text-[#6CAE3E]">Hierarchical View</TabsTrigger>
-        <TabsTrigger value="list" className="data-[state=active]:bg-white data-[state=active]:text-[#6CAE3E]">List View</TabsTrigger>
+      <TabsList className="mb-4 bg-gray-100 flex justify-between">
+        <div className="flex">
+          <TabsTrigger value="hierarchy" className="data-[state=active]:bg-white data-[state=active]:text-[#6CAE3E]">Hierarchical View</TabsTrigger>
+          <TabsTrigger value="list" className="data-[state=active]:bg-white data-[state=active]:text-[#6CAE3E]">List View</TabsTrigger>
+        </div>
+        <Badge variant="outline" className="mr-2 bg-[#6CAE3E]/10 text-[#6CAE3E] border-[#6CAE3E]/20">
+          {deviceCount} {deviceCount === 1 ? 'Device' : 'Devices'}
+        </Badge>
       </TabsList>
       <TabsContent value="hierarchy">
         <ZonesHierarchyList siteId={siteId} />

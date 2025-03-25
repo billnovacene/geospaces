@@ -1,10 +1,12 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Building } from "lucide-react";
+import { Building, Cpu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SiteStatusBadge } from "@/components/Dashboard/SiteStatusBadge";
 import { Site } from "@/services/interfaces";
+import { useQuery } from "@tanstack/react-query";
+import { fetchDevicesCountForSite } from "@/services/device-sites";
 
 interface SiteListItemProps {
   site: Site;
@@ -19,6 +21,14 @@ export const SiteListItem = ({
 }: SiteListItemProps) => {
   const defaultLink = `/site/${site.id}`;
   const sitePath = linkTo || defaultLink;
+
+  // Fetch device count for this site
+  const { data: deviceCount = 0 } = useQuery({
+    queryKey: ["devices-count-sidebar", site.id],
+    queryFn: () => fetchDevicesCountForSite(site.id),
+    enabled: !!site.id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   return (
     <Link to={sitePath} className="block">
@@ -38,7 +48,13 @@ export const SiteListItem = ({
             {site.name}
           </span>
         </div>
-        <SiteStatusBadge status={site.status || "Active"} />
+        <div className="flex items-center gap-2">
+          <SiteStatusBadge status={site.status || "Active"} />
+          <span className="text-xs text-[#6CAE3E] flex items-center">
+            <Cpu className="h-3 w-3 mr-0.5" />
+            {deviceCount}
+          </span>
+        </div>
       </div>
     </Link>
   );
