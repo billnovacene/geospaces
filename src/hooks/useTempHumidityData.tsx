@@ -11,13 +11,24 @@ interface LogItem {
   type: 'info' | 'error' | 'warning' | 'success' | 'api';
 }
 
-export function useTempHumidityData() {
-  const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
+interface UseTempHumidityDataProps {
+  forceSiteId?: string;
+  forceZoneId?: string;
+}
+
+export function useTempHumidityData(props?: UseTempHumidityDataProps) {
+  const { siteId: routeSiteId, zoneId: routeZoneId } = useParams<{ siteId: string; zoneId: string }>();
+  
+  // Use forced IDs from props if provided, otherwise use route params
+  const siteId = props?.forceSiteId || routeSiteId;
+  const zoneId = props?.forceZoneId || routeZoneId;
+  
   const [isUsingMockData, setIsUsingMockData] = useState(false);
   const [loadingStage, setLoadingStage] = useState<'initial' | 'daily' | 'stats' | 'monthly' | 'complete'>('initial');
   const [apiConnectionFailed, setApiConnectionFailed] = useState(false);
   const [logs, setLogs] = useState<LogItem[]>([]);
-  const paramsLoggedRef = useRef(false); // Use ref to track if params logged
+  const paramsLoggedRef = useRef(false);
+  const consoleLoggedRef = useRef(false);
   
   // Function to add logs
   const addLog = useCallback((message: string, type: LogItem['type'] = 'info') => {
@@ -34,11 +45,21 @@ export function useTempHumidityData() {
   useEffect(() => {
     if (!paramsLoggedRef.current) {
       addLog(`Dashboard initialized for ${zoneId ? `zone ${zoneId}` : siteId ? `site ${siteId}` : 'all locations'}`, 'info');
-      addLog(`Route params: siteId=${siteId || 'undefined'}, zoneId=${zoneId || 'undefined'}`, 'info');
-      console.log("🔍 useTempHumidityData: Route params:", { siteId, zoneId });
+      addLog(`Using params: siteId=${siteId || 'undefined'}, zoneId=${zoneId || 'undefined'}`, 'info');
       paramsLoggedRef.current = true;
     }
-  }, [addLog, siteId, zoneId]);
+    
+    if (!consoleLoggedRef.current) {
+      console.log("🔍 useTempHumidityData: Using params:", { siteId, zoneId });
+      console.log("🔍 Props or route params:", { 
+        forceSiteId: props?.forceSiteId, 
+        forceZoneId: props?.forceZoneId,
+        routeSiteId,
+        routeZoneId
+      });
+      consoleLoggedRef.current = true;
+    }
+  }, [addLog, siteId, zoneId, props?.forceSiteId, props?.forceZoneId, routeSiteId, routeZoneId]);
   
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["temp-humidity-data", siteId, zoneId],
@@ -159,56 +180,6 @@ export function useTempHumidityData() {
       setApiConnectionFailed(true);
     }
   }, [data, error, addLog]);
-
-  // Setup auto-refresh interval
-  useEffect(() => {
-    const liveDataInterval = setInterval(() => {
-      console.log("🔄 Refreshing temperature data...");
-      addLog('Auto-refreshing temperature data...', 'info');
-      refetch();
-    }, 30000);
-    
-    return () => clearInterval(liveDataInterval);
-  }, [refetch, addLog]);
-
-  // Show toast on data load
-  useEffect(() => {
-    if (data) {
-      const realDataPoints = data.daily?.filter(point => point.isReal?.temperature === true).length || 0;
-      const totalDataPoints = data.daily?.length || 0;
-      const realDataPercentage = totalDataPoints > 0 ? (realDataPoints / totalDataPoints * 100).toFixed(1) : "0";
-      
-      console.log("✅ Temperature and humidity data loaded:", {
-        statsAvailable: !!data.stats,
-        dailyDataPoints: data.daily?.length,
-        monthlyDataPoints: data.monthly?.length,
-        realDataPoints,
-        realDataPercentage: `${realDataPercentage}%`,
-        operatingHours: data.operatingHours
-      });
-      
-      if (zoneId) {
-        console.log(`📍 For zone: ${zoneId}`);
-      } else if (siteId) {
-        console.log(`📍 For site: ${siteId}`);
-      }
-      
-      const contextType = zoneId ? "zone" : (siteId ? "site" : "dashboard");
-      
-      if (realDataPoints > 0) {
-        toast.success(`Real temperature data loaded for ${contextType}`, {
-          id: "temp-data-loaded",
-          duration: 2000,
-        });
-      } else {
-        toast.warning(`No real-time data available for ${contextType}`, {
-          id: "temp-data-loaded",
-          duration: 3000,
-          description: "Using historical API data only"
-        });
-      }
-    }
-  }, [data, siteId, zoneId, addLog]);
 
   return { 
     data, 

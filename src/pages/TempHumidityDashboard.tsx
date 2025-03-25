@@ -4,9 +4,10 @@ import { DashboardHeader } from "@/components/Dashboard/TempHumidity/DashboardHe
 import { DashboardMainContent } from "@/components/Dashboard/TempHumidity/DashboardMainContent";
 import { useTempHumidityData } from "@/hooks/useTempHumidityData";
 import { useContextName } from "@/components/Dashboard/TempHumidity/useContextName";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { ZonesHierarchy } from "@/components/Dashboard/ZonesHierarchy";
 import { LogPanel } from "@/components/Dashboard/TempHumidity/LogPanel";
+import { SpecificZoneView } from "@/components/Dashboard/TempHumidity/SpecificZoneView";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { RefreshCw } from "lucide-react";
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button";
 export default function TempHumidityDashboard() {
   // Get route params to detect if we're viewing a zone
   const { zoneId, siteId } = useParams<{ zoneId: string; siteId: string }>();
+  const location = useLocation();
   
   // Custom hooks to manage data and context
   const { 
@@ -30,6 +32,9 @@ export default function TempHumidityDashboard() {
   } = useTempHumidityData();
   
   const { contextName } = useContextName();
+  
+  // Check if we should render the specific zone view (zone 12658 of site 471)
+  const shouldRenderSpecificZone = siteId === "471" && !zoneId;
   
   // Handle manual refresh
   const handleRefresh = () => {
@@ -98,23 +103,35 @@ export default function TempHumidityDashboard() {
               operatingHours={data?.operatingHours}
             />
 
-            {/* Main dashboard content with stats, charts and sensor info */}
-            <DashboardMainContent 
-              data={data}
-              isLoading={isLoading}
-              error={error}
-              loadingStage={loadingStage}
-              isUsingMockData={isUsingMockData}
-              contextName={contextName}
-              apiConnectionFailed={apiConnectionFailed}
-            />
-            
-            {/* Log panel to show API data and processing logs */}
-            <LogPanel 
-              logs={logs}
-              title={`Temperature API Logs - ${contextName}`}
-              onClearLogs={clearLogs}
-            />
+            {/* Special case for site 471 - show specific zone 12658 */}
+            {shouldRenderSpecificZone ? (
+              <SpecificZoneView 
+                siteId="471" 
+                zoneId="12658" 
+                contextName="Zone 12658 (Site 471)"
+              />
+            ) : (
+              <>
+                {/* Main dashboard content with stats, charts and sensor info */}
+                <DashboardMainContent 
+                  data={data}
+                  isLoading={isLoading}
+                  error={error}
+                  loadingStage={loadingStage}
+                  isUsingMockData={isUsingMockData}
+                  contextName={contextName}
+                  apiConnectionFailed={apiConnectionFailed}
+                  onRetry={refetch}
+                />
+                
+                {/* Log panel to show API data and processing logs */}
+                <LogPanel 
+                  logs={logs}
+                  title={`Temperature API Logs - ${contextName}`}
+                  onClearLogs={clearLogs}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>

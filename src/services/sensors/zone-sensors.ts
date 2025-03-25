@@ -1,6 +1,6 @@
 
 import { fetchDevicesForZone } from "../device-zones";
-import { ZONE_SENSORS_CACHE } from "./sensor-maps";
+import { ZONE_SENSORS, ZONE_SENSORS_CACHE, ZONE_SENSOR_DETAILS } from "./sensor-maps";
 import { SensorInfo } from "../interfaces/temp-humidity";
 
 // Function to find temperature and humidity sensors in a zone
@@ -16,8 +16,32 @@ export async function findZoneSensors(zoneId: number, siteId: number): Promise<{
     console.log(`Using cached sensors for zone ${zoneId}:`, ZONE_SENSORS_CACHE[cacheKey]);
     return ZONE_SENSORS_CACHE[cacheKey];
   }
+  
+  // Check if this is a known zone in our static mapping
+  const zoneIdStr = zoneId.toString();
+  if (ZONE_SENSORS[zoneIdStr]) {
+    console.log(`Using predefined sensors for zone ${zoneId}:`, ZONE_SENSORS[zoneIdStr]);
+    
+    // Get the predefined sensor details if available
+    const sensorDetails = ZONE_SENSOR_DETAILS[zoneIdStr] || {
+      temperatureSensors: [],
+      humiditySensors: []
+    };
+    
+    // Create result with both sensor IDs and detailed info
+    const result = {
+      temperature: ZONE_SENSORS[zoneIdStr].temperature,
+      humidity: ZONE_SENSORS[zoneIdStr].humidity,
+      temperatureSensors: sensorDetails.temperatureSensors,
+      humiditySensors: sensorDetails.humiditySensors
+    };
+    
+    // Cache the result
+    ZONE_SENSORS_CACHE[cacheKey] = result;
+    return result;
+  }
 
-  // Fetch all devices in the zone
+  // If not in static mapping, fetch all devices in the zone
   console.log(`Finding sensors for zone ${zoneId} in site ${siteId}`);
   const devices = await fetchDevicesForZone(zoneId, siteId, true);
   console.log(`Found ${devices.length} devices in zone ${zoneId}`);

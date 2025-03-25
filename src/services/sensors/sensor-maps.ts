@@ -1,47 +1,80 @@
 
-import { SensorInfo } from "../interfaces/temp-humidity";
+// Cache for zone sensors
+export const ZONE_SENSORS_CACHE: Record<string, {
+  temperature: string[];
+  humidity: string[];
+  temperatureSensors: Array<{id: string; name: string; deviceName: string; deviceId: string; lastUpdated: string;}>;
+  humiditySensors: Array<{id: string; name: string; deviceName: string; deviceId: string; lastUpdated: string;}>;
+}> = {};
 
-// Map of known temperature sensors by site
+// Map of temperature sensors for each site
 export const TEMP_SENSORS: Record<string, string[]> = {
-  "471": ["a1442adf-1109-4b30-a860-309ef45ae67f"]
+  "471": ["e4dd6e3f-8572-4036-84e9-4c6e79cfcb18"], // Site 471 temperature sensor
 };
 
-// Map of known humidity sensors by site
+// Map of humidity sensors for each site
 export const HUMIDITY_SENSORS: Record<string, string[]> = {
-  "471": ["e4dd6e3f-8572-4036-84e9-4c6e79cfcb18"]
+  "471": ["a1442adf-1109-4b30-a860-309ef45ae67f"], // Site 471 humidity sensor
 };
 
-// Detailed sensor information for known site sensors
+// Specific zone sensors for important zones
+export const ZONE_SENSORS: Record<string, { temperature: string[], humidity: string[] }> = {
+  "12658": {
+    temperature: ["e4dd6e3f-8572-4036-84e9-4c6e79cfcb18"], // Zone 12658 temperature sensor
+    humidity: ["a1442adf-1109-4b30-a860-309ef45ae67f"]     // Zone 12658 humidity sensor
+  }
+};
+
+// Source data for sensor metadata
 export const SITE_SENSOR_DETAILS: Record<string, {
-  temperatureSensors: SensorInfo[];
-  humiditySensors: SensorInfo[];
+  temperatureSensors: Array<{id: string; name: string; deviceName: string; deviceId: string; lastUpdated: string;}>;
+  humiditySensors: Array<{id: string; name: string; deviceName: string; deviceId: string; lastUpdated: string;}>;
 }> = {
   "471": {
     temperatureSensors: [
       {
-        id: "a1442adf-1109-4b30-a860-309ef45ae67f",
-        name: "Temperature Sensor",
-        deviceName: "Main Temperature Monitor",
-        deviceId: "temp-001",
+        id: "e4dd6e3f-8572-4036-84e9-4c6e79cfcb18",
+        name: "Temperature Sensor 1",
+        deviceName: "Temperature Monitor",
+        deviceId: "temp-device-471",
         lastUpdated: new Date().toISOString()
       }
     ],
     humiditySensors: [
       {
-        id: "e4dd6e3f-8572-4036-84e9-4c6e79cfcb18",
-        name: "Humidity Sensor",
-        deviceName: "Main Humidity Monitor",
-        deviceId: "hum-001",
+        id: "a1442adf-1109-4b30-a860-309ef45ae67f",
+        name: "Humidity Sensor 1",
+        deviceName: "Humidity Monitor",
+        deviceId: "humidity-device-471",
         lastUpdated: new Date().toISOString()
       }
     ]
   }
 };
 
-// Cache for sensors found in zones
-export const ZONE_SENSORS_CACHE: Record<string, {
-  temperature: string[];
-  humidity: string[];
-  temperatureSensors: SensorInfo[];
-  humiditySensors: SensorInfo[];
-}> = {};
+// Similar details for zone-specific sensors
+export const ZONE_SENSOR_DETAILS: Record<string, {
+  temperatureSensors: Array<{id: string; name: string; deviceName: string; deviceId: string; lastUpdated: string;}>;
+  humiditySensors: Array<{id: string; name: string; deviceName: string; deviceId: string; lastUpdated: string;}>;
+}> = {
+  "12658": {
+    temperatureSensors: [
+      {
+        id: "e4dd6e3f-8572-4036-84e9-4c6e79cfcb18",
+        name: "Zone Temperature Sensor",
+        deviceName: "Zone Temperature Monitor",
+        deviceId: "temp-device-zone-12658",
+        lastUpdated: new Date().toISOString()
+      }
+    ],
+    humiditySensors: [
+      {
+        id: "a1442adf-1109-4b30-a860-309ef45ae67f",
+        name: "Zone Humidity Sensor",
+        deviceName: "Zone Humidity Monitor",
+        deviceId: "humidity-device-zone-12658",
+        lastUpdated: new Date().toISOString()
+      }
+    ]
+  }
+};
