@@ -9,7 +9,6 @@ interface ZoneDetailsCardProps {
   zone: Zone;
   deviceCount: number | undefined;
   deviceCountLoading: boolean;
-  areaValue: string | null;
 }
 
 export const ZoneDetailsCard = ({ zone, deviceCount, deviceCountLoading }: ZoneDetailsCardProps) => {
