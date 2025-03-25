@@ -28,7 +28,12 @@ export function useTempHumidityData(props?: UseTempHumidityDataProps) {
   const [apiConnectionFailed, setApiConnectionFailed] = useState(false);
   const [logs, setLogs] = useState<LogItem[]>([]);
   const paramsLoggedRef = useRef(false);
-  const consoleLoggedRef = useRef(false);
+  
+  // Reset params logged ref when IDs change
+  useEffect(() => {
+    paramsLoggedRef.current = false;
+    console.log(`🔄 useTempHumidityData: IDs changed, resetting paramsLoggedRef`);
+  }, [siteId, zoneId]);
   
   // Function to add logs
   const addLog = useCallback((message: string, type: LogItem['type'] = 'info') => {
@@ -46,10 +51,7 @@ export function useTempHumidityData(props?: UseTempHumidityDataProps) {
     if (!paramsLoggedRef.current) {
       addLog(`Dashboard initialized for ${zoneId ? `zone ${zoneId}` : siteId ? `site ${siteId}` : 'all locations'}`, 'info');
       addLog(`Using params: siteId=${siteId || 'undefined'}, zoneId=${zoneId || 'undefined'}`, 'info');
-      paramsLoggedRef.current = true;
-    }
-    
-    if (!consoleLoggedRef.current) {
+      
       console.log("🔍 useTempHumidityData: Using params:", { siteId, zoneId });
       console.log("🔍 Props or route params:", { 
         forceSiteId: props?.forceSiteId, 
@@ -57,19 +59,26 @@ export function useTempHumidityData(props?: UseTempHumidityDataProps) {
         routeSiteId,
         routeZoneId
       });
-      consoleLoggedRef.current = true;
+      
+      paramsLoggedRef.current = true;
     }
   }, [addLog, siteId, zoneId, props?.forceSiteId, props?.forceZoneId, routeSiteId, routeZoneId]);
   
+  // Create a query key that depends on both siteId and zoneId
+  const queryKey = ["temp-humidity-data", siteId, zoneId];
+  
+  // Log the query key to debug
+  console.log("🔑 Using query key:", queryKey);
+  
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["temp-humidity-data", siteId, zoneId],
+    queryKey: queryKey,
     queryFn: async () => {
       addLog(`Starting data fetch process for ${zoneId ? `zone ${zoneId}` : siteId ? `site ${siteId}` : 'all locations'}`, 'api');
       console.log("🔄 Starting data fetch process for zone/site:", { zoneId, siteId });
       try {
+        setApiConnectionFailed(false);
         // Pass both siteId and zoneId to the API
         const result = await fetchTempHumidityData(siteId, zoneId);
-        setApiConnectionFailed(false);
         addLog(`API fetch successful: ${result.daily?.length || 0} daily points, ${result.monthly?.length || 0} monthly points`, 'success');
         
         // Log details about the data

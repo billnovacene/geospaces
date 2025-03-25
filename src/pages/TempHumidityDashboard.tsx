@@ -18,6 +18,14 @@ export default function TempHumidityDashboard() {
   const { zoneId, siteId } = useParams<{ zoneId: string; siteId: string }>();
   const location = useLocation();
   
+  // Special case handling for site 471 - always show zone 12658
+  const shouldRenderSpecificZone = siteId === "471" && !zoneId;
+  const effectiveZoneId = shouldRenderSpecificZone ? "12658" : zoneId;
+  const effectiveSiteId = siteId;
+  
+  console.log(`TempHumidityDashboard: Rendering with params: siteId=${effectiveSiteId}, zoneId=${effectiveZoneId}`);
+  console.log(`TempHumidityDashboard: shouldRenderSpecificZone=${shouldRenderSpecificZone}`);
+  
   // Custom hooks to manage data and context
   const { 
     data, 
@@ -29,12 +37,12 @@ export default function TempHumidityDashboard() {
     refetch,
     logs,
     clearLogs
-  } = useTempHumidityData();
+  } = useTempHumidityData({
+    forceSiteId: effectiveSiteId,
+    forceZoneId: effectiveZoneId
+  });
   
   const { contextName } = useContextName();
-  
-  // Check if we should render the specific zone view (zone 12658 of site 471)
-  const shouldRenderSpecificZone = siteId === "471" && !zoneId;
   
   // Handle manual refresh
   const handleRefresh = () => {
@@ -50,21 +58,21 @@ export default function TempHumidityDashboard() {
   
   // Refetch data when the zone or site changes
   useEffect(() => {
-    if (zoneId || siteId) {
-      console.log(`TempHumidityDashboard: Context changed to ${zoneId ? `zone ${zoneId}` : `site ${siteId}`}, refetching data...`);
+    if (effectiveZoneId || effectiveSiteId) {
+      console.log(`TempHumidityDashboard: Context changed to ${effectiveZoneId ? `zone ${effectiveZoneId}` : `site ${effectiveSiteId}`}, refetching data...`);
       refetch();
     }
-  }, [zoneId, siteId, refetch]);
+  }, [effectiveZoneId, effectiveSiteId, refetch]);
   
   // Show error toast when API connection fails
   useEffect(() => {
     if (apiConnectionFailed) {
       toast.error("API connection failed", {
-        description: `Unable to retrieve temperature data for ${zoneId ? `zone ${zoneId}` : siteId ? `site ${siteId}` : 'dashboard'}.`,
+        description: `Unable to retrieve temperature data for ${effectiveZoneId ? `zone ${effectiveZoneId}` : effectiveSiteId ? `site ${effectiveSiteId}` : 'dashboard'}.`,
         duration: 5000,
       });
     }
-  }, [apiConnectionFailed, zoneId, siteId]);
+  }, [apiConnectionFailed, effectiveZoneId, effectiveSiteId]);
   
   return (
     <SidebarWrapper>
@@ -85,7 +93,7 @@ export default function TempHumidityDashboard() {
               </Button>
             </div>
             <ZonesHierarchy
-              siteId={siteId ? Number(siteId) : null}
+              siteId={effectiveSiteId ? Number(effectiveSiteId) : null}
               preserveDashboardRoute={true}
               currentDashboard="temp-humidity"
               hideZonesWithoutSensors={true}

@@ -126,7 +126,7 @@ export function LiveDataMetrics() {
   }
   
   // We have real temperature data
-  const temperatureColor = getSensorValueColor('temperature', latestTemperature);
+  const temperatureColor = getSensorValueColor('temperature', latestTemperature ?? 0);
   const formattedTime = lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   
   // Extract color classes for use in component
