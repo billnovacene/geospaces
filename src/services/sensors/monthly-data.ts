@@ -1,5 +1,8 @@
+
 import { apiRequest } from "../api-client";
 import { MonthlyOverviewPoint, PointsDataResponse } from "../interfaces/temp-humidity";
+import { filterDataByOperatingHours } from "./data-processing";
+import { generateMockMonthlyData } from "./monthly-mock-data";
 
 export async function fetchSensorDataForMonth(
   siteId: string,
@@ -122,67 +125,6 @@ export async function fetchSensorDataForMonth(
     
     // Generate synthetic data as a fallback
     console.warn("Falling back to synthetic monthly data");
-    return Array(30).fill(null).map((_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (29 - i));
-      const dateStr = date.toISOString().split('T')[0];
-      
-      // Add some randomness and a sine wave pattern
-      const avgTemp = 21 + Math.sin(i / 30 * Math.PI * 2) * 3 + (Math.random() * 2 - 1);
-      const minTemp = avgTemp - (2 + Math.random() * 1);
-      const maxTemp = avgTemp + (2 + Math.random() * 1);
-      const avgHumidity = 55 + Math.sin((i / 30 * Math.PI * 2) + 1) * 10 + (Math.random() * 5 - 2.5);
-      
-      return {
-        date: dateStr,
-        avgTemp,
-        minTemp,
-        maxTemp,
-        avgHumidity
-      };
-    });
+    return generateMockMonthlyData();
   }
-}
-
-// Function to filter data points by operating hours
-function filterDataByOperatingHours(
-  data: Array<{timestamp: string, value: number | string}>,
-  operatingHours: { startTime: string; endTime: string }
-): Array<{timestamp: string, value: number | string}> {
-  if (!operatingHours || !operatingHours.startTime || !operatingHours.endTime) {
-    return data;
-  }
-  
-  // Parse the operating hours to get hours and minutes
-  const startParts = operatingHours.startTime.split(':');
-  const endParts = operatingHours.endTime.split(':');
-  
-  if (startParts.length < 2 || endParts.length < 2) {
-    console.warn('Invalid operating hours format:', operatingHours);
-    return data;
-  }
-  
-  const startHour = parseInt(startParts[0], 10);
-  const startMinute = parseInt(startParts[1], 10);
-  const endHour = parseInt(endParts[0], 10);
-  const endMinute = parseInt(endParts[1], 10);
-  
-  return data.filter(point => {
-    try {
-      const datetime = new Date(point.timestamp);
-      const hour = datetime.getHours();
-      const minute = datetime.getMinutes();
-      
-      // Convert to minutes since midnight for easier comparison
-      const timeInMinutes = hour * 60 + minute;
-      const startInMinutes = startHour * 60 + startMinute;
-      const endInMinutes = endHour * 60 + endMinute;
-      
-      // Check if the time is within operating hours
-      return timeInMinutes >= startInMinutes && timeInMinutes <= endInMinutes;
-    } catch (e) {
-      console.warn('Error filtering data point by operating hours:', e, point);
-      return false;
-    }
-  });
 }
