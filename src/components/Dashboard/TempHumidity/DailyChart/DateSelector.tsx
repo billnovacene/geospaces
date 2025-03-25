@@ -9,7 +9,6 @@ interface DateSelectorProps {
 
 export function DateSelector({ selectedDate, setSelectedDate }: DateSelectorProps) {
   const handlePrevDay = () => {
-    // Fix: Instead of using a callback, directly calculate and pass the new date
     const newDate = subDays(selectedDate, 1);
     setSelectedDate(newDate);
   };
