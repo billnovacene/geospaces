@@ -30,9 +30,9 @@ export function MonthlyOverview({
             <div className="col-span-1">
               <h2 className="text-xl font-medium mb-4">Monthly Overview - {contextName}</h2>
               <p className="text-sm text-gray-600 mb-3">
-                The last 30 days show peak temps around {stats.maxTemp}°C with minimums
-                near {stats.minTemp}°C. Early morning and late evening periods typically
-                show the largest temperature variations.
+                The monthly data shows peak temps around {stats.maxTemp}°C with minimums
+                near {stats.minTemp}°C during operating hours. Data has been filtered to only 
+                include measurements within operating hours.
               </p>
             </div>
             <div className="col-span-1 lg:col-span-3">

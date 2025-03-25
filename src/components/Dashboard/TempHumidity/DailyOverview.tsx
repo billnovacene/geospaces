@@ -34,7 +34,7 @@ export function DailyOverview({
             <div className="col-span-1">
               <h2 className="text-xl font-medium mb-4">Daily Overview - {contextName}</h2>
               <p className="text-sm text-gray-600 mb-3">
-                Today's temperatures range from {stats.minTemp}°C to {stats.maxTemp}°C.
+                Today's temperatures range from {stats.minTemp}°C to {stats.maxTemp}°C during operating hours.
                 {hasRealDailyData 
                   ? " Data is from actual sensor readings."
                   : " The current view uses simulated data where sensor readings are unavailable."}

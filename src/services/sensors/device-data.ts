@@ -15,9 +15,9 @@ export async function fetchRealDeviceData(
     console.log(`💧 Humidity sensors: ${humiditySensors.join(', ')}`);
     console.log("⏰ Operating hours:", operatingHours);
     
-    // Override with fixed 7am to 7pm hours
-    const workingHours = { startTime: "07:00", endTime: "19:00" };
-    console.log("⏰ Using fixed working hours:", workingHours);
+    // Default to 7am to 7pm if no operating hours provided
+    const workingHours = operatingHours || { startTime: "07:00", endTime: "19:00" };
+    console.log("⏰ Using working hours:", workingHours);
     
     // Get the first available temperature and humidity sensor IDs
     const mainTempSensorId = temperatureSensors[0];
