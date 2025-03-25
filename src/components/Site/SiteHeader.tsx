@@ -42,7 +42,7 @@ export function SiteHeader({ site }: SiteHeaderProps) {
         <div>
           <h1 className="text-3xl font-normal text-gray-800 mb-3 flex items-center">
             <Building2 className="h-7 w-7 mr-3 text-primary" />
-            {site.name} Office Site Dashboard
+            {site.name}
           </h1>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className={getStatusColor(site.status || "Unknown")}>
