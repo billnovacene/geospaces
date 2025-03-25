@@ -44,21 +44,24 @@ export default function TempHumidityDashboard() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["temp-humidity-data", siteId, zoneId],
     queryFn: () => fetchTempHumidityData(siteId, zoneId),
-    onSettled: (data, error) => {
+    // Remove the onSettled property and handle this logic in useEffect
+  });
+
+  // Handle data source detection in useEffect
+  useEffect(() => {
+    if (data) {
       // Check if we're using mock data by examining the API response
       const usingMockData = !data?.sourceData?.temperatureSensors?.length && 
-                            !data?.sourceData?.humiditySensors?.length;
+                          !data?.sourceData?.humiditySensors?.length;
       setIsUsingMockData(usingMockData);
       
-      if (error) {
-        console.error("Error fetching temperature data:", error);
-      }
-      
-      if (data) {
-        console.log(`Data source: ${usingMockData ? "SIMULATED" : "REAL API"} data`);
-      }
+      console.log(`Data source: ${usingMockData ? "SIMULATED" : "REAL API"} data`);
     }
-  });
+    
+    if (error) {
+      console.error("Error fetching temperature data:", error);
+    }
+  }, [data, error]);
 
   useEffect(() => {
     const liveDataInterval = setInterval(() => {
