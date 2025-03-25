@@ -17,7 +17,7 @@ export const fetchDevicesCountForSite = async (siteId: number): Promise<number> 
     
     // If not cached, fetch from API with timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
     
     const response = await apiRequest<DevicesResponse>(
       `/devices?page=1&limit=1&siteid=${siteId}&nodeveui=false`,
@@ -58,7 +58,7 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
     
     // Create abort controller for timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 12000); // 12 second timeout (reduced from 15)
     
     const response = await apiRequest<DevicesResponse>(
       `/devices?siteid=${siteId}&limit=100&nodeveui=false&includeSensors=true&nocache=${nocache}`,

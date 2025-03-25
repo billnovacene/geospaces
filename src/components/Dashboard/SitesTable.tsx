@@ -1,6 +1,6 @@
 
 import { format } from "date-fns";
-import { MapPin, Building2, Cpu } from "lucide-react";
+import { MapPin, Building2, Cpu, Server } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -9,12 +9,57 @@ import { siteDevicesCache } from "@/services/sites";
 import { Site } from "@/services/interfaces";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useEffect, useState } from "react";
+import { fetchDevicesCountForSite } from "@/services/device-sites";
+import { Badge } from "@/components/ui/badge";
 
 interface SitesTableProps {
   sites: Site[];
 }
 
 export function SitesTable({ sites }: SitesTableProps) {
+  // Store fetched device counts
+  const [deviceCounts, setDeviceCounts] = useState<Record<number, number | null>>({});
+  const [loadingCounts, setLoadingCounts] = useState<Record<number, boolean>>({});
+
+  // Fetch device counts for all sites when component mounts
+  useEffect(() => {
+    const fetchAllDeviceCounts = async () => {
+      // Create initial loading state for all sites
+      const initialLoadingState: Record<number, boolean> = {};
+      sites.forEach(site => {
+        if (site.id) {
+          initialLoadingState[site.id] = true;
+        }
+      });
+      setLoadingCounts(initialLoadingState);
+      
+      // Fetch counts for each site
+      for (const site of sites) {
+        if (site.id) {
+          try {
+            console.log(`Fetching device count for site ${site.id}...`);
+            const count = await fetchDevicesCountForSite(site.id);
+            
+            setDeviceCounts(prev => ({
+              ...prev,
+              [site.id]: count
+            }));
+          } catch (error) {
+            console.error(`Error fetching device count for site ${site.id}:`, error);
+          } finally {
+            setLoadingCounts(prev => ({
+              ...prev,
+              [site.id]: false
+            }));
+          }
+        }
+      }
+    };
+    
+    fetchAllDeviceCounts();
+  }, [sites]);
+
   // Format date
   const formatDate = (dateString: string) => {
     try {
@@ -26,6 +71,12 @@ export function SitesTable({ sites }: SitesTableProps) {
 
   // Get device count (prioritize cache)
   const getDeviceCount = (site: Site) => {
+    // First check if we have a freshly fetched count
+    if (site.id && deviceCounts[site.id] !== undefined) {
+      return deviceCounts[site.id];
+    }
+    
+    // Then check our cache
     if (site.id && siteDevicesCache[site.id] !== undefined && siteDevicesCache[site.id] > 0) {
       console.log(`Using cached device count for site ${site.id}: ${siteDevicesCache[site.id]}`);
       return siteDevicesCache[site.id];
@@ -70,6 +121,7 @@ export function SitesTable({ sites }: SitesTableProps) {
       <TableBody>
         {sites.map((site) => {
           const deviceCount = getDeviceCount(site);
+          const isLoading = site.id ? loadingCounts[site.id] : false;
           
           return (
             <TableRow key={site.id}>
@@ -100,9 +152,15 @@ export function SitesTable({ sites }: SitesTableProps) {
                 )}
               </TableCell>
               <TableCell>
-                <div className="flex items-center">
-                  <Cpu className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
-                  <span>{deviceCount}</span>
+                <div className="flex items-center gap-1">
+                  <Server className="h-3.5 w-3.5 text-muted-foreground" />
+                  {isLoading ? (
+                    <span className="text-muted-foreground text-sm">Loading...</span>
+                  ) : (
+                    <Badge variant="secondary" className="font-semibold">
+                      {deviceCount || 0}
+                    </Badge>
+                  )}
                 </div>
               </TableCell>
               <TableCell>{formatDate(site.createdAt)}</TableCell>
