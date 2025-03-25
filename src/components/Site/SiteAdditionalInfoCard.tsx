@@ -3,7 +3,7 @@ import { Site } from "@/services/interfaces";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/utils/formatting";
-import { Clock, Calendar } from "lucide-react";
+import { Clock, Calendar, ToggleLeft, ToggleRight } from "lucide-react";
 import { format } from "date-fns";
 
 interface SiteAdditionalInfoCardProps {
@@ -39,18 +39,38 @@ export function SiteAdditionalInfoCard({ site }: SiteAdditionalInfoCardProps) {
           {site.isEnabledScheduler !== undefined && (
             <div className="border rounded-md p-3">
               <h3 className="font-medium text-sm text-muted-foreground mb-2">Scheduler</h3>
-              <Badge variant={site.isEnabledScheduler ? "default" : "outline"}>
-                {site.isEnabledScheduler ? "Enabled" : "Disabled"}
-              </Badge>
+              <div className="flex items-center">
+                {site.isEnabledScheduler ? (
+                  <div className="flex items-center">
+                    <ToggleRight className="h-6 w-6 text-primary mr-2" />
+                    <span className="text-sm font-medium">Enabled</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <ToggleLeft className="h-6 w-6 text-muted-foreground mr-2" />
+                    <span className="text-sm font-medium text-muted-foreground">Disabled</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
           
           {site.isEnabledCondition !== undefined && (
             <div className="border rounded-md p-3">
               <h3 className="font-medium text-sm text-muted-foreground mb-2">Condition</h3>
-              <Badge variant={site.isEnabledCondition ? "default" : "outline"}>
-                {site.isEnabledCondition ? "Enabled" : "Disabled"}
-              </Badge>
+              <div className="flex items-center">
+                {site.isEnabledCondition ? (
+                  <div className="flex items-center">
+                    <ToggleRight className="h-6 w-6 text-primary mr-2" />
+                    <span className="text-sm font-medium">Enabled</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <ToggleLeft className="h-6 w-6 text-muted-foreground mr-2" />
+                    <span className="text-sm font-medium text-muted-foreground">Disabled</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
