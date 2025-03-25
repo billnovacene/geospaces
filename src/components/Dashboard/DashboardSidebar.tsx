@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
@@ -52,8 +51,6 @@ export function DashboardSidebar() {
             <Settings className="h-5 w-5" />
           </Button>
         </div>
-
-        {/* Search section removed as requested */}
 
         {/* Sticky Dashboards Section at the top */}
         <div className="sticky top-0 z-10 bg-white border-b border-[#E5E7EB]">

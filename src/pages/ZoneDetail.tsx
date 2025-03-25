@@ -68,7 +68,7 @@ const ZoneDetail = () => {
                 <Package className="h-6 w-6 text-primary" />
               </div>
               <h1 className="text-2xl font-semibold">
-                {zone.name} Zone Dashboard
+                Overview
               </h1>
             </div>
 

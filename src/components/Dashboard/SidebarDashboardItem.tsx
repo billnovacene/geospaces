@@ -56,6 +56,9 @@ export function SidebarDashboardItem({
     }
   };
   
+  // Replace "All Data" with "Overview" in the display name
+  const displayName = name === "All Data" ? "Overview" : name;
+  
   const content = (
     <div 
       className={cn(
@@ -80,7 +83,7 @@ export function SidebarDashboardItem({
           isSelected ? "text-primary font-semibold" : 
           isDashboardTypeActive ? "text-zinc-900" : "text-zinc-800"
         )}>
-          {name}
+          {displayName}
         </span>
       </div>
     </div>
