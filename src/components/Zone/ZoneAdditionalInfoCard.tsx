@@ -4,6 +4,7 @@ import { Zone } from "@/services/interfaces";
 import { formatDate } from "@/utils/formatting";
 import { formatZoneLocation } from "@/utils/zoneUtils";
 import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
 
 interface ZoneAdditionalInfoCardProps {
   zone: Zone;
@@ -11,11 +12,42 @@ interface ZoneAdditionalInfoCardProps {
 
 export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) => {
   const locationData = formatZoneLocation(zone);
+  const [formattedCoordinates, setFormattedCoordinates] = useState<string | null>(null);
   
   // We'll calculate the area here to ensure it's displayed properly in this component
   const areaValue = zone?.location && Array.isArray(zone.location) && zone.location.length >= 3 
     ? calculateArea(zone.location)
-    : null;
+    : (zone?.location && typeof zone.location === 'object' && !Array.isArray(zone.location))
+      ? calculateAreaFromGeoJSON(zone.location as any)
+      : null;
+  
+  // Extract and format coordinates for display
+  useEffect(() => {
+    if (zone?.location) {
+      try {
+        let coords;
+        if (typeof zone.location === 'object' && !Array.isArray(zone.location)) {
+          // Extract coordinates from GeoJSON format
+          const geoJson = zone.location as any;
+          if (geoJson?.geometry?.coordinates?.[0]) {
+            coords = geoJson.geometry.coordinates[0].slice(0, 3).map((coord: number[]) => 
+              `[${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}]`
+            ).join(", ") + (geoJson.geometry.coordinates[0].length > 3 ? ", ..." : "");
+          }
+        } else if (Array.isArray(zone.location) && zone.location.length > 0) {
+          // Format direct coordinate array
+          coords = zone.location.slice(0, 3).map((coord: number[]) => 
+            `[${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}]`
+          ).join(", ") + (zone.location.length > 3 ? ", ..." : "");
+        }
+        
+        setFormattedCoordinates(coords || null);
+      } catch (error) {
+        console.error("Error formatting coordinates:", error);
+        setFormattedCoordinates(null);
+      }
+    }
+  }, [zone?.location]);
   
   function calculateArea(coordinates: number[][]) {
     if (!coordinates || coordinates.length < 3) {
@@ -51,6 +83,24 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
       return area.toFixed(2);
     } catch (error) {
       console.error("Error calculating area:", error);
+      return null;
+    }
+  }
+  
+  function calculateAreaFromGeoJSON(geoJsonLocation: any) {
+    try {
+      if (
+        geoJsonLocation?.geometry?.coordinates && 
+        Array.isArray(geoJsonLocation.geometry.coordinates) &&
+        geoJsonLocation.geometry.coordinates.length > 0 &&
+        Array.isArray(geoJsonLocation.geometry.coordinates[0]) &&
+        geoJsonLocation.geometry.coordinates[0].length >= 3
+      ) {
+        return calculateArea(geoJsonLocation.geometry.coordinates[0]);
+      }
+      return null;
+    } catch (error) {
+      console.error("Error calculating area from GeoJSON:", error);
       return null;
     }
   }
@@ -108,6 +158,18 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
             </p>
           )}
         </div>
+        
+        {/* Coordinates preview */}
+        {formattedCoordinates && (
+          <div className="mb-2">
+            <h3 className="font-medium text-sm text-muted-foreground mb-1">
+              Location Coordinates
+            </h3>
+            <p className="text-xs text-muted-foreground border rounded-lg p-2 bg-gray-50 font-mono overflow-auto">
+              {formattedCoordinates}
+            </p>
+          </div>
+        )}
         
         {locationDataExists && (
           <div>
