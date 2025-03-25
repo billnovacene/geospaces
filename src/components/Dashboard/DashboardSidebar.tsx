@@ -50,12 +50,7 @@ export function DashboardSidebar() {
           </Button>
         </div>
 
-        <div className="p-5 border-b border-[#E5E7EB] bg-white">
-          <div className="relative">
-            <Input placeholder="Search" className="pl-4 h-9 text-sm border-[#E5E7EB] bg-white text-[#8E9196]" />
-            <Search className="absolute right-3 top-2.5 h-4 w-4 text-[#8E9196]" />
-          </div>
-        </div>
+        {/* Search section removed as requested */}
 
         {/* Sticky Dashboards Section at the top */}
         <div className="sticky top-0 z-10 bg-white border-b border-[#E5E7EB]">
