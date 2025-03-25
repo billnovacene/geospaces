@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZones } from "@/services/api";
 import { Zone } from "@/services/interfaces";
@@ -33,10 +33,14 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     staleTime: 10 * 60 * 1000, // 10 minutes
-    onSettled: () => {
+  });
+
+  // Set hasFetched to true after the first query completes
+  useEffect(() => {
+    if (allZones.length > 0 || error) {
       hasFetchedRef.current = true;
     }
-  });
+  }, [allZones, error]);
 
   // Filter zones based on search term - safely handle empty or undefined zones
   const filteredZones = allZones && allZones.length > 0 
