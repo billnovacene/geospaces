@@ -14,6 +14,9 @@ import { SitesSidebar } from "./SitesSidebar";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZone } from "@/services/zones";
 
+// Import process.env to get the build version
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || "1.2.4"; // Fallback to hardcoded version if env var not set
+
 export function DashboardSidebar() {
   const { siteId, zoneId } = useParams<{ siteId: string, zoneId: string }>();
   const location = useLocation();
@@ -126,12 +129,12 @@ export function DashboardSidebar() {
       <SidebarFooter className="border-t border-[#E5E7EB] p-4 bg-white">
         <div className="flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
-            <Avatar className="h-9 w-9 bg-black">
-              <div className="text-white font-bold">N</div>
+            <Avatar className="h-7 w-7 bg-black">
+              <div className="text-white text-xs font-bold">N</div>
             </Avatar>
             <div>
-              <div className="font-semibold">Novacene</div>
-              <div className="text-xs text-[#8E9196]">1.2.4</div>
+              <div className="font-semibold text-sm">Novacene</div>
+              <div className="text-xs text-[#8E9196]">v{APP_VERSION}</div>
             </div>
           </div>
           <Button variant="ghost" size="icon" className="text-[#8E9196]">
