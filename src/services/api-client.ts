@@ -19,21 +19,33 @@ export async function apiRequest<T>(
       ...(options.headers || {})
     };
 
+    console.log(`🌐 API Request: ${API_BASE_URL}${endpoint}`);
+    console.time(`API call to ${endpoint}`);
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: "GET",
       ...options,
       headers
     });
 
+    console.timeEnd(`API call to ${endpoint}`);
+    
     if (!response.ok) {
       const errorData = await response.json();
       console.error('API error response:', errorData);
       throw new Error(errorData.message || `API request failed with status ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log(`✅ API Response for ${endpoint}:`, {
+      status: response.status,
+      dataSize: JSON.stringify(data).length,
+      dataPreview: JSON.stringify(data).slice(0, 200) + '...',
+    });
+    
+    return data;
   } catch (error) {
-    console.error(`Error in API request to ${endpoint}:`, error);
+    console.error(`❌ Error in API request to ${endpoint}:`, error);
     toast.error(`API request failed: ${(error as Error).message}`);
     throw error;
   }

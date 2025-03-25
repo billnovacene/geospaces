@@ -20,7 +20,7 @@ export default function TempHumidityDashboard() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
   const [isUsingMockData, setIsUsingMockData] = useState(false);
   
-  console.log("TempHumidityDashboard: Route params:", { siteId, zoneId });
+  console.log("🔍 TempHumidityDashboard: Route params:", { siteId, zoneId });
   
   const { data: siteData } = useQuery({
     queryKey: ["site-for-temp-dashboard", siteId],
@@ -51,16 +51,21 @@ export default function TempHumidityDashboard() {
                           !data?.sourceData?.humiditySensors?.length;
       setIsUsingMockData(usingMockData);
       
-      console.log(`Data source: ${usingMockData ? "SIMULATED" : "REAL API"} data`);
+      console.log(`📊 Data source: ${usingMockData ? "SIMULATED" : "REAL API"} data`);
+      console.log("📡 Sensors:", {
+        temperature: data?.sourceData?.temperatureSensors || [],
+        humidity: data?.sourceData?.humiditySensors || []
+      });
     }
     
     if (error) {
-      console.error("Error fetching temperature data:", error);
+      console.error("❌ Error fetching temperature data:", error);
     }
   }, [data, error]);
 
   useEffect(() => {
     const liveDataInterval = setInterval(() => {
+      console.log("🔄 Refreshing temperature data...");
       refetch();
     }, 30000);
     
@@ -69,14 +74,19 @@ export default function TempHumidityDashboard() {
 
   useEffect(() => {
     if (data) {
-      console.log("Temperature and humidity data:", data);
+      console.log("✅ Temperature and humidity data loaded:", {
+        statsAvailable: !!data.stats,
+        dailyDataPoints: data.daily?.length,
+        monthlyDataPoints: data.monthly?.length,
+        operatingHours: data.operatingHours
+      });
       
       if (siteId) {
-        console.log(`For site: ${siteId} (${siteData?.name || 'unknown'})`);
+        console.log(`📍 For site: ${siteId} (${siteData?.name || 'unknown'})`);
       }
       
       if (zoneId) {
-        console.log(`For zone: ${zoneId} (${zoneData?.name || 'unknown'})`);
+        console.log(`🏢 For zone: ${zoneId} (${zoneData?.name || 'unknown'})`);
       }
       
       const contextType = zoneId ? "zone" : (siteId ? "site" : "dashboard");
@@ -166,7 +176,7 @@ export default function TempHumidityDashboard() {
         ) : null}
 
         {!isLoading && !error && data && (
-          <div className="mt-8">
+          <div className="mt-8 mb-12">
             <SensorSourceInfo 
               sourceData={data.sourceData} 
               isLoading={false}

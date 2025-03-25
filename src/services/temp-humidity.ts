@@ -11,12 +11,14 @@ export * from "./interfaces/temp-humidity";
 
 export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): Promise<TempHumidityResponse> => {
   try {
+    console.log(`📊 Fetch temperature data initiated for ${zoneId ? `zone ${zoneId}` : siteId ? `site ${siteId}` : 'all locations'}`);
+    
     let effectiveSiteId = siteId;
     let operatingHours = null;
     
     // For zone-specific data
     if (zoneId) {
-      console.log(`Fetching temperature data for zone ${zoneId}`);
+      console.log(`🔍 Fetching temperature data for zone ${zoneId}`);
       
       // Get zone data to find its site
       const zoneData = await fetchZone(Number(zoneId));
@@ -25,18 +27,19 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
       }
       
       effectiveSiteId = zoneData.siteId.toString();
+      console.log(`📍 Zone ${zoneId} belongs to site ${effectiveSiteId}`);
       
       // Find temperature and humidity sensors in this zone
       const zoneSensors = await findZoneSensors(Number(zoneId), zoneData.siteId);
       
       if (zoneSensors.temperature.length > 0 || zoneSensors.humidity.length > 0) {
-        console.log(`Using REAL zone sensors for zone ${zoneId}:`, zoneSensors);
+        console.log(`🌡️ Using REAL zone sensors for zone ${zoneId}:`, zoneSensors);
         
         // Get operating hours from site
         const siteData = await fetchSite(zoneData.siteId);
         if (siteData?.fields) {
           operatingHours = extractOperatingHours(siteData);
-          console.log("Operating hours for zone data:", operatingHours);
+          console.log("⏰ Operating hours for zone data:", operatingHours);
         }
         
         const response = await fetchRealDeviceData(
@@ -56,22 +59,27 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
           operatingHours
         };
       } else {
-        console.log(`No temperature or humidity sensors found in zone ${zoneId}, falling back to site sensors`);
+        console.log(`⚠️ No temperature or humidity sensors found in zone ${zoneId}, falling back to site sensors`);
       }
     }
     
     // Handle site-specific data fetch
     if (effectiveSiteId && TEMP_SENSORS[effectiveSiteId]) {
-      console.log(`Fetching REAL temperature data for site ${effectiveSiteId}`);
+      console.log(`🌡️ Fetching REAL temperature data for site ${effectiveSiteId}`);
       
       // Get operating hours from site
       if (!operatingHours) {
         const siteData = await fetchSite(Number(effectiveSiteId));
         if (siteData?.fields) {
           operatingHours = extractOperatingHours(siteData);
-          console.log("Operating hours for site data:", operatingHours);
+          console.log("⏰ Operating hours for site data:", operatingHours);
         }
       }
+      
+      console.log(`📡 Sensors for site ${effectiveSiteId}:`, {
+        temperature: TEMP_SENSORS[effectiveSiteId] || [],
+        humidity: HUMIDITY_SENSORS[effectiveSiteId] || []
+      });
       
       const response = await fetchRealDeviceData(
         effectiveSiteId, 
@@ -101,16 +109,18 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
       endpoint += `/site/${siteId}`;
     }
     
+    console.log(`🔄 Falling back to generic API endpoint: ${endpoint}`);
+    
     // Make the actual API request via the apiRequest utility
     const response = await fetch(endpoint);
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
     }
     const data = await response.json();
-    console.log('API response:', data);
+    console.log('✅ API response:', data);
     return data;
   } catch (error) {
-    console.error('Error fetching temperature and humidity data:', error);
+    console.error('❌ Error fetching temperature and humidity data:', error);
     
     // If the API request fails, fall back to the mock data
     console.warn('⚠️ Falling back to SIMULATED temperature and humidity data');

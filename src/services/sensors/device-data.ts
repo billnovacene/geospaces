@@ -10,10 +10,10 @@ export async function fetchRealDeviceData(
   operatingHours: { startTime: string; endTime: string } | null = null
 ) {
   try {
-    console.log(`Fetching real device data for site ${siteId}`);
-    console.log(`Temperature sensors: ${temperatureSensors.join(', ')}`);
-    console.log(`Humidity sensors: ${humiditySensors.join(', ')}`);
-    console.log("Operating hours:", operatingHours);
+    console.log(`🔍 Fetching real device data for site ${siteId}`);
+    console.log(`🌡️ Temperature sensors: ${temperatureSensors.join(', ')}`);
+    console.log(`💧 Humidity sensors: ${humiditySensors.join(', ')}`);
+    console.log("⏰ Operating hours:", operatingHours);
     
     // Get the first available temperature and humidity sensor IDs
     const mainTempSensorId = temperatureSensors[0];
@@ -21,6 +21,8 @@ export async function fetchRealDeviceData(
     
     // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split('T')[0];
+    
+    console.log(`📅 Fetching data for today: ${today}`);
     
     // Get data for today from the daily API
     const dailyData = await fetchSensorDataForDay(
@@ -31,6 +33,8 @@ export async function fetchRealDeviceData(
       operatingHours
     );
     
+    console.log(`📅 Fetching monthly data...`);
+    
     // Get monthly data
     const monthlyData = await fetchSensorDataForMonth(
       siteId, 
@@ -39,10 +43,11 @@ export async function fetchRealDeviceData(
       operatingHours
     );
     
-    console.log(`Fetched ${dailyData.length} daily data points and ${monthlyData.length} monthly data points`);
+    console.log(`✅ Fetched ${dailyData.length} daily data points and ${monthlyData.length} monthly data points`);
     
     // Calculate stats based on the data
     const stats = calculateStats(dailyData, monthlyData);
+    console.log(`📊 Calculated stats:`, stats);
     
     return {
       stats,
@@ -50,7 +55,7 @@ export async function fetchRealDeviceData(
       monthly: monthlyData
     };
   } catch (error) {
-    console.error("Error fetching real device data:", error);
+    console.error("❌ Error fetching real device data:", error);
     throw error;
   }
 }
