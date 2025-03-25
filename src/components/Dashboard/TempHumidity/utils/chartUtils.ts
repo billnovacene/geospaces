@@ -7,7 +7,8 @@ import { getSensorValueColor } from "@/utils/sensorThresholds";
  */
 export function enhanceDailyChartData(data: DailyOverviewPoint[]) {
   return data.map(point => {
-    // Use real colors for real data, grey for simulated
+    // Properly check if the temperature data is real
+    // This is important for distinguishing real vs simulated data
     const isRealDataPoint = point.isReal?.temperature === true;
     
     // For real data, use the temperature-based color

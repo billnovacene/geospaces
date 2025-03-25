@@ -21,12 +21,13 @@ interface DailyChartProps {
 export function DailyChart({ data, isMockData = false }: DailyChartProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   
-  // Count real data points
+  // Count real data points - ensuring we check isReal.temperature properly
   const realDataPointsCount = data.filter(point => point.isReal?.temperature === true).length;
   const totalDataPoints = data.length;
   const hasRealData = realDataPointsCount > 0;
   
   console.log(`Daily chart rendering: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}, isMockData: ${isMockData}`);
+  console.log("Sample isReal flags:", data.slice(0, 3).map(d => d.isReal));
   
   // Process data for chart rendering
   const enhancedData = enhanceDailyChartData(data);

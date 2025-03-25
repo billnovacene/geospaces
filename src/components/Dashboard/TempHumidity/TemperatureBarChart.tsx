@@ -54,9 +54,10 @@ export function TemperatureBarChart({
                 labelFormatter={(label) => `Time: ${label}`} 
                 formatter={(value, name, item) => {
                   const entry = item.payload;
+                  const dataType = entry.isReal?.temperature ? 'Real data' : 'Simulated data';
                   return [
-                    `${value}°C${entry.isReal?.temperature ? '' : ' (simulated)'}`,
-                    name
+                    `${value}°C`,
+                    `${name} (${dataType})`
                   ];
                 }}
               />

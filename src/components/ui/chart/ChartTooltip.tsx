@@ -1,93 +1,88 @@
 
 import * as React from "react"
-import * as RechartsPrimitive from "recharts"
-import { cn } from "@/lib/utils"
+import { ContentProps } from "recharts/types/component/Tooltip"
 import { useChart } from "./hooks"
-import { getPayloadConfigFromPayload } from "./utils"
-import { TooltipIndicator } from "./TooltipIndicator"
-import { TooltipItem } from "./TooltipItem"
 import { TooltipLabel } from "./TooltipLabel"
+import { TooltipItem } from "./TooltipItem"
 
-export const ChartTooltip = RechartsPrimitive.Tooltip
+interface ChartTooltipContentProps
+  extends Omit<ContentProps, "content" | "contentStyle"> {
+  labelFormatter?: (label: any, payload: any[]) => React.ReactNode
+  formatter?: (value: any, name: string, item: any, index: number, payload: any) => React.ReactNode
+  className?: string
+  labelClassName?: string
+  labelKey?: string
+  hideIndicator?: boolean
+  indicator?: "line" | "dot" | "dashed"
+  nestLabel?: boolean
+  hideLabel?: boolean
+  nameKey?: string
+}
 
-export const ChartTooltipContent = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-    React.ComponentProps<"div"> & {
-      hideLabel?: boolean
-      hideIndicator?: boolean
-      indicator?: "line" | "dot" | "dashed"
-      nameKey?: string
-      labelKey?: string
-    }
->(
-  (
-    {
-      active,
-      payload,
-      className,
-      indicator = "dot",
-      hideLabel = false,
-      hideIndicator = false,
-      label,
-      labelFormatter,
-      labelClassName,
-      formatter,
-      color,
-      nameKey,
-      labelKey,
-    },
-    ref
-  ) => {
-    const { config } = useChart()
+export const ChartTooltipContent = ({
+  className,
+  labelClassName,
+  payload = [],
+  labelFormatter,
+  formatter,
+  active,
+  label,
+  labelKey,
+  hideIndicator = false,
+  indicator = "line",
+  nestLabel = false,
+  hideLabel = false,
+  nameKey,
+  ...props
+}: ChartTooltipContentProps) => {
+  const { config } = useChart()
 
-    if (!active || !payload?.length) {
-      return null
-    }
-
-    const nestLabel = payload.length === 1 && indicator !== "dot"
-
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl",
-          className
-        )}
-      >
-        {!nestLabel && !hideLabel && (
-          <TooltipLabel
-            payload={payload}
-            label={label}
-            labelKey={labelKey}
-            labelFormatter={labelFormatter}
-            labelClassName={labelClassName}
-            config={config}
-          />
-        )}
-        <div className="grid gap-1.5">
-          {payload.map((item, index) => (
-            <TooltipItem
-              key={item.dataKey}
-              item={item}
-              index={index}
-              formatter={formatter}
-              hideIndicator={hideIndicator}
-              indicator={indicator}
-              color={color}
-              nameKey={nameKey}
-              config={config}
-              nestLabel={nestLabel}
-              hideLabel={hideLabel}
-              label={label}
-              labelKey={labelKey}
-              labelFormatter={labelFormatter}
-              labelClassName={labelClassName}
-            />
-          ))}
-        </div>
-      </div>
-    )
+  if (!active || !payload?.length) {
+    return null
   }
-)
-ChartTooltipContent.displayName = "ChartTooltip"
+
+  return (
+    <div
+      className={className}
+      style={{
+        background: "var(--background)",
+        color: "var(--foreground)",
+        borderRadius: "var(--radius)",
+        padding: "0.5rem 0.75rem",
+        boxShadow:
+          "0 1px 2px 0 rgb(0 0 0 / 0.05), 0 1px 1px -1px rgb(0 0 0 / 0.1)",
+        textAlign: "left",
+        outline: "none",
+        zIndex: 1000,
+        minWidth: "10rem",
+      }}
+      {...props}
+    >
+      {!hideLabel && (
+        <TooltipLabel
+          payload={payload}
+          label={label}
+          labelKey={labelKey}
+          labelFormatter={labelFormatter}
+          labelClassName={labelClassName}
+          config={config}
+        />
+      )}
+      <ul className="flex flex-col gap-2.5 pt-1.5">
+        {payload.map((item, index) => (
+          <TooltipItem
+            key={index}
+            item={item}
+            index={index}
+            formatter={formatter}
+            hideIndicator={hideIndicator}
+            indicator={indicator}
+            config={config}
+            nestLabel={nestLabel}
+            nameKey={nameKey}
+          />
+        ))}
+      </ul>
+    </div>
+  )
+}
