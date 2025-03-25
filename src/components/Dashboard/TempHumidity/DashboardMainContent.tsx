@@ -37,13 +37,12 @@ export function DashboardMainContent({
 
   return (
     <>
-      {loadingStage !== 'initial' && loadingStage !== 'daily' && (
-        <DashboardStatsSection 
-          stats={data.stats} 
-          isLoading={isLoading} 
-          loadingStage={loadingStage}
-        />
-      )}
+      {/* Stats section - pass down the loading stages */}
+      <DashboardStatsSection 
+        stats={data.stats} 
+        isLoading={isLoading} 
+        loadingStage={loadingStage}
+      />
 
       <DashboardContent 
         data={data} 

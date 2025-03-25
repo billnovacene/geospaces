@@ -9,7 +9,8 @@ interface DashboardStatsSectionProps {
 }
 
 export function DashboardStatsSection({ stats, isLoading, loadingStage }: DashboardStatsSectionProps) {
-  // Only show stats when not in initial or daily loading stages
+  // Only show stats when we're in stats, monthly, or complete loading stages
+  // Hide during initial and daily loading stages
   if (isLoading || loadingStage === 'initial' || loadingStage === 'daily') {
     return null;
   }
