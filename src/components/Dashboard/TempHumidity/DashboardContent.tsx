@@ -51,7 +51,15 @@ export function DashboardContent({
       return { minTemp: "0", maxTemp: "0" };
     }
     
-    const temps = data.daily.map(point => point.temperature);
+    // Filter out null values and only include real data if available
+    const realDataPoints = data.daily.filter(point => point.temperature !== null && point.isReal?.temperature);
+    
+    // If we have real data points, use those for min/max calculations
+    const temps = realDataPoints.length > 0 
+      ? realDataPoints.map(point => point.temperature) 
+      : data.daily.filter(point => point.temperature !== null).map(point => point.temperature);
+    
+    if (temps.length === 0) return { minTemp: "0", maxTemp: "0" };
     
     return {
       minTemp: Math.min(...temps).toFixed(1),
@@ -63,14 +71,18 @@ export function DashboardContent({
   const dailyStats = calculateDailyStats();
   
   // Check if we have real temperature data in the daily dataset
-  const hasRealDailyData = data.daily.some(point => point.isReal?.temperature);
+  const hasRealDailyData = data.daily.some(point => point.isReal?.temperature === true);
+
+  // Log data about real vs simulated data for debugging
+  console.log(`DashboardContent: Has real daily data: ${hasRealDailyData}`);
+  console.log(`DashboardContent: Real data points: ${data.daily.filter(point => point.isReal?.temperature === true).length}/${data.daily.length}`);
 
   return (
     <>
       {/* Daily Overview - moved to top */}
       <DailyOverview 
         data={data.daily}
-        isMockData={isMockData}
+        isMockData={isMockData && !hasRealDailyData}
         contextName={contextName}
         stats={dailyStats}
         hasRealDailyData={hasRealDailyData}

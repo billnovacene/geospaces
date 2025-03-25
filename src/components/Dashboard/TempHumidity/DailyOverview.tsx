@@ -29,6 +29,8 @@ export function DailyOverview({
   hasRealDailyData,
   isLoading = false
 }: DailyOverviewProps) {
+  console.log(`DailyOverview: isMockData=${isMockData}, hasRealDailyData=${hasRealDailyData}, real points=${data.filter(d => d.isReal?.temperature === true).length}`);
+  
   return (
     <div className="mb-12">
       <Card className="shadow-sm border-0">

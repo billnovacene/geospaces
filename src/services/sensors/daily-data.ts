@@ -19,6 +19,8 @@ export async function fetchSensorDataForDay(
     let tempData: Array<{timestamp: string, value: number | string}> = [];
     let humidityData: Array<{timestamp: string, value: number | string}> = [];
     
+    console.log(`📅 fetchSensorDataForDay: siteId=${siteId}, date=${date}, temperatureSensor=${temperatureSensor}, humiditySensor=${humiditySensor}`);
+    
     // Fetch temperature data if sensor is available
     if (temperatureSensor) {
       const tempEndpoint = `/devices/points-data?siteid=${siteId}&sensor=${temperatureSensor}&start=${date}&end=${date}`;
@@ -57,6 +59,11 @@ export async function fetchSensorDataForDay(
       console.log(`After filtering: ${tempData.length} temp points, ${humidityData.length} humidity points`);
     }
     
+    // Log samples of data for debugging
+    if (tempData.length > 0) {
+      console.log('Temperature data sample:', tempData.slice(0, 3));
+    }
+    
     // Aggregate data by hour
     const {
       hourlyTemperatures,
@@ -64,6 +71,8 @@ export async function fetchSensorDataForDay(
       hasRealTempData,
       hasRealHumidityData
     } = aggregateHourlyData(tempData, humidityData);
+    
+    console.log(`Aggregation results: hasRealTempData=${hasRealTempData}, hasRealHumidityData=${hasRealHumidityData}`);
     
     // Create hourly data points
     const hourlyData = createHourlyDataPoints(
@@ -75,7 +84,13 @@ export async function fetchSensorDataForDay(
     
     // Fill in missing data points
     const processedData = fillMissingDataPoints(hourlyData);
-    console.log(`Returning ${processedData.length} daily data points with ${processedData.filter(p => p.isReal.temperature).length} real temperature readings`);
+    const realDataPoints = processedData.filter(p => p.isReal?.temperature).length;
+    
+    console.log(`Returning ${processedData.length} daily data points with ${realDataPoints} real temperature readings (${(realDataPoints/processedData.length*100).toFixed(1)}%)`);
+    
+    if (realDataPoints === 0) {
+      console.warn('No real temperature data found for this day, all values are simulated');
+    }
     
     return processedData;
   } catch (error) {

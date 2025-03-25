@@ -64,6 +64,14 @@ export function aggregateHourlyData(
   const hasRealTempData = Object.keys(hourlyTemperatures).length > 0;
   const hasRealHumidityData = Object.keys(hourlyHumidities).length > 0;
   
+  // Log detailed data for debugging
+  if (hasRealTempData) {
+    console.log('Hours with temperature data:', Object.keys(hourlyTemperatures).join(', '));
+    Object.entries(hourlyTemperatures).forEach(([hour, values]) => {
+      console.log(`Hour ${hour}: ${values.length} readings, avg: ${values.reduce((a, b) => a + b, 0) / values.length}`);
+    });
+  }
+  
   return {
     hourlyTemperatures,
     hourlyHumidities,
@@ -94,8 +102,7 @@ export function createHourlyDataPoints(
       ? humidityValues.reduce((sum, val) => sum + val, 0) / humidityValues.length 
       : null;
     
-    // Only use simulated data if we have no real data at all
-    // Changed from hour-by-hour substitution to all-or-nothing
+    // Always set isReal correctly based on whether we have actual data for this hour
     const hasTemp = avgTemp !== null;
     const hasHumidity = avgHumidity !== null;
     
@@ -110,12 +117,15 @@ export function createHourlyDataPoints(
     });
   }
   
-  console.log(`Created ${hourlyData.length} hourly data points with ${hourlyData.filter(p => p.isReal?.temperature).length} real temperature readings`);
+  const realTempPoints = hourlyData.filter(p => p.isReal?.temperature).length;
+  console.log(`Created ${hourlyData.length} hourly data points with ${realTempPoints} real temperature readings (${(realTempPoints / hourlyData.length * 100).toFixed(1)}% real data)`);
+  
   return hourlyData;
 }
 
 // Function to generate mock data when real data isn't available
 export function generateMockDailyData(): DailyOverviewPoint[] {
+  console.log('Generating all simulated daily data because no real data was available');
   return Array(24).fill(null).map((_, i) => ({
     time: `${i}:00`,
     temperature: 18 + Math.sin(i / 24 * Math.PI * 2) * 6,
