@@ -1,3 +1,4 @@
+
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSite, fetchZones } from "@/services/api";
@@ -115,10 +116,6 @@ const SiteDetail = () => {
           <SiteErrorState />
         ) : (
           <>
-            <div className="mb-4">
-              <SiteHeader site={site} />
-            </div>
-            
             <div className="flex items-center space-x-3 mb-8">
               <div className="rounded-lg bg-primary/10 p-2">
                 <Building2 className="h-6 w-6 text-primary" />
@@ -127,7 +124,11 @@ const SiteDetail = () => {
                 {site.name} Site Dashboard
               </h1>
             </div>
-
+            
+            <div className="mb-4">
+              <SiteHeader site={site} />
+            </div>
+            
             <div className="grid gap-6 lg:grid-cols-2 mb-8">
               <SiteDetailsCard site={site} calculatedDeviceCount={totalDevicesFromZones} />
               <SiteAdditionalInfoCard site={site} />
