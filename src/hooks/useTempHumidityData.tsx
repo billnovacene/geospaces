@@ -9,6 +9,7 @@ export function useTempHumidityData() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
   const [isUsingMockData, setIsUsingMockData] = useState(false);
   const [loadingStage, setLoadingStage] = useState<'initial' | 'daily' | 'stats' | 'monthly' | 'complete'>('initial');
+  const [apiConnectionFailed, setApiConnectionFailed] = useState(false);
   
   console.log("🔍 useTempHumidityData: Route params:", { siteId, zoneId });
   
@@ -16,8 +17,16 @@ export function useTempHumidityData() {
     queryKey: ["temp-humidity-data", siteId, zoneId],
     queryFn: async () => {
       console.log("🔄 Starting data fetch process for zone/site:", { zoneId, siteId });
-      // Pass both siteId and zoneId to the API
-      return fetchTempHumidityData(siteId, zoneId);
+      try {
+        // Pass both siteId and zoneId to the API
+        const result = await fetchTempHumidityData(siteId, zoneId);
+        setApiConnectionFailed(false);
+        return result;
+      } catch (err) {
+        console.error("❌ API connection failed:", err);
+        setApiConnectionFailed(true);
+        throw err;
+      }
     },
     refetchOnWindowFocus: false,
     refetchInterval: 60000, // Refresh every minute
@@ -76,6 +85,7 @@ export function useTempHumidityData() {
     
     if (error) {
       console.error("❌ Error fetching temperature data:", error);
+      setApiConnectionFailed(true);
     }
   }, [data, error]);
 
@@ -112,12 +122,29 @@ export function useTempHumidityData() {
       }
       
       const contextType = zoneId ? "zone" : (siteId ? "site" : "dashboard");
-      toast.success(`Temperature data loaded for ${contextType}`, {
-        id: "temp-data-loaded",
-        duration: 2000,
-      });
+      
+      if (realDataPoints > 0) {
+        toast.success(`Real temperature data loaded for ${contextType}`, {
+          id: "temp-data-loaded",
+          duration: 2000,
+        });
+      } else {
+        toast.warning(`No real-time data available for ${contextType}`, {
+          id: "temp-data-loaded",
+          duration: 3000,
+          description: "Using historical API data only"
+        });
+      }
     }
   }, [data, siteId, zoneId]);
 
-  return { data, isLoading, error, isUsingMockData, loadingStage, refetch };
+  return { 
+    data, 
+    isLoading, 
+    error, 
+    isUsingMockData, 
+    loadingStage, 
+    refetch,
+    apiConnectionFailed 
+  };
 }

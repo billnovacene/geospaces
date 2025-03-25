@@ -7,7 +7,7 @@ import { useContextName } from "@/components/Dashboard/TempHumidity/useContextNa
 
 export default function TempHumidityDashboard() {
   // Custom hooks to manage data and context
-  const { data, isLoading, error, isUsingMockData, loadingStage } = useTempHumidityData();
+  const { data, isLoading, error, isUsingMockData, loadingStage, apiConnectionFailed } = useTempHumidityData();
   const { contextName } = useContextName();
 
   return (
@@ -28,6 +28,7 @@ export default function TempHumidityDashboard() {
           loadingStage={loadingStage}
           isUsingMockData={isUsingMockData}
           contextName={contextName}
+          apiConnectionFailed={apiConnectionFailed}
         />
       </div>
     </SidebarWrapper>
