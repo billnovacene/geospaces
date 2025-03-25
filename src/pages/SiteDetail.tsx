@@ -15,6 +15,15 @@ import { AlertTriangle, Home, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { HomeIcon } from "lucide-react";
 
 const SiteDetail = () => {
   const { siteId } = useParams<{ siteId: string }>();
@@ -116,6 +125,25 @@ const SiteDetail = () => {
           <SiteErrorState />
         ) : (
           <>
+            {/* Breadcrumb navigation at the very top */}
+            <div className="mb-8">
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink asChild>
+                      <Link to="/">
+                        <HomeIcon className="h-3.5 w-3.5" />
+                      </Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>{site.name}</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+
             <div className="flex items-center space-x-3 mb-8">
               <div className="rounded-lg bg-primary/10 p-2">
                 <Building2 className="h-6 w-6 text-primary" />
