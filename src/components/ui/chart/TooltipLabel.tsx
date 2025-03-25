@@ -1,17 +1,8 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { ChartConfig } from "./ChartContext"
+import { TooltipLabelProps } from "./types"
 import { getPayloadConfigFromPayload } from "./utils"
-
-interface TooltipLabelProps {
-  payload: any[]
-  label?: React.ReactNode
-  labelKey?: string
-  labelFormatter?: (label: any, payload: any[]) => React.ReactNode
-  labelClassName?: string
-  config: ChartConfig
-}
 
 export const TooltipLabel = ({
   payload,

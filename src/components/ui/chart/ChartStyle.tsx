@@ -1,6 +1,6 @@
 
 import * as React from "react"
-import { ChartConfig } from "./ChartContext"
+import { ChartConfig } from "./types"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const

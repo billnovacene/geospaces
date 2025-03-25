@@ -1,27 +1,10 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { ChartConfig } from "./ChartContext"
+import { TooltipItemProps } from "./types"
 import { getPayloadConfigFromPayload } from "./utils"
 import { TooltipIndicator } from "./TooltipIndicator"
 import { TooltipLabel } from "./TooltipLabel"
-
-interface TooltipItemProps {
-  item: any
-  index: number
-  formatter?: (value: any, name: string, item: any, index: number, payload: any) => React.ReactNode
-  hideIndicator?: boolean
-  indicator: "line" | "dot" | "dashed"
-  color?: string
-  nameKey?: string
-  config: ChartConfig
-  nestLabel?: boolean
-  hideLabel?: boolean
-  label?: React.ReactNode
-  labelKey?: string
-  labelFormatter?: (label: any, payload: any[]) => React.ReactNode
-  labelClassName?: string
-}
 
 export const TooltipItem = ({
   item,

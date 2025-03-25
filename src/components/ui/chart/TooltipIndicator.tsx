@@ -1,12 +1,7 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
-
-interface TooltipIndicatorProps {
-  indicatorType: "line" | "dot" | "dashed"
-  color: string
-  nestLabel?: boolean
-}
+import { TooltipIndicatorProps } from "./types"
 
 export const TooltipIndicator = ({
   indicatorType,
