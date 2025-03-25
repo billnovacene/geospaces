@@ -55,8 +55,10 @@ export function aggregateHourlyData(
     }
   });
   
-  console.log('Processed hourly temperatures:', hourlyTemperatures);
-  console.log('Processed hourly humidities:', hourlyHumidities);
+  console.log('Processed hourly temperatures:', Object.keys(hourlyTemperatures).length > 0 ? 
+    `${Object.keys(hourlyTemperatures).length} hours with data` : 'No temperature data available');
+  console.log('Processed hourly humidities:', Object.keys(hourlyHumidities).length > 0 ? 
+    `${Object.keys(hourlyHumidities).length} hours with data` : 'No humidity data available');
   
   // Check if we have real data
   const hasRealTempData = Object.keys(hourlyTemperatures).length > 0;
@@ -92,21 +94,23 @@ export function createHourlyDataPoints(
       ? humidityValues.reduce((sum, val) => sum + val, 0) / humidityValues.length 
       : null;
     
-    // Only use simulated data if we have no real data for this hour
-    const useSimulatedTemp = avgTemp === null && !hasRealTempData;
-    const useSimulatedHumidity = avgHumidity === null && !hasRealHumidityData;
+    // Only use simulated data if we have no real data at all
+    // Changed from hour-by-hour substitution to all-or-nothing
+    const hasTemp = avgTemp !== null;
+    const hasHumidity = avgHumidity !== null;
     
     hourlyData.push({
       time: hour,
-      temperature: avgTemp !== null ? avgTemp : (useSimulatedTemp ? 18 + Math.sin(i / 24 * Math.PI * 2) * 6 : null),
-      humidity: avgHumidity !== null ? avgHumidity : (useSimulatedHumidity ? 40 + Math.sin((i / 24 * Math.PI * 2) + 1) * 15 : null),
+      temperature: hasTemp ? avgTemp : (hasRealTempData ? null : 18 + Math.sin(i / 24 * Math.PI * 2) * 6),
+      humidity: hasHumidity ? avgHumidity : (hasRealHumidityData ? null : 40 + Math.sin((i / 24 * Math.PI * 2) + 1) * 15),
       isReal: {
-        temperature: avgTemp !== null,
-        humidity: avgHumidity !== null
+        temperature: hasTemp,
+        humidity: hasHumidity
       }
     });
   }
   
+  console.log(`Created ${hourlyData.length} hourly data points with ${hourlyData.filter(p => p.isReal?.temperature).length} real temperature readings`);
   return hourlyData;
 }
 

@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DailyChart } from "@/components/Dashboard/TempHumidity/DailyChart";
-import { DailyOverviewPoint } from "@/services/interfaces/temp-humidity";
+import { DailyOverviewPoint } from "@/services/temp-humidity";
 import { LoaderCircle } from "lucide-react";
 
 interface DailyOverviewProps {

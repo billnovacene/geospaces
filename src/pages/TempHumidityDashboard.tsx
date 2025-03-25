@@ -192,6 +192,7 @@ export default function TempHumidityDashboard() {
             isMockData={isUsingMockData}
             operatingHours={data.operatingHours}
             isLoadingMonthly={loadingStage === 'stats' || loadingStage === 'monthly'}
+            isLoadingDaily={loadingStage === 'daily'}
           />
         ) : null}
 

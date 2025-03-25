@@ -20,13 +20,15 @@ interface DashboardContentProps {
     endTime: string;
   };
   isLoadingMonthly?: boolean;
+  isLoadingDaily?: boolean;
 }
 
 export function DashboardContent({ 
   data, 
   contextName = "All Locations", 
   isMockData = false,
-  isLoadingMonthly = false
+  isLoadingMonthly = false,
+  isLoadingDaily = false
 }: DashboardContentProps) {
   // Calculate the min/max temperatures from monthly data
   const calculateMonthlyStats = () => {
@@ -72,6 +74,7 @@ export function DashboardContent({
         contextName={contextName}
         stats={dailyStats}
         hasRealDailyData={hasRealDailyData}
+        isLoading={isLoadingDaily}
       />
 
       {/* Monthly Overview */}

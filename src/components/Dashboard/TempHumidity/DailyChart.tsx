@@ -34,7 +34,10 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
   const totalDataPoints = data.length;
   const hasRealData = realDataPointsCount > 0;
   
+  console.log(`Daily chart: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}`);
+  
   const enhancedData = data.map(point => {
+    // Use real colors for real data, grey for simulated
     const barColor = point.isReal?.temperature 
       ? getSensorValueColor("temperature", point.temperature)
       : "#E5E7EB"; // Gray for simulated data
@@ -47,8 +50,8 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
     };
   });
 
-  const actualMinTemp = Math.min(...data.map(d => d.temperature));
-  const actualMaxTemp = Math.max(...data.map(d => d.temperature));
+  const actualMinTemp = Math.min(...data.filter(d => d.temperature !== null).map(d => d.temperature));
+  const actualMaxTemp = Math.max(...data.filter(d => d.temperature !== null).map(d => d.temperature));
   
   const yAxisMin = Math.floor(actualMinTemp - 2);
   const yAxisMax = Math.ceil(actualMaxTemp + 2);
@@ -69,7 +72,7 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
       
       <ChartLegend 
         colors={temperatureConfig.colors} 
-        showSimulated={!hasRealData} 
+        showSimulated={!hasRealData || realDataPointsCount < totalDataPoints} 
       />
       
       <TemperatureBarChart 
