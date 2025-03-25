@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Zone } from "@/services/interfaces";
 import { formatDate } from "@/utils/formatting";
 import { formatZoneLocation } from "@/utils/zoneUtils";
+import { useZoneArea } from "@/hooks/useZoneArea";
 
 interface ZoneAdditionalInfoCardProps {
   zone: Zone;
@@ -10,6 +11,7 @@ interface ZoneAdditionalInfoCardProps {
 
 export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) => {
   const locationData = formatZoneLocation(zone);
+  const areaValue = useZoneArea(zone);
   
   return (
     <Card>
@@ -24,7 +26,9 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
         
         {zone.location && (
           <div>
-            <h3 className="font-medium text-sm text-muted-foreground mb-1">Location Data</h3>
+            <h3 className="font-medium text-sm text-muted-foreground mb-1">
+              Location Data {areaValue && `(Area: ${areaValue} m²)`}
+            </h3>
             <div className="border rounded-lg p-3">
               <pre className="text-xs overflow-auto max-h-48">
                 {locationData}
