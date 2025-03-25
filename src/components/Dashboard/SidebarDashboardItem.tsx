@@ -46,12 +46,13 @@ export function SidebarDashboardItem({
   
   // Reset selection state when route changes
   useEffect(() => {
-    // For Overview dashboard, check if we're on the site or zone detail page
+    // For Overview dashboard, check if we're on the site, zone detail page or home page
     if (isOverview) {
       const currentPath = location.pathname;
       const isZoneDetailPage = zoneId && currentPath === `/zone/${zoneId}`;
       const isSiteDetailPage = siteId && currentPath === `/site/${siteId}`;
-      setIsSelected(isZoneDetailPage || isSiteDetailPage);
+      const isHomePage = currentPath === "/" || currentPath === "/index";
+      setIsSelected(isZoneDetailPage || isSiteDetailPage || isHomePage);
     } else {
       // For other dashboards, check if this is the active dashboard
       const isDashboardActive = contextualTo && location.pathname === contextualTo;
