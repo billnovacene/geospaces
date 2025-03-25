@@ -1,4 +1,3 @@
-
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSite, fetchZones } from "@/services/api";
@@ -118,7 +117,7 @@ const SiteDetail = () => {
 
   return (
     <SidebarWrapper>
-      <div className="container mx-auto py-8 px-6 md:px-8 lg:px-12">
+      <div className="container mx-auto py-6 px-6 md:px-8 lg:px-12">
         {siteLoading ? (
           <SiteLoadingSkeleton />
         ) : siteError || !site ? (
@@ -126,13 +125,13 @@ const SiteDetail = () => {
         ) : (
           <>
             {/* Breadcrumb navigation at the very top */}
-            <div className="mb-8">
+            <div className="mb-6">
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
                       <Link to="/">
-                        <HomeIcon className="h-3.5 w-3.5" />
+                        <HomeIcon className="h-3.5 w-3.5 text-primary" />
                       </Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
@@ -144,7 +143,7 @@ const SiteDetail = () => {
               </Breadcrumb>
             </div>
 
-            <div className="flex items-center space-x-3 mb-8">
+            <div className="flex items-center space-x-3 mb-6">
               <div className="rounded-lg bg-primary/10 p-2">
                 <Building2 className="h-6 w-6 text-primary" />
               </div>
@@ -153,16 +152,16 @@ const SiteDetail = () => {
               </h1>
             </div>
             
-            <div className="mb-4">
+            <div className="mb-6">
               <SiteHeader site={site} />
             </div>
             
-            <div className="grid gap-6 lg:grid-cols-2 mb-8">
+            <div className="grid gap-6 lg:grid-cols-2 mb-6">
               <SiteDetailsCard site={site} calculatedDeviceCount={totalDevicesFromZones} />
               <SiteAdditionalInfoCard site={site} />
             </div>
 
-            <div className="w-full mb-8">
+            <div className="w-full mb-6">
               <Card className="shadow-sm">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-medium mb-4">Zones</h2>
