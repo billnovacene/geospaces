@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZones } from "@/services/api";
 import { Zone } from "@/services/interfaces";
@@ -20,20 +20,31 @@ interface ZonesHierarchyListProps {
 export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedZones, setExpandedZones] = useState<number[]>([]);
+  const hasFetchedRef = useRef(false);
   
   const { data: allZones = [], isLoading, error } = useQuery({
     queryKey: ["zones", siteId],
-    queryFn: () => siteId ? fetchZones(siteId) : Promise.resolve([]),
-    enabled: !!siteId, // Only run the query if siteId is available
-    retry: 1, // Limit retries
+    queryFn: () => {
+      console.log(`Fetching zones for site ${siteId}`);
+      return siteId ? fetchZones(siteId) : Promise.resolve([]);
+    },
+    enabled: !!siteId && !hasFetchedRef.current, // Only fetch once
+    retry: 0, // No retries
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    onSettled: () => {
+      hasFetchedRef.current = true;
+    }
   });
 
-  // Filter zones based on search term
-  const filteredZones = allZones.filter(zone => 
-    zone.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (zone.type && zone.type.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Filter zones based on search term - safely handle empty or undefined zones
+  const filteredZones = allZones && allZones.length > 0 
+    ? allZones.filter(zone => 
+        zone && zone.name && zone.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        (zone.type && zone.type.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+    : [];
 
   // Toggle expanded state for a zone
   const toggleExpand = (zoneId: number) => {
@@ -44,7 +55,10 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
     );
   };
 
-  const hierarchicalZones = organizeZonesHierarchy(filteredZones);
+  // Safely organize zones hierarchy
+  const hierarchicalZones = filteredZones.length > 0 
+    ? organizeZonesHierarchy(filteredZones)
+    : [];
 
   if (error) {
     return <ZonesErrorState />;
@@ -90,7 +104,7 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
           </div>
         )}
       </CardContent>
-      {siteId && allZones.length > 0 && (
+      {siteId && allZones && allZones.length > 0 && (
         <CardFooter className="p-4 text-sm text-muted-foreground flex justify-between items-center">
           <div>Total zones: {allZones.length}</div>
           <div>Showing {filteredZones.length} of {allZones.length}</div>

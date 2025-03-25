@@ -20,25 +20,38 @@ export const fetchDevicesCountForSite = async (siteId: number): Promise<number> 
       return deviceCountsBySite[siteId];
     }
     
-    // If not cached, fetch from API
-    const response = await apiRequest<DevicesResponse>(
-      `/devices?page=1&limit=1&siteid=${siteId}&nodeveui=false`
-    );
+    // If not cached, fetch from API with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
     
-    console.log(`Devices count API response for site ${siteId}:`, response);
-    
-    // Store the count in cache
-    if (response && typeof response.total === 'number') {
-      deviceCountsBySite[siteId] = response.total;
-      console.log(`Caching device count ${response.total} for site ${siteId}`);
-      return response.total;
+    try {
+      const response = await apiRequest<DevicesResponse>(
+        `/devices?page=1&limit=1&siteid=${siteId}&nodeveui=false`,
+        { signal: controller.signal }
+      );
+      
+      clearTimeout(timeoutId);
+      console.log(`Devices count API response for site ${siteId}:`, response);
+      
+      // Store the count in cache
+      if (response && typeof response.total === 'number') {
+        deviceCountsBySite[siteId] = response.total;
+        console.log(`Caching device count ${response.total} for site ${siteId}`);
+        return response.total;
+      }
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      if (fetchError.name === 'AbortError') {
+        console.warn(`Request timeout for site ${siteId} device count`);
+      } else {
+        throw fetchError; // Re-throw non-timeout errors
+      }
     }
     
     return 0;
   } catch (error) {
     console.error(`Error fetching devices count for site ${siteId}:`, error);
     // Don't show a toast for every fetch error as it can be overwhelming
-    // toast.error("Failed to fetch devices count. Please try again later.");
     return 0;
   }
 };
@@ -53,43 +66,56 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
   try {
     console.log(`Fetching devices for site ${siteId} from API...`);
     
-    // Add nocache parameter to avoid caching issues  
-    const nocache = new Date().getTime();
-    const response = await apiRequest<DevicesResponse>(
-      `/devices?siteid=${siteId}&limit=100&nodeveui=false&includeSensors=true&nocache=${nocache}`
-    );
+    // Add timeout and nocache parameter to avoid stalling issues
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
     
-    console.log(`Devices API response for site ${siteId}:`, response);
-    
-    if (response && response.devices && Array.isArray(response.devices)) {
-      // Store the count in cache
-      deviceCountsBySite[siteId] = response.total;
-      console.log(`Caching device count ${response.total} for site ${siteId}`);
+    try {
+      const nocache = new Date().getTime();
+      const response = await apiRequest<DevicesResponse>(
+        `/devices?siteid=${siteId}&limit=100&nodeveui=false&includeSensors=true&nocache=${nocache}`,
+        { signal: controller.signal }
+      );
       
-      // Transform the response into the Device interface
-      return response.devices.map(device => ({
-        id: device.id,
-        name: device.name || `Device ${device.id}`,
-        type: device.type,
-        zoneId: device.zoneId,
-        siteId: device.siteId,
-        projectId: device.projectId,
-        modelId: device.modelId,
-        createdAt: device.createdAt,
-        updatedAt: device.updatedAt,
-        sensors: device.sensors || [],
-        status: device.isRemoved ? "Inactive" : "Active",
-        isRemoved: device.isRemoved,
-        zoneName: device.zoneName || (device.zone ? device.zone.name : null),
-        ...device // Include any other properties
-      }));
+      clearTimeout(timeoutId);
+      console.log(`Devices API response for site ${siteId}:`, response);
+      
+      if (response && response.devices && Array.isArray(response.devices)) {
+        // Store the count in cache
+        deviceCountsBySite[siteId] = response.total;
+        console.log(`Caching device count ${response.total} for site ${siteId}`);
+        
+        // Transform the response into the Device interface
+        return response.devices.map(device => ({
+          id: device.id,
+          name: device.name || `Device ${device.id}`,
+          type: device.type,
+          zoneId: device.zoneId,
+          siteId: device.siteId,
+          projectId: device.projectId,
+          modelId: device.modelId,
+          createdAt: device.createdAt,
+          updatedAt: device.updatedAt,
+          sensors: device.sensors || [],
+          status: device.isRemoved ? "Inactive" : "Active",
+          isRemoved: device.isRemoved,
+          zoneName: device.zoneName || (device.zone ? device.zone.name : null),
+          ...device // Include any other properties
+        }));
+      }
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      if (fetchError.name === 'AbortError') {
+        console.warn(`Request timeout for site ${siteId} devices`);
+      } else {
+        throw fetchError; // Re-throw non-timeout errors
+      }
     }
     
     return [];
   } catch (error) {
     console.error(`Error fetching devices for site ${siteId}:`, error);
     // Only show error toast for critical user-initiated actions
-    // toast.error("Failed to fetch devices. Please try again later.");
     return [];
   }
 };
