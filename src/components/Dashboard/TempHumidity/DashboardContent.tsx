@@ -8,12 +8,25 @@ interface DashboardContentProps {
     daily: DailyOverviewPoint[];
     monthly: MonthlyOverviewPoint[];
     stats: StatsData;
+    operatingHours?: {
+      startTime: string;
+      endTime: string;
+    };
   };
   contextName?: string;
   isMockData?: boolean;
+  operatingHours?: {
+    startTime: string;
+    endTime: string;
+  };
 }
 
-export function DashboardContent({ data, contextName = "All Locations", isMockData = false }: DashboardContentProps) {
+export function DashboardContent({ 
+  data, 
+  contextName = "All Locations", 
+  isMockData = false,
+  operatingHours
+}: DashboardContentProps) {
   // Calculate the min/max temperatures from monthly data
   const calculateMonthlyStats = () => {
     if (!data.monthly || data.monthly.length === 0) {
@@ -56,6 +69,7 @@ export function DashboardContent({ data, contextName = "All Locations", isMockDa
         data={data.monthly}
         contextName={contextName}
         stats={monthlyStats}
+        operatingHours={operatingHours}
       />
 
       {/* Daily Overview */}
@@ -65,6 +79,7 @@ export function DashboardContent({ data, contextName = "All Locations", isMockDa
         contextName={contextName}
         stats={dailyStats}
         hasRealDailyData={hasRealDailyData}
+        operatingHours={operatingHours}
       />
     </>
   );

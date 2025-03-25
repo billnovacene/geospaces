@@ -49,6 +49,10 @@ export interface TempHumidityResponse {
   daily: DailyOverviewPoint[];
   monthly: MonthlyOverviewPoint[];
   sourceData: SensorSourceData;
+  operatingHours?: {
+    startTime: string;
+    endTime: string;
+  };
 }
 
 export interface PointsDataResponse {

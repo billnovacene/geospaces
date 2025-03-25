@@ -15,7 +15,7 @@ import { fetchSite } from "@/services/sites";
 import { fetchZone } from "@/services/zones";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Package, Building, AlertTriangle } from "lucide-react";
+import { Package, Building, AlertTriangle, Clock } from "lucide-react";
 
 export default function TempHumidityDashboard() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
@@ -91,6 +91,14 @@ export default function TempHumidityDashboard() {
     }
   }, [data, siteId, zoneId, siteData, zoneData]);
 
+  // Format operating hours for display
+  const formatOperatingHours = () => {
+    if (data?.operatingHours) {
+      return `${data.operatingHours.startTime} - ${data.operatingHours.endTime}`;
+    }
+    return "All hours";
+  };
+
   // Determine data source description with icons
   const getDataSourceDescription = () => {
     if (zoneId && zoneData) {
@@ -125,6 +133,13 @@ export default function TempHumidityDashboard() {
               {getDataSourceDescription()}
             </Badge>
             
+            {data?.operatingHours && (
+              <Badge variant="outline" className="text-xs px-3 py-1 bg-blue-50 text-blue-700 border-blue-200">
+                <Clock className="h-3.5 w-3.5 mr-1" />
+                Operating hours: {formatOperatingHours()}
+              </Badge>
+            )}
+            
             {isUsingMockData && !isLoading && (
               <Badge variant="outline" className="text-xs px-3 py-1 bg-amber-50 text-amber-700 border-amber-200">
                 <AlertTriangle className="h-3.5 w-3.5 mr-1" />
@@ -146,6 +161,7 @@ export default function TempHumidityDashboard() {
                 sourceData={data.sourceData} 
                 isLoading={false}
                 isMockData={isUsingMockData}
+                operatingHours={data.operatingHours}
               />
             </div>
           </>
@@ -160,6 +176,7 @@ export default function TempHumidityDashboard() {
             data={data} 
             contextName={getContextName()} 
             isMockData={isUsingMockData}
+            operatingHours={data.operatingHours}
           />
         ) : null}
       </div>
