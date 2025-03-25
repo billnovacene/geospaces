@@ -1,8 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
-import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Settings, MoreVertical, Home, Building, Package } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Link, useParams, useLocation } from "react-router-dom";
@@ -50,12 +49,7 @@ export function DashboardSidebar() {
           </Button>
         </div>
 
-        <div className="p-5 border-b border-[#E5E7EB] bg-white">
-          <div className="relative">
-            <Input placeholder="Search" className="pl-4 h-9 text-sm border-[#E5E7EB] bg-white text-[#8E9196]" />
-            <Search className="absolute right-3 top-2.5 h-4 w-4 text-[#8E9196]" />
-          </div>
-        </div>
+        {/* Removed search input section */}
 
         {/* Sticky Dashboards Section at the top */}
         <div className="sticky top-0 z-10 bg-white border-b border-[#E5E7EB]">
