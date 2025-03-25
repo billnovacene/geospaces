@@ -103,7 +103,9 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
               </span>
             </p>
           ) : (
-            <p className="text-sm text-muted-foreground">Not available</p>
+            <p className="text-sm text-muted-foreground">
+              Not available (calculated from location GeoJSON)
+            </p>
           )}
         </div>
         
