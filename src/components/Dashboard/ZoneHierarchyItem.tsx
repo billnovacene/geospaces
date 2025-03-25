@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Zone } from "@/services/interfaces";
 import { useQuery } from "@tanstack/react-query";
@@ -9,19 +9,17 @@ import { findZoneSensors } from "@/services/sensors/zone-sensors";
 
 interface ZoneHierarchyItemProps {
   zone: Zone;
-  depth?: number;
   activeZoneId: number | null;
   expandedZones: number[];
   toggleExpanded: (zoneId: number) => void;
   preserveDashboardRoute?: boolean;
   dashboardPath?: string;
-  effectiveSiteId?: number | null;
+  effectiveSiteId: number;
   hideZonesWithoutSensors?: boolean;
 }
 
 export function ZoneHierarchyItem({ 
   zone, 
-  depth = 0, 
   activeZoneId, 
   expandedZones, 
   toggleExpanded,
@@ -30,88 +28,90 @@ export function ZoneHierarchyItem({
   effectiveSiteId,
   hideZonesWithoutSensors = false
 }: ZoneHierarchyItemProps) {
-  const [shouldRender, setShouldRender] = useState(true);
-  
-  // Check for sensors in this zone if needed
-  const { data: zoneSensors, isLoading: sensorsLoading } = useQuery({
-    queryKey: ["zone-sensors-check", zone.id],
-    queryFn: () => findZoneSensors(zone.id, zone.siteId || effectiveSiteId || 0),
-    enabled: hideZonesWithoutSensors && !!zone.id && !!(zone.siteId || effectiveSiteId),
-  });
-  
-  useEffect(() => {
-    // Only apply filtering when explicitly requested AND sensor data is loaded
-    if (hideZonesWithoutSensors && !sensorsLoading && zoneSensors) {
-      const hasSensors = zoneSensors.temperature.length > 0 || zoneSensors.humidity.length > 0;
-      console.log(`Zone ${zone.name} (ID: ${zone.id}) has sensors: ${hasSensors}`, zoneSensors);
-      setShouldRender(hasSensors);
-    } else {
-      setShouldRender(true);
-    }
-  }, [hideZonesWithoutSensors, sensorsLoading, zoneSensors, zone.id, zone.name]);
-
-  const hasChildren = zone.children && zone.children.length > 0;
+  const location = useLocation();
   const isExpanded = expandedZones.includes(zone.id);
   const isActive = activeZoneId === zone.id;
-  const deviceCount = typeof zone.devices === 'number' ? zone.devices : parseInt(String(zone.devices), 10) || 0;
+  const hasChildren = zone.children && zone.children.length > 0;
+  const indentationLevel = zone.level || 0;
+  const [hasSensors, setHasSensors] = useState<boolean | null>(null);
+  const [isLoadingSensors, setIsLoadingSensors] = useState(false);
   
-  // If we need to hide zones without sensors and this zone has no sensors
-  if (hideZonesWithoutSensors && !shouldRender && !sensorsLoading) {
-    // If this zone has children, we still want to render it even if it doesn't have sensors directly
-    if (!hasChildren) {
-      return null;
-    }
+  // Check if this zone has temperature/humidity sensors if we need to filter
+  useEffect(() => {
+    const checkForSensors = async () => {
+      if (hideZonesWithoutSensors && zone.id && effectiveSiteId) {
+        try {
+          setIsLoadingSensors(true);
+          const sensors = await findZoneSensors(zone.id, effectiveSiteId);
+          const hasTempOrHumidity = sensors.temperature.length > 0 || sensors.humidity.length > 0;
+          setHasSensors(hasTempOrHumidity);
+          console.log(`Zone ${zone.id} (${zone.name}) has sensors: ${hasTempOrHumidity}`);
+        } catch (error) {
+          console.error(`Failed to check sensors for zone ${zone.id}:`, error);
+          setHasSensors(false);
+        } finally {
+          setIsLoadingSensors(false);
+        }
+      } else {
+        // If not filtering, all zones are valid
+        setHasSensors(true);
+      }
+    };
+    
+    checkForSensors();
+  }, [zone.id, effectiveSiteId, hideZonesWithoutSensors]);
+  
+  // If we're hiding zones without sensors and this one doesn't have any, don't render
+  if (hideZonesWithoutSensors && hasSensors === false) {
+    return null;
   }
   
-  // Create zone link with dashboard path if needed
+  // Create the zone link with appropriate dashboard path
   const zoneLink = preserveDashboardRoute && dashboardPath 
     ? `/zone/${zone.id}${dashboardPath}`
     : `/zone/${zone.id}`;
   
-  console.log(`Zone: ${zone.name}, ID: ${zone.id}, isActive: ${isActive}, Link: ${zoneLink}, shouldRender: ${shouldRender}`);
-  
   return (
-    <div key={zone.id}>
+    <>
       <div 
         className={cn(
-          "flex items-center justify-between py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
-          isActive && "bg-[#F9F9FA] font-bold border-l-4 border-primary text-primary",
-          depth > 0 && "pl-8"
+          "flex items-center gap-1.5 py-2 cursor-pointer hover:bg-gray-100/50",
+          isActive ? "bg-gray-100" : ""
         )}
-        style={{ paddingLeft: depth > 0 ? `${depth * 12 + 20}px` : undefined }}
-        onClick={() => hasChildren && toggleExpanded(zone.id)}
+        style={{ paddingLeft: `${indentationLevel * 12 + 20}px` }}
       >
-        <div className="flex items-center gap-2">
-          {hasChildren && (
-            <span className="text-xs text-zinc-600">
-              {isExpanded ? '▼' : '▶'}
-            </span>
-          )}
-          <Link 
-            to={zoneLink}
-            className={cn(
-              "text-sm text-gray-900",
-              isActive && "font-bold"
-            )}
-            onClick={(e) => e.stopPropagation()}
+        {hasChildren ? (
+          <button 
+            onClick={() => toggleExpanded(zone.id)}
+            className="text-gray-500 hover:text-gray-700 p-0.5"
           >
-            {isActive ? (
-              <span className="flex items-center gap-1">
-                <MapPin className="h-3 w-3" /> {zone.name}
-              </span>
-            ) : zone.name}
-          </Link>
-        </div>
-        <span className="text-sm text-[#8E9196]">{deviceCount}</span>
+            {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+        ) : (
+          <div className="w-5" />
+        )}
+        
+        <Link to={zoneLink} className="flex-1 flex items-center">
+          <span className={`text-sm ${isActive ? "font-medium" : ""}`}>
+            {zone.name}
+          </span>
+          
+          {isLoadingSensors && (
+            <span className="ml-2 inline-block h-2 w-2 animate-pulse rounded-full bg-gray-200"></span>
+          )}
+          
+          {hasSensors === true && hideZonesWithoutSensors && (
+            <span className="ml-2 inline-block h-2 w-2 rounded-full bg-green-500"></span>
+          )}
+        </Link>
       </div>
       
-      {hasChildren && isExpanded && (
-        <div className="zone-children">
-          {zone.children.map(childZone => (
+      {isExpanded && hasChildren && (
+        <div>
+          {zone.children?.map(childZone => (
             <ZoneHierarchyItem
               key={childZone.id}
               zone={childZone}
-              depth={depth + 1}
               activeZoneId={activeZoneId}
               expandedZones={expandedZones}
               toggleExpanded={toggleExpanded}
@@ -123,6 +123,6 @@ export function ZoneHierarchyItem({
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -82,7 +82,9 @@ export async function fetchZoneTempHumidityData(zoneId: string): Promise<TempHum
         console.error(`Error fetching real device data for zone ${zoneId}:`, error);
       }
     } else {
-      console.log(`⚠️ No temperature or humidity sensors found in zone ${zoneId}, falling back to site sensors`);
+      console.log(`⚠️ No temperature or humidity sensors found in zone ${zoneId}, checking if subzones have sensors`);
+      
+      // TODO: In the future, we could add logic here to check subzones for sensors
     }
   } catch (error) {
     console.error(`Failed to fetch zone temperature data: ${error}`);
