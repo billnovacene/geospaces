@@ -30,6 +30,7 @@ export function DailyOverview({
   operatingHours,
   isLoading = false
 }: DailyOverviewProps) {
+  // Count real data points for accurate percentage calculation
   const realDataCount = data.filter(d => d.isReal?.temperature === true).length;
   const totalCount = data.length;
   const realDataPercentage = totalCount > 0 ? ((realDataCount / totalCount) * 100).toFixed(0) : "0";
@@ -45,14 +46,14 @@ export function DailyOverview({
               <h2 className="text-xl font-medium mb-4">Daily Overview - {contextName}</h2>
               <p className="text-sm text-gray-600 mb-3">
                 Today's temperatures range from {stats.minTemp}°C to {stats.maxTemp}°C during operating hours.
-                {hasRealDailyData 
+                {realDataCount > 0 
                   ? ` ${realDataPercentage}% of data comes from actual sensor readings.`
                   : " The current view uses simulated data where sensor readings are unavailable."}
               </p>
               
               {operatingHours && (
                 <p className="text-xs text-gray-500 mb-3">
-                  Data filtered to operating hours: {operatingHours.startTime} - {operatingHours.endTime}
+                  Data filtered to operating hours: {operatingHours.startTime.split('T')[1].substring(0, 5)} - {operatingHours.endTime.split('T')[1].substring(0, 5)}
                 </p>
               )}
               

@@ -30,6 +30,11 @@ export async function fetchSensorDataForDay(
         if (tempResponse.data && tempResponse.data.length > 0 && tempResponse.data[0].pointData) {
           tempData = tempResponse.data[0].pointData || [];
           console.log(`Received ${tempData.length} temperature data points for day ${date}`);
+          
+          // Log a few sample points
+          if (tempData.length > 0) {
+            console.log('Temperature data samples:', tempData.slice(0, 3));
+          }
         } else {
           console.warn(`No temperature data points received from API for sensor ${temperatureSensor}`);
         }
@@ -49,6 +54,11 @@ export async function fetchSensorDataForDay(
         if (humidityResponse.data && humidityResponse.data.length > 0 && humidityResponse.data[0].pointData) {
           humidityData = humidityResponse.data[0].pointData || [];
           console.log(`Received ${humidityData.length} humidity data points for day ${date}`);
+          
+          // Log a few sample points
+          if (humidityData.length > 0) {
+            console.log('Humidity data samples:', humidityData.slice(0, 3));
+          }
         } else {
           console.warn(`No humidity data points received from API for sensor ${humiditySensor}`);
         }
@@ -67,7 +77,7 @@ export async function fetchSensorDataForDay(
     
     // Log samples of data for debugging
     if (tempData.length > 0) {
-      console.log('Temperature data sample:', tempData.slice(0, 3));
+      console.log('Temperature data sample after filtering:', tempData.slice(0, 3));
     } else {
       console.warn('No temperature data available after filtering');
     }
@@ -83,7 +93,7 @@ export async function fetchSensorDataForDay(
     console.log(`Aggregation results: hasRealTempData=${hasRealTempData}, hasRealHumidityData=${hasRealHumidityData}`);
     
     // Create hourly data points
-    const hourlyData = createHourlyDataPoints(
+    let hourlyData = createHourlyDataPoints(
       hourlyTemperatures,
       hourlyHumidities,
       hasRealTempData,

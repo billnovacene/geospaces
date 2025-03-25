@@ -49,19 +49,24 @@ export function DashboardContent({
     };
   };
   
-  // Calculate the daily min/max temperatures
+  // Calculate the daily min/max temperatures using only real data if available
   const calculateDailyStats = () => {
     if (!data.daily || data.daily.length === 0) {
       return { minTemp: "0", maxTemp: "0" };
     }
     
     // Filter out null values and only include real data if available
-    const realDataPoints = data.daily.filter(point => point.temperature !== null && point.isReal?.temperature);
+    const realDataPoints = data.daily.filter(point => 
+      point.temperature !== null && 
+      point.temperature !== undefined && 
+      point.isReal?.temperature === true
+    );
     
     // If we have real data points, use those for min/max calculations
-    const temps = realDataPoints.length > 0 
-      ? realDataPoints.map(point => point.temperature) 
-      : data.daily.filter(point => point.temperature !== null).map(point => point.temperature);
+    const usePoints = realDataPoints.length > 0 ? realDataPoints : data.daily;
+    const temps = usePoints
+      .filter(point => point.temperature !== null && point.temperature !== undefined)
+      .map(point => point.temperature);
     
     if (temps.length === 0) return { minTemp: "0", maxTemp: "0" };
     
@@ -79,7 +84,7 @@ export function DashboardContent({
   const realDailyDataCount = data.daily.filter(point => point.isReal?.temperature === true).length;
 
   // Log data about real vs simulated data for debugging
-  console.log(`DashboardContent: Has real daily data: ${hasRealDailyData}`);
+  console.log(`DashboardContent: Has real daily data: ${hasRealDailyData}, isMockData: ${isMockData}`);
   console.log(`DashboardContent: Real data points: ${realDailyDataCount}/${data.daily.length} (${(realDailyDataCount/data.daily.length*100).toFixed(1)}%)`);
   console.log(`DashboardContent: Source sensors: ${data?.sourceData?.temperatureSensors?.length || 0} temperature, ${data?.sourceData?.humiditySensors?.length || 0} humidity`);
 
@@ -88,7 +93,7 @@ export function DashboardContent({
       {/* Daily Overview - moved to top */}
       <DailyOverview 
         data={data.daily}
-        isMockData={isMockData && !hasRealDailyData}
+        isMockData={isMockData}
         contextName={contextName}
         stats={dailyStats}
         hasRealDailyData={hasRealDailyData}

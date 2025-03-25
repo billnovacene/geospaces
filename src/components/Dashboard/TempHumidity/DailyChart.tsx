@@ -34,18 +34,21 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
   const totalDataPoints = data.length;
   const hasRealData = realDataPointsCount > 0;
   
-  console.log(`Daily chart: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}`);
+  console.log(`Daily chart: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}, isMockData: ${isMockData}`);
   
   // Log each point's real/simulated status for debugging
   data.forEach((point, idx) => {
-    if (idx < 5 || point.isReal?.temperature) { // Only log first 5 points and any real points
-      console.log(`Point ${idx} (${point.time}): temperature=${point.temperature.toFixed(1)}, isReal=${point.isReal?.temperature}`);
+    const isRealPoint = point.isReal?.temperature === true;
+    if (idx < 5 || isRealPoint) { // Only log first 5 points and any real points
+      console.log(`Point ${idx} (${point.time}): temperature=${point.temperature?.toFixed(1)}, isReal=${isRealPoint}`);
     }
   });
   
   const enhancedData = data.map(point => {
     // Use real colors for real data, grey for simulated
-    const barColor = point.isReal?.temperature 
+    const isRealDataPoint = point.isReal?.temperature === true;
+    
+    const barColor = isRealDataPoint 
       ? getSensorValueColor("temperature", point.temperature)
       : "#E5E7EB"; // Gray for simulated data
     
@@ -53,12 +56,12 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
       ...point,
       barColor,
       // Create a label for the tooltip
-      label: point.isReal?.temperature ? "Real data" : "Simulated data"
+      label: isRealDataPoint ? "Real data" : "Simulated data"
     };
   });
 
   // Calculate actual min and max temps from the data
-  const tempValues = data.filter(d => d.temperature !== null).map(d => d.temperature);
+  const tempValues = data.filter(d => d.temperature !== null && d.temperature !== undefined).map(d => d.temperature);
   const actualMinTemp = tempValues.length > 0 ? Math.min(...tempValues) : 10;
   const actualMaxTemp = tempValues.length > 0 ? Math.max(...tempValues) : 30;
   

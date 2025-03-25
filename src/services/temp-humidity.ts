@@ -44,25 +44,39 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
         humidity: zoneSensors.humidity?.length || 0
       });
       
+      // This is the fix: Check if we actually have sensors for this zone
       if (zoneSensors.temperature.length > 0 || zoneSensors.humidity.length > 0) {
         console.log(`🌡️ Using REAL zone sensors for zone ${zoneId}:`, zoneSensors);
         
-        const response = await fetchRealDeviceData(
-          effectiveSiteId,
-          zoneSensors.temperature,
-          zoneSensors.humidity,
-          operatingHours
-        );
-        
-        // Add source information to the response
-        return {
-          ...response,
-          sourceData: {
-            temperatureSensors: zoneSensors.temperatureSensors,
-            humiditySensors: zoneSensors.humiditySensors
-          },
-          operatingHours
-        };
+        try {
+          const response = await fetchRealDeviceData(
+            effectiveSiteId,
+            zoneSensors.temperature,
+            zoneSensors.humidity,
+            operatingHours
+          );
+          
+          // Make sure we have valid data in the response
+          if (response && response.daily) {
+            // Count real data points
+            const realDataPoints = response.daily.filter(point => point.isReal?.temperature === true).length;
+            console.log(`Found ${realDataPoints}/${response.daily.length} real data points for zone ${zoneId}`);
+            
+            // Add source information to the response
+            return {
+              ...response,
+              sourceData: {
+                temperatureSensors: zoneSensors.temperatureSensors,
+                humiditySensors: zoneSensors.humiditySensors
+              },
+              operatingHours
+            };
+          } else {
+            console.warn(`No valid data found in real device response for zone ${zoneId}`);
+          }
+        } catch (error) {
+          console.error(`Error fetching real device data for zone ${zoneId}:`, error);
+        }
       } else {
         console.log(`⚠️ No temperature or humidity sensors found in zone ${zoneId}, falling back to site sensors`);
       }
@@ -81,27 +95,40 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
         }
       }
       
+      const tempSensors = TEMP_SENSORS[effectiveSiteId] || [];
+      const humSensors = HUMIDITY_SENSORS[effectiveSiteId] || [];
+      
       console.log(`📡 Sensors for site ${effectiveSiteId}:`, {
-        temperature: TEMP_SENSORS[effectiveSiteId] || [],
-        humidity: HUMIDITY_SENSORS[effectiveSiteId] || []
+        temperature: tempSensors,
+        humidity: humSensors
       });
       
-      const response = await fetchRealDeviceData(
-        effectiveSiteId, 
-        TEMP_SENSORS[effectiveSiteId] || [],
-        HUMIDITY_SENSORS[effectiveSiteId] || [],
-        operatingHours
-      );
-      
-      // Add site sensor information
-      return {
-        ...response,
-        sourceData: SITE_SENSOR_DETAILS[effectiveSiteId] || {
-          temperatureSensors: [],
-          humiditySensors: []
-        },
-        operatingHours
-      };
+      if (tempSensors.length > 0 || humSensors.length > 0) {
+        try {
+          const response = await fetchRealDeviceData(
+            effectiveSiteId, 
+            tempSensors,
+            humSensors,
+            operatingHours
+          );
+          
+          // Count real data points
+          const realDataPoints = response.daily.filter(point => point.isReal?.temperature === true).length;
+          console.log(`Found ${realDataPoints}/${response.daily.length} real data points for site ${effectiveSiteId}`);
+          
+          // Add site sensor information
+          return {
+            ...response,
+            sourceData: SITE_SENSOR_DETAILS[effectiveSiteId] || {
+              temperatureSensors: [],
+              humiditySensors: []
+            },
+            operatingHours
+          };
+        } catch (error) {
+          console.error(`Error fetching real device data for site ${effectiveSiteId}:`, error);
+        }
+      }
     }
     
     // For zones or sites without known sensors, construct the API endpoint 

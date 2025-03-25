@@ -14,10 +14,14 @@ export function useTempHumidityData() {
   
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["temp-humidity-data", siteId, zoneId],
-    queryFn: () => {
-      console.log("🔄 Starting data fetch process...");
+    queryFn: async () => {
+      console.log("🔄 Starting data fetch process for zone/site:", { zoneId, siteId });
+      // Pass both siteId and zoneId to the API
       return fetchTempHumidityData(siteId, zoneId);
     },
+    refetchOnWindowFocus: false,
+    refetchInterval: 60000, // Refresh every minute
+    retry: 2,
   });
 
   // Staged loading effect
@@ -31,13 +35,13 @@ export function useTempHumidityData() {
       // Simulate staged loading for better UX
       const stageSequence = async () => {
         setLoadingStage('daily');
-        await new Promise(resolve => setTimeout(resolve, 500)); // Short delay
+        await new Promise(resolve => setTimeout(resolve, 300)); // Short delay
         
         setLoadingStage('stats');
-        await new Promise(resolve => setTimeout(resolve, 700)); // Slightly longer delay
+        await new Promise(resolve => setTimeout(resolve, 400)); // Slightly longer delay
         
         setLoadingStage('monthly');
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Longer delay for monthly data
+        await new Promise(resolve => setTimeout(resolve, 500)); // Longer delay for monthly data
         
         setLoadingStage('complete');
       };
@@ -49,11 +53,21 @@ export function useTempHumidityData() {
   // Check if using mock data
   useEffect(() => {
     if (data) {
-      const usingMockData = !data?.sourceData?.temperatureSensors?.length && 
-                          !data?.sourceData?.humiditySensors?.length;
+      // Check if we have real sensor data
+      const hasTempSensors = data?.sourceData?.temperatureSensors?.length > 0;
+      const hasHumiditySensors = data?.sourceData?.humiditySensors?.length > 0;
+      const hasRealDataPoints = data.daily?.some(point => point.isReal?.temperature === true);
+      
+      // If we have sensors but no real data points, log warning
+      if ((hasTempSensors || hasHumiditySensors) && !hasRealDataPoints) {
+        console.warn('⚠️ Sensors available but no real data points found!');
+      }
+      
+      // Only mark as using mock data if we have NO sensors AND no real data points
+      const usingMockData = !hasTempSensors && !hasHumiditySensors;
       setIsUsingMockData(usingMockData);
       
-      console.log(`📊 Data source: ${usingMockData ? "SIMULATED" : "REAL API"} data`);
+      console.log(`📊 Data source: ${usingMockData ? "SIMULATED" : "REAL API"} data, has real data points: ${hasRealDataPoints}`);
       console.log("📡 Sensors:", {
         temperature: data?.sourceData?.temperatureSensors || [],
         humidity: data?.sourceData?.humiditySensors || []
@@ -78,19 +92,23 @@ export function useTempHumidityData() {
   // Show toast on data load
   useEffect(() => {
     if (data) {
+      const realDataPoints = data.daily?.filter(point => point.isReal?.temperature === true).length || 0;
+      const totalDataPoints = data.daily?.length || 0;
+      const realDataPercentage = totalDataPoints > 0 ? (realDataPoints / totalDataPoints * 100).toFixed(1) : "0";
+      
       console.log("✅ Temperature and humidity data loaded:", {
         statsAvailable: !!data.stats,
         dailyDataPoints: data.daily?.length,
         monthlyDataPoints: data.monthly?.length,
+        realDataPoints,
+        realDataPercentage: `${realDataPercentage}%`,
         operatingHours: data.operatingHours
       });
       
-      if (siteId) {
-        console.log(`📍 For site: ${siteId}`);
-      }
-      
       if (zoneId) {
-        console.log(`🏢 For zone: ${zoneId}`);
+        console.log(`📍 For zone: ${zoneId}`);
+      } else if (siteId) {
+        console.log(`📍 For site: ${siteId}`);
       }
       
       const contextType = zoneId ? "zone" : (siteId ? "site" : "dashboard");
