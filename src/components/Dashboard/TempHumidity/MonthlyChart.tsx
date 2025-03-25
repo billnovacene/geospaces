@@ -9,9 +9,11 @@ import { MonthlyChartFooter } from "@/components/Dashboard/TempHumidity/MonthlyC
 
 interface MonthlyChartProps {
   data: MonthlyOverviewPoint[];
+  isCachedData?: boolean;
+  onRefresh?: () => void;
 }
 
-export function MonthlyChart({ data }: MonthlyChartProps) {
+export function MonthlyChart({ data, isCachedData = false, onRefresh }: MonthlyChartProps) {
   const [month, setMonth] = useState("March");
   
   const temperatureConfig = sensorTypes.temperature;
@@ -50,7 +52,10 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
         relevantThresholds={relevantThresholds}
       />
       
-      <MonthlyChartFooter />
+      <MonthlyChartFooter 
+        onRefresh={onRefresh}
+        isCachedData={isCachedData}
+      />
     </div>
   );
 }

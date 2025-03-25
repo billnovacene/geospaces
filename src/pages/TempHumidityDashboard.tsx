@@ -1,5 +1,5 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
 import { useEffect, useState } from "react";
@@ -15,11 +15,14 @@ import { fetchSite } from "@/services/sites";
 import { fetchZone } from "@/services/zones";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Package, Building, AlertTriangle } from "lucide-react";
+import { Package, Building, AlertTriangle, Clock } from "lucide-react";
+import { clearTempHumidityCache } from "@/services/cache/temp-humidity-cache";
 
 export default function TempHumidityDashboard() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
   const [isUsingMockData, setIsUsingMockData] = useState(false);
+  const [isUsingCachedData, setIsUsingCachedData] = useState(false);
+  const queryClient = useQueryClient();
   
   console.log("TempHumidityDashboard: Route params:", { siteId, zoneId });
   
@@ -41,11 +44,33 @@ export default function TempHumidityDashboard() {
     return "All Locations";
   };
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch, dataUpdatedAt } = useQuery({
     queryKey: ["temp-humidity-data", siteId, zoneId],
     queryFn: () => fetchTempHumidityData(siteId, zoneId),
-    // Remove the onSettled property and handle this logic in useEffect
+    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
   });
+
+  // Handle force refresh
+  const handleForceRefresh = async () => {
+    toast.promise(
+      async () => {
+        // Clear the cache for this specific data
+        clearTempHumidityCache();
+        
+        // Invalidate the query to force a refetch
+        await queryClient.invalidateQueries({ 
+          queryKey: ["temp-humidity-data", siteId, zoneId] 
+        });
+        
+        setIsUsingCachedData(false);
+      },
+      {
+        loading: 'Refreshing data...',
+        success: 'Data refreshed successfully',
+        error: 'Failed to refresh data'
+      }
+    );
+  };
 
   // Handle data source detection in useEffect
   useEffect(() => {
@@ -55,13 +80,16 @@ export default function TempHumidityDashboard() {
                           !data?.sourceData?.humiditySensors?.length;
       setIsUsingMockData(usingMockData);
       
-      console.log(`Data source: ${usingMockData ? "SIMULATED" : "REAL API"} data`);
+      // Check if data is from cache - this is set by the service
+      setIsUsingCachedData(dataUpdatedAt < Date.now() - 5000); // If data is older than 5 seconds, it's from cache
+      
+      console.log(`Data source: ${usingMockData ? "SIMULATED" : "REAL API"} data, Cache: ${isUsingCachedData ? "CACHED" : "FRESH"}`);
     }
     
     if (error) {
       console.error("Error fetching temperature data:", error);
     }
-  }, [data, error]);
+  }, [data, error, dataUpdatedAt]);
 
   useEffect(() => {
     const liveDataInterval = setInterval(() => {
@@ -125,6 +153,13 @@ export default function TempHumidityDashboard() {
               {getDataSourceDescription()}
             </Badge>
             
+            {isUsingCachedData && !isLoading && (
+              <Badge variant="outline" className="text-xs px-3 py-1 bg-green-50 text-green-700 border-green-200">
+                <Clock className="h-3.5 w-3.5 mr-1" />
+                Cached data
+              </Badge>
+            )}
+            
             {isUsingMockData && !isLoading && (
               <Badge variant="outline" className="text-xs px-3 py-1 bg-amber-50 text-amber-700 border-amber-200">
                 <AlertTriangle className="h-3.5 w-3.5 mr-1" />
@@ -160,6 +195,8 @@ export default function TempHumidityDashboard() {
             data={data} 
             contextName={getContextName()} 
             isMockData={isUsingMockData}
+            isCachedData={isUsingCachedData}
+            onRefresh={handleForceRefresh}
           />
         ) : null}
       </div>

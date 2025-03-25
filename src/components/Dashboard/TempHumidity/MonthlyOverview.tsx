@@ -11,9 +11,17 @@ interface MonthlyOverviewProps {
     minTemp: string;
     maxTemp: string;
   };
+  isCachedData?: boolean;
+  onRefresh?: () => void;
 }
 
-export function MonthlyOverview({ data, contextName, stats }: MonthlyOverviewProps) {
+export function MonthlyOverview({ 
+  data, 
+  contextName, 
+  stats, 
+  isCachedData = false,
+  onRefresh 
+}: MonthlyOverviewProps) {
   return (
     <div className="mb-16">
       <Card className="shadow-sm border-0">
@@ -28,7 +36,11 @@ export function MonthlyOverview({ data, contextName, stats }: MonthlyOverviewPro
               </p>
             </div>
             <div className="col-span-1 lg:col-span-3">
-              <MonthlyChart data={data} />
+              <MonthlyChart 
+                data={data} 
+                isCachedData={isCachedData}
+                onRefresh={onRefresh}
+              />
             </div>
           </div>
         </CardContent>
