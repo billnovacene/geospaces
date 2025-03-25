@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Zone } from "@/services/interfaces";
 import { formatDate } from "@/utils/formatting";
@@ -13,6 +12,7 @@ interface ZoneAdditionalInfoCardProps {
 export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) => {
   const locationData = formatZoneLocation(zone);
   const [formattedCoordinates, setFormattedCoordinates] = useState<string | null>(null);
+  const [calculatedArea, setCalculatedArea] = useState<string | null>(null);
   
   // We'll calculate the area here to ensure it's displayed properly in this component
   const areaValue = zone?.location && Array.isArray(zone.location) && zone.location.length >= 3 
@@ -26,6 +26,8 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
     if (zone?.location) {
       try {
         let coords;
+        let extractedCoordinates = null;
+
         if (typeof zone.location === 'object' && !Array.isArray(zone.location)) {
           // Extract coordinates from GeoJSON format
           const geoJson = zone.location as any;
@@ -33,15 +35,25 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
             coords = geoJson.geometry.coordinates[0].slice(0, 3).map((coord: number[]) => 
               `[${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}]`
             ).join(", ") + (geoJson.geometry.coordinates[0].length > 3 ? ", ..." : "");
+            
+            extractedCoordinates = geoJson.geometry.coordinates[0];
           }
         } else if (Array.isArray(zone.location) && zone.location.length > 0) {
           // Format direct coordinate array
           coords = zone.location.slice(0, 3).map((coord: number[]) => 
             `[${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}]`
           ).join(", ") + (zone.location.length > 3 ? ", ..." : "");
+          
+          extractedCoordinates = zone.location;
         }
         
         setFormattedCoordinates(coords || null);
+        
+        // Try to calculate area from extracted coordinates
+        if (extractedCoordinates && extractedCoordinates.length >= 3) {
+          const area = calculateArea(extractedCoordinates);
+          setCalculatedArea(area);
+        }
       } catch (error) {
         console.error("Error formatting coordinates:", error);
         setFormattedCoordinates(null);
@@ -152,9 +164,22 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
                 ({parseFloat(areaValue).toLocaleString()} square meters)
               </span>
             </p>
+          ) : calculatedArea ? (
+            <p>
+              <Badge variant="success" className="text-sm font-medium mr-2">
+                {calculatedArea} m²
+              </Badge>
+              <span className="text-sm text-muted-foreground">
+                (Calculated from location coordinates)
+              </span>
+            </p>
+          ) : locationDataExists ? (
+            <p className="text-sm text-muted-foreground">
+              Calculating from {locationCoordinates?.length || 0} coordinates...
+            </p>
           ) : (
             <p className="text-sm text-muted-foreground">
-              Not available (calculated from location GeoJSON)
+              No valid coordinates found to calculate area
             </p>
           )}
         </div>
