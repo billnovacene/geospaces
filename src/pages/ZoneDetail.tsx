@@ -74,7 +74,6 @@ const ZoneDetail = () => {
                 zone={zone} 
                 deviceCount={deviceCount} 
                 deviceCountLoading={deviceCountLoading}
-                areaValue={null}
               />
               <ZoneAdditionalInfoCard zone={zone} />
             </div>

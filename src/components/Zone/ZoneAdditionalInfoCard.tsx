@@ -54,6 +54,24 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
       return null;
     }
   }
+
+  // Check for location before displaying area section
+  let locationDataExists = false;
+  let locationCoordinates = null;
+
+  try {
+    if (zone.location) {
+      if (typeof zone.location === 'object' && zone.location.geometry && zone.location.geometry.coordinates) {
+        locationCoordinates = zone.location.geometry.coordinates[0];
+        locationDataExists = Array.isArray(locationCoordinates) && locationCoordinates.length > 0;
+      } else if (Array.isArray(zone.location)) {
+        locationCoordinates = zone.location;
+        locationDataExists = zone.location.length > 0;
+      }
+    }
+  } catch (error) {
+    console.error("Error processing location data:", error);
+  }
   
   return (
     <Card>
@@ -66,21 +84,21 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
           <p>{formatDate(zone.updatedAt)}</p>
         </div>
         
-        {zone.location && (
+        {/* Always show area section if it has a value */}
+        {areaValue && (
+          <div className="mb-2">
+            <h3 className="font-medium text-sm text-muted-foreground mb-1">Area</h3>
+            <Badge variant="secondary" className="text-sm font-medium">
+              {areaValue} m²
+            </Badge>
+          </div>
+        )}
+        
+        {locationDataExists && (
           <div>
             <h3 className="font-medium text-sm text-muted-foreground mb-1">
               Location Data
             </h3>
-            
-            {areaValue && (
-              <div className="mb-2">
-                <h3 className="font-medium text-sm text-muted-foreground mb-1">Area</h3>
-                <Badge variant="secondary" className="text-sm font-medium">
-                  {areaValue} m²
-                </Badge>
-              </div>
-            )}
-            
             <div className="border rounded-lg p-3">
               <pre className="text-xs overflow-auto max-h-48">
                 {locationData}

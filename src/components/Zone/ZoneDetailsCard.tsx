@@ -12,7 +12,7 @@ interface ZoneDetailsCardProps {
   areaValue: string | null;
 }
 
-export const ZoneDetailsCard = ({ zone, deviceCount, deviceCountLoading, areaValue }: ZoneDetailsCardProps) => {
+export const ZoneDetailsCard = ({ zone, deviceCount, deviceCountLoading }: ZoneDetailsCardProps) => {
   return (
     <Card>
       <CardHeader>
