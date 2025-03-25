@@ -3,6 +3,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { MonthlyChart } from "@/components/Dashboard/TempHumidity/MonthlyChart";
 import { MonthlyOverviewPoint } from "@/services/interfaces/temp-humidity";
+import { LoaderCircle } from "lucide-react";
 
 interface MonthlyOverviewProps {
   data: MonthlyOverviewPoint[];
@@ -15,12 +16,14 @@ interface MonthlyOverviewProps {
     startTime: string;
     endTime: string;
   };
+  isLoading?: boolean;
 }
 
 export function MonthlyOverview({ 
   data, 
   contextName, 
-  stats
+  stats,
+  isLoading = false
 }: MonthlyOverviewProps) {
   return (
     <div className="mb-16">
@@ -34,9 +37,25 @@ export function MonthlyOverview({
                 near {stats.minTemp}°C during operating hours. Data has been filtered to only 
                 include measurements within operating hours.
               </p>
+              
+              {isLoading && (
+                <div className="flex items-center gap-2 text-blue-600 mt-4">
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                  <span className="text-sm font-medium">Calculating monthly metrics...</span>
+                </div>
+              )}
             </div>
             <div className="col-span-1 lg:col-span-3">
-              <MonthlyChart data={data} />
+              {isLoading ? (
+                <div className="flex items-center justify-center h-[300px] bg-gray-50 rounded-lg">
+                  <div className="flex flex-col items-center gap-2">
+                    <LoaderCircle className="h-8 w-8 animate-spin text-blue-600" />
+                    <span className="text-sm text-gray-500">Loading monthly temperature data...</span>
+                  </div>
+                </div>
+              ) : (
+                <MonthlyChart data={data} />
+              )}
             </div>
           </div>
         </CardContent>

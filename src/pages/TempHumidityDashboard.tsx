@@ -20,6 +20,7 @@ import { AlertTriangle, Clock } from "lucide-react";
 export default function TempHumidityDashboard() {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
   const [isUsingMockData, setIsUsingMockData] = useState(false);
+  const [loadingStage, setLoadingStage] = useState<'initial' | 'daily' | 'stats' | 'monthly' | 'complete'>('initial');
   
   console.log("🔍 TempHumidityDashboard: Route params:", { siteId, zoneId });
   
@@ -43,8 +44,37 @@ export default function TempHumidityDashboard() {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["temp-humidity-data", siteId, zoneId],
-    queryFn: () => fetchTempHumidityData(siteId, zoneId),
+    queryFn: () => {
+      console.log("🔄 Starting data fetch process...");
+      return fetchTempHumidityData(siteId, zoneId);
+    },
   });
+
+  // Staged loading effect
+  useEffect(() => {
+    if (isLoading) {
+      setLoadingStage('initial');
+      return;
+    }
+    
+    if (data) {
+      // Simulate staged loading for better UX
+      const stageSequence = async () => {
+        setLoadingStage('daily');
+        await new Promise(resolve => setTimeout(resolve, 500)); // Short delay
+        
+        setLoadingStage('stats');
+        await new Promise(resolve => setTimeout(resolve, 700)); // Slightly longer delay
+        
+        setLoadingStage('monthly');
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Longer delay for monthly data
+        
+        setLoadingStage('complete');
+      };
+      
+      stageSequence();
+    }
+  }, [isLoading, data]);
 
   useEffect(() => {
     if (data) {
@@ -117,7 +147,7 @@ export default function TempHumidityDashboard() {
         </div>
         
         {data?.operatingHours && (
-          <div className="flex items-center mb-6 text-blue-700">
+          <div className="flex items-center mb-6 text-gray-700">
             <Clock className="h-4 w-4 mr-1.5" />
             <span className="text-sm font-medium">Operating hours: {formatOperatingHours()}</span>
           </div>
@@ -139,16 +169,19 @@ export default function TempHumidityDashboard() {
           </div>
         </div>
         
-        {!isLoading && !error && data && (
+        {!isLoading && !error && data && loadingStage !== 'initial' && loadingStage !== 'daily' && (
           <>
             <div className="mb-8">
               <h3 className="text-lg font-medium mb-3">Live Metrics</h3>
-              <TempHumidityStats stats={data.stats} />
+              <TempHumidityStats 
+                stats={data.stats} 
+                isLoading={loadingStage === 'stats'} 
+              />
             </div>
           </>
         )}
 
-        {isLoading ? (
+        {isLoading || loadingStage === 'initial' ? (
           <LoadingState />
         ) : error ? (
           <ErrorState />
@@ -158,10 +191,11 @@ export default function TempHumidityDashboard() {
             contextName={getContextName()} 
             isMockData={isUsingMockData}
             operatingHours={data.operatingHours}
+            isLoadingMonthly={loadingStage === 'stats' || loadingStage === 'monthly'}
           />
         ) : null}
 
-        {!isLoading && !error && data && (
+        {!isLoading && !error && data && loadingStage === 'complete' && (
           <div className="mt-8 mb-24">
             <SensorSourceInfo 
               sourceData={data.sourceData} 

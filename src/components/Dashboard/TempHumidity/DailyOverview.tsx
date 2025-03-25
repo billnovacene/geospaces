@@ -3,6 +3,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DailyChart } from "@/components/Dashboard/TempHumidity/DailyChart";
 import { DailyOverviewPoint } from "@/services/interfaces/temp-humidity";
+import { LoaderCircle } from "lucide-react";
 
 interface DailyOverviewProps {
   data: DailyOverviewPoint[];
@@ -17,6 +18,7 @@ interface DailyOverviewProps {
     startTime: string;
     endTime: string;
   };
+  isLoading?: boolean;
 }
 
 export function DailyOverview({ 
@@ -24,7 +26,8 @@ export function DailyOverview({
   isMockData, 
   contextName, 
   stats, 
-  hasRealDailyData
+  hasRealDailyData,
+  isLoading = false
 }: DailyOverviewProps) {
   return (
     <div className="mb-12">
@@ -39,10 +42,26 @@ export function DailyOverview({
                   ? " Data is from actual sensor readings."
                   : " The current view uses simulated data where sensor readings are unavailable."}
               </p>
+              
+              {isLoading && (
+                <div className="flex items-center gap-2 text-blue-600 mt-4">
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                  <span className="text-sm font-medium">Loading daily data...</span>
+                </div>
+              )}
             </div>
             
             <div className="col-span-1 lg:col-span-3">
-              <DailyChart data={data} isMockData={isMockData} />
+              {isLoading ? (
+                <div className="flex items-center justify-center h-[300px] bg-gray-50 rounded-lg">
+                  <div className="flex flex-col items-center gap-2">
+                    <LoaderCircle className="h-8 w-8 animate-spin text-blue-600" />
+                    <span className="text-sm text-gray-500">Loading today's temperature data...</span>
+                  </div>
+                </div>
+              ) : (
+                <DailyChart data={data} isMockData={isMockData} />
+              )}
             </div>
           </div>
         </CardContent>

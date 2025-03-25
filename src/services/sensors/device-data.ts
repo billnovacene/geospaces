@@ -28,6 +28,9 @@ export async function fetchRealDeviceData(
     
     console.log(`📅 Fetching data for today: ${today}`);
     
+    // Performance monitoring
+    console.time('dailyDataFetch');
+    
     // Get data for today from the daily API
     const dailyData = await fetchSensorDataForDay(
       siteId, 
@@ -37,6 +40,18 @@ export async function fetchRealDeviceData(
       workingHours
     );
     
+    console.timeEnd('dailyDataFetch');
+    console.log(`📅 Daily data fetched: ${dailyData.length} points`);
+    
+    // Calculate stats based on daily data first
+    console.time('statsCalculation');
+    const prelimStats = calculateStats(dailyData, []);
+    console.timeEnd('statsCalculation');
+    
+    console.log(`📊 Calculated preliminary stats`);
+    
+    // Now fetch monthly data (potentially in parallel or after showing initial UI)
+    console.time('monthlyDataFetch');
     console.log(`📅 Fetching monthly data...`);
     
     // Get monthly data
@@ -47,11 +62,17 @@ export async function fetchRealDeviceData(
       workingHours
     );
     
-    console.log(`✅ Fetched ${dailyData.length} daily data points and ${monthlyData.length} monthly data points`);
+    console.timeEnd('monthlyDataFetch');
+    console.log(`📅 Monthly data fetched: ${monthlyData.length} points`);
     
-    // Calculate stats based on the data
+    // Recalculate stats with both daily and monthly data
+    console.time('finalStatsCalculation');
     const stats = calculateStats(dailyData, monthlyData);
-    console.log(`📊 Calculated stats:`, stats);
+    console.timeEnd('finalStatsCalculation');
+    
+    console.log(`📊 Calculated final stats with both daily and monthly data`);
+    
+    console.log(`✅ Fetched ${dailyData.length} daily data points and ${monthlyData.length} monthly data points`);
     
     return {
       stats,
