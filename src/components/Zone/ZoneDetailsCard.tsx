@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Zone } from "@/services/interfaces";
 import { formatDate } from "@/utils/formatting";
+import { Badge } from "@/components/ui/badge";
 
 interface ZoneDetailsCardProps {
   zone: Zone;

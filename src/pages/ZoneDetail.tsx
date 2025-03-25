@@ -45,7 +45,9 @@ const ZoneDetail = () => {
   console.log("Zone location data:", zone?.location);
   console.log("Zone device count from API:", deviceCount);
 
+  // Calculate area using the useZoneArea hook
   const areaValue = useZoneArea(zone);
+  console.log("Calculated area value:", areaValue);
 
   const handleRefresh = () => {
     toast.info("Refreshing zone data...");
