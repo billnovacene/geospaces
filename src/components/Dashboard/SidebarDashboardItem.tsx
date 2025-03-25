@@ -26,12 +26,14 @@ export function SidebarDashboardItem({
   // Determine the correct URL based on current context and passed contextPath
   let contextualTo = to;
   
-  if (isOverview && (siteId || zoneId)) {
-    // For Overview, navigate directly to the site or zone detail page instead of a dashboard
+  if (isOverview) {
+    // For Overview, navigate to root, site, or zone detail page
     if (zoneId) {
       contextualTo = `/zone/${zoneId}`;
     } else if (siteId) {
       contextualTo = `/site/${siteId}`;
+    } else {
+      contextualTo = "/";
     }
   } else if (to) {
     if (contextPath) {

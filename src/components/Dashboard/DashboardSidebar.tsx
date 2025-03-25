@@ -61,7 +61,6 @@ export function DashboardSidebar() {
             </div>
             <SidebarDashboardItem 
               name="All Data" 
-              to="/dashboard" 
               contextPath={zoneId ? `/zone/${zoneId}` : (siteId ? `/site/${siteId}` : '')}
             />
             <SidebarDashboardItem 
