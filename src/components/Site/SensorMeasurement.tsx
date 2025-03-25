@@ -37,7 +37,7 @@ export const SensorMeasurement = ({
 
   // Use the new sensor thresholds utility
   const getColorForValue = () => {
-    if (value === null || value === undefined) return "#a1a1aa"; // Default gray
+    if (value === null || value === undefined) return { text: "text-gray-400", bg: "bg-gray-200" };
     
     // Use the detected sensor type from the name if not explicitly provided
     const detectedType = sensorType || 
@@ -56,10 +56,10 @@ export const SensorMeasurement = ({
   const getStatusIndicator = () => {
     if (!value) return null;
     
-    const color = getColorForValue();
-    if (color === "#db4f6a") {
+    const colorObj = getColorForValue();
+    if (colorObj.text.includes("red")) {
       return <AlertTriangle className="h-5 w-5 text-red-500" />;
-    } else if (color === "#ebc651") {
+    } else if (colorObj.text.includes("amber")) {
       return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
     }
     
@@ -74,13 +74,12 @@ export const SensorMeasurement = ({
     <div className="flex items-center">
       <div>
         <div className="font-medium flex items-center gap-1">
-          <span style={{ color: valueColor }}>{value}</span> {unit}
+          <span className={valueColor.text}>{value}</span> {unit}
           {getStatusIndicator()}
         </div>
         <div className="text-xs text-muted-foreground flex items-center gap-1">
           <span 
-            className="inline-block w-2 h-2 rounded-full" 
-            style={{ backgroundColor: valueColor }}
+            className={`inline-block w-2 h-2 rounded-full ${valueColor.bg}`}
           ></span>
           {name} - {formatTimeAgo(time)}
         </div>

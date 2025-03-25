@@ -8,7 +8,18 @@ import { sensorTypes } from "@/utils/sensorThresholds";
  */
 export function enhanceMonthlyChartData(data: MonthlyOverviewPoint[]) {
   return data.map(point => {
-    const barColor = getSensorValueColor("temperature", point.avgTemp);
+    const colorObj = getSensorValueColor("temperature", point.avgTemp);
+    
+    // Extract a simple color string from the Tailwind classes
+    let barColor = "#60a5fa"; // Default blue
+    
+    if (colorObj.bg.includes("red")) {
+      barColor = "#db4f6a"; // Red
+    } else if (colorObj.bg.includes("amber")) {
+      barColor = "#ebc651"; // Amber
+    } else if (colorObj.bg.includes("green")) {
+      barColor = "#3cc774"; // Green
+    }
     
     return {
       ...point,

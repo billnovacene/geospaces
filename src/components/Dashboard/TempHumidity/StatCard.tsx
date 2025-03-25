@@ -42,13 +42,25 @@ export function StatCard({
     // Fallback to status-based colors
     switch (status) {
       case 'good':
-        return '#3cc774';
+        return {
+          text: "text-green-600",
+          bg: "bg-gradient-to-r from-green-300 to-green-400"
+        };
       case 'caution':
-        return '#ebc651';
+        return {
+          text: "text-amber-600",
+          bg: "bg-gradient-to-r from-amber-300 to-amber-400"
+        };
       case 'warning':
-        return '#db4f6a';
+        return {
+          text: "text-red-600",
+          bg: "bg-gradient-to-r from-red-300 to-red-400"
+        };
       default:
-        return '#a1a1aa';
+        return {
+          text: "text-gray-400",
+          bg: "bg-gray-200"
+        };
     }
   };
   
@@ -67,6 +79,16 @@ export function StatCard({
   
   const statusColor = getStatusColor(status, sensorType, sensorValue);
   
+  // Convert Tailwind classes to CSS colors for use with style attribute
+  const getColorFromClass = (colorClass: string) => {
+    if (colorClass.includes("red")) return "#ef4444";
+    if (colorClass.includes("amber")) return "#f59e0b";
+    if (colorClass.includes("green")) return "#10b981";
+    if (colorClass.includes("blue")) return "#3b82f6";
+    if (colorClass.includes("gray")) return "#6b7280";
+    return "#6b7280"; // default gray
+  };
+  
   // Format the last seen timestamp if provided
   const lastSeenText = lastSeen ? formatDistanceToNow(new Date(lastSeen), { addSuffix: true }) : 'N/A';
   
@@ -74,15 +96,15 @@ export function StatCard({
   const getIcon = () => {
     switch (icon) {
       case 'temperature':
-        return <Thermometer className="h-5 w-5" style={{ color: statusColor }} />;
+        return <Thermometer className="h-5 w-5" style={{ color: getColorFromClass(statusColor.text) }} />;
       case 'humidity':
-        return <Droplets className="h-5 w-5" style={{ color: statusColor }} />;
+        return <Droplets className="h-5 w-5" style={{ color: getColorFromClass(statusColor.text) }} />;
       case 'min':
-        return <ArrowDown className="h-5 w-5" style={{ color: statusColor }} />;
+        return <ArrowDown className="h-5 w-5" style={{ color: getColorFromClass(statusColor.text) }} />;
       case 'max':
-        return <ArrowUp className="h-5 w-5" style={{ color: statusColor }} />;
+        return <ArrowUp className="h-5 w-5" style={{ color: getColorFromClass(statusColor.text) }} />;
       case 'avg':
-        return <Sun className="h-5 w-5" style={{ color: statusColor }} />;
+        return <Sun className="h-5 w-5" style={{ color: getColorFromClass(statusColor.text) }} />;
       default:
         return null;
     }
@@ -99,7 +121,8 @@ export function StatCard({
         null;
   };
   
-  return <Card className="overflow-hidden border-0 h-full rounded-none shadow-sm">
+  return (
+    <Card className="overflow-hidden border-0 h-full rounded-none shadow-sm">
       <CardContent className="p-0 h-full flex flex-col">
         <div className="px-[5px] mx-[5px] py-2 flex-grow flex flex-col justify-center">
           <div className="flex flex-col items-center text-center">
@@ -115,7 +138,7 @@ export function StatCard({
             </div>
             <div className="mt-1 text-sm text-muted-foreground">{title}</div>
             
-            <div className={cn("mt-3 text-sm font-medium")} style={{ color: statusColor }}>
+            <div className={cn("mt-3 text-sm font-medium", statusColor.text)}>
               {getStatusText(status)}
             </div>
             
@@ -126,7 +149,8 @@ export function StatCard({
             )}
           </div>
         </div>
-        <div className="h-1 w-full rounded-none" style={{ backgroundColor: statusColor }} />
+        <div className={`h-1 w-full rounded-none ${statusColor.bg}`} />
       </CardContent>
-    </Card>;
+    </Card>
+  );
 }
