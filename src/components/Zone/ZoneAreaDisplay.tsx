@@ -100,10 +100,10 @@ export const ZoneAreaDisplay = ({ zone }: ZoneAreaDisplayProps) => {
       ) : locationDataExists ? (
         <div className="flex items-center">
           <span className="text-sm text-muted-foreground mr-1">
-            Calculating from {locationCoordinates?.length || 0} coordinates...
+            {locationCoordinates && locationCoordinates.length > 0 ? `${locationCoordinates.length} coordinates (need at least 3 for area calculation)` : "Area: Unknown"}
           </span>
           <TooltipWrapper 
-            content="Area calculation in progress. The system needs at least 3 coordinates to calculate the area using the Shoelace formula."
+            content="Area calculation requires at least 3 valid coordinates in the zone's location data. The system is processing the available coordinates."
           >
             <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
           </TooltipWrapper>
