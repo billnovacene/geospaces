@@ -28,16 +28,6 @@ export const ZoneCoordinatesDisplay = ({ zone }: ZoneCoordinatesDisplayProps) =>
     }
   }, [zone?.location]);
   
-  if (!formattedCoordinates) return null;
-  
-  return (
-    <div className="mb-2">
-      <h3 className="font-medium text-sm text-muted-foreground mb-1">
-        Location Coordinates
-      </h3>
-      <p className="text-xs text-muted-foreground border rounded-lg p-2 bg-gray-50 font-mono overflow-auto">
-        {formattedCoordinates}
-      </p>
-    </div>
-  );
-};
+  // Return null to hide this component completely
+  return null;
+}
