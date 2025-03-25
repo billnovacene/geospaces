@@ -1,9 +1,11 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Zone } from "@/services/interfaces";
 import { formatDate } from "@/utils/formatting";
 import { formatZoneLocation } from "@/utils/zoneUtils";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
+import { MapIcon } from "lucide-react";
 
 interface ZoneAdditionalInfoCardProps {
   zone: Zone;
@@ -147,41 +149,48 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
         <CardTitle>Additional Information</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div>
-          <h3 className="font-medium text-sm text-muted-foreground mb-1">Last Updated</h3>
-          <p>{formatDate(zone.updatedAt)}</p>
-        </div>
-        
-        {/* Area information displayed more prominently */}
-        <div className="mb-2">
-          <h3 className="font-medium text-sm text-muted-foreground mb-1">Area</h3>
+        {/* Display Zone Area prominently at the top */}
+        <div className="mb-4 p-4 bg-slate-50 rounded-lg border">
+          <h3 className="font-semibold text-base text-slate-800 mb-2 flex items-center">
+            <MapIcon className="h-5 w-5 mr-2 text-primary" />
+            Zone Area
+          </h3>
           {areaValue ? (
-            <p>
-              <Badge variant="secondary" className="text-sm font-medium mr-2">
+            <div className="flex items-center">
+              <Badge variant="secondary" className="text-lg font-medium mr-2 py-1.5 px-3">
                 {areaValue} m²
               </Badge>
               <span className="text-sm text-muted-foreground">
                 ({parseFloat(areaValue).toLocaleString()} square meters)
               </span>
-            </p>
+            </div>
           ) : calculatedArea ? (
-            <p>
-              <Badge variant="success" className="text-sm font-medium mr-2">
+            <div className="flex items-center">
+              <Badge variant="success" className="text-lg font-medium mr-2 py-1.5 px-3">
                 {calculatedArea} m²
               </Badge>
               <span className="text-sm text-muted-foreground">
                 (Calculated from location coordinates)
               </span>
-            </p>
+            </div>
           ) : locationDataExists ? (
-            <p className="text-sm text-muted-foreground">
-              Calculating from {locationCoordinates?.length || 0} coordinates...
-            </p>
+            <div className="flex items-center">
+              <span className="text-sm text-muted-foreground">
+                Calculating from {locationCoordinates?.length || 0} coordinates...
+              </span>
+            </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
-              No valid coordinates found to calculate area
-            </p>
+            <div className="flex items-center">
+              <span className="text-sm text-muted-foreground">
+                No valid coordinates found to calculate area
+              </span>
+            </div>
           )}
+        </div>
+
+        <div>
+          <h3 className="font-medium text-sm text-muted-foreground mb-1">Last Updated</h3>
+          <p>{formatDate(zone.updatedAt)}</p>
         </div>
         
         {/* Coordinates preview */}
