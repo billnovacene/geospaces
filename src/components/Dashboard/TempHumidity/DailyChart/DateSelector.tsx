@@ -9,8 +9,7 @@ interface DateSelectorProps {
 
 export function DateSelector({ selectedDate, setSelectedDate }: DateSelectorProps) {
   const handlePrevDay = () => {
-    const newDate = subDays(selectedDate, 1);
-    setSelectedDate(newDate);
+    setSelectedDate(prev => subDays(prev, 1));
   };
   
   const handleNextDay = () => {
