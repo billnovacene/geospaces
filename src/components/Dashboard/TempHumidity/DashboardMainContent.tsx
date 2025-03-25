@@ -4,9 +4,10 @@ import { ErrorState } from "@/components/Dashboard/TempHumidity/ErrorState";
 import { DashboardContent } from "@/components/Dashboard/TempHumidity/DashboardContent";
 import { SensorSourceInfo } from "@/components/Dashboard/TempHumidity/SensorSourceInfo";
 import { DashboardStatsSection } from "@/components/Dashboard/TempHumidity/DashboardStatsSection";
-import { TempHumidityResponse } from "@/services/interfaces/temp-humidity";
+import { TempHumidityResponse, StatsData } from "@/services/interfaces/temp-humidity";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface DashboardMainContentProps {
   data: TempHumidityResponse | undefined;
@@ -29,6 +30,17 @@ export function DashboardMainContent({
   apiConnectionFailed = false,
   onRetry
 }: DashboardMainContentProps) {
+  // State to track progressive stats calculations
+  const [progressiveStats, setProgressiveStats] = useState<Partial<StatsData> | null>(null);
+  
+  // Handle stats calculated from progressive loading
+  const handleStatsCalculated = (newStats: Partial<StatsData>) => {
+    setProgressiveStats(prev => ({
+      ...prev,
+      ...newStats
+    }));
+  };
+  
   if (isLoading || loadingStage === 'initial') {
     return <LoadingState />;
   }
@@ -68,12 +80,17 @@ export function DashboardMainContent({
   const realDataPoints = data.daily.filter(point => point.isReal?.temperature === true).length;
   const totalDataPoints = data.daily.length;
   const hasRealData = realDataPoints > 0;
+  
+  // Merge progressively calculated stats with API stats
+  const displayStats = progressiveStats 
+    ? { ...data.stats, ...progressiveStats }
+    : data.stats;
 
   return (
     <>
       {/* Stats section - pass down the loading stages */}
       <DashboardStatsSection 
-        stats={data.stats} 
+        stats={displayStats} 
         isLoading={isLoading} 
         loadingStage={loadingStage}
       />
@@ -85,6 +102,7 @@ export function DashboardMainContent({
         operatingHours={data.operatingHours}
         isLoadingMonthly={loadingStage === 'stats' || loadingStage === 'monthly'}
         isLoadingDaily={loadingStage === 'daily'}
+        onStatsCalculated={handleStatsCalculated}
       />
 
       {loadingStage === 'complete' && (

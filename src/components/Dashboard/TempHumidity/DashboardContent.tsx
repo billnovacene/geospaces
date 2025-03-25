@@ -2,6 +2,7 @@
 import { MonthlyOverview } from "@/components/Dashboard/TempHumidity/MonthlyOverview";
 import { DailyOverview } from "@/components/Dashboard/TempHumidity/DailyOverview";
 import { MonthlyOverviewPoint, DailyOverviewPoint, StatsData } from "@/services/interfaces/temp-humidity";
+import { useState } from "react";
 
 interface DashboardContentProps {
   data: {
@@ -25,6 +26,7 @@ interface DashboardContentProps {
   };
   isLoadingMonthly?: boolean;
   isLoadingDaily?: boolean;
+  onStatsCalculated?: (stats: Partial<StatsData>) => void;
 }
 
 export function DashboardContent({ 
@@ -32,8 +34,15 @@ export function DashboardContent({
   contextName = "All Locations", 
   isMockData = false,
   isLoadingMonthly = false,
-  isLoadingDaily = false
+  isLoadingDaily = false,
+  onStatsCalculated
 }: DashboardContentProps) {
+  // Track calculated stats from progressive data loading
+  const [calculatedMonthlyStats, setCalculatedMonthlyStats] = useState({
+    minTemp: "0",
+    maxTemp: "0"
+  });
+  
   // Calculate the min/max temperatures from monthly data
   const calculateMonthlyStats = () => {
     if (!data.monthly || data.monthly.length === 0) {
@@ -79,8 +88,50 @@ export function DashboardContent({
     };
   };
   
+  // Handle monthly stats calculation from progressive loading
+  const handleMonthlyStatsCalculated = (stats: { avgTemp: number; minTemp: number; maxTemp: number; avgHumidity: number }) => {
+    setCalculatedMonthlyStats({
+      minTemp: stats.minTemp.toFixed(1),
+      maxTemp: stats.maxTemp.toFixed(1)
+    });
+    
+    // Pass stats up to parent component for metrics panel
+    if (onStatsCalculated) {
+      onStatsCalculated({
+        avgTemp: stats.avgTemp,
+        minTemp: stats.minTemp,
+        maxTemp: stats.maxTemp,
+        avgHumidity: stats.avgHumidity,
+        status: {
+          avgTemp: getTemperatureStatus(stats.avgTemp),
+          minTemp: getTemperatureStatus(stats.minTemp),
+          maxTemp: getTemperatureStatus(stats.maxTemp),
+          avgHumidity: getHumidityStatus(stats.avgHumidity)
+        }
+      });
+    }
+  };
+  
+  // Helper function to determine temperature status
+  const getTemperatureStatus = (temp: number): 'good' | 'caution' | 'warning' => {
+    if (temp >= 17 && temp <= 22) return 'good';
+    if ((temp >= 10 && temp < 17) || (temp > 22 && temp <= 30)) return 'caution';
+    return 'warning';
+  };
+  
+  // Helper function to determine humidity status
+  const getHumidityStatus = (humidity: number): 'good' | 'caution' | 'warning' => {
+    if (humidity >= 40 && humidity <= 60) return 'good';
+    if ((humidity >= 30 && humidity < 40) || (humidity > 60 && humidity <= 70)) return 'caution';
+    return 'warning';
+  };
+  
   const monthlyStats = calculateMonthlyStats();
   const dailyStats = calculateDailyStats();
+  
+  // Use calculated stats from progressive loading if available, otherwise use pre-calculated
+  const displayMonthlyStats = calculatedMonthlyStats.maxTemp !== "0" ? 
+    calculatedMonthlyStats : monthlyStats;
   
   // Check if we have real temperature data in the daily dataset
   const hasRealDailyData = data.daily.some(point => point.isReal?.temperature === true);
@@ -91,16 +142,6 @@ export function DashboardContent({
   console.log(`DashboardContent: Real data points: ${realDailyDataCount}/${data.daily.length} (${(realDailyDataCount/data.daily.length*100).toFixed(1)}%)`);
   console.log(`DashboardContent: Available sensors: ${data?.sourceData?.temperatureSensors?.length || 0} temperature, ${data?.sourceData?.humiditySensors?.length || 0} humidity`);
   console.log(`DashboardContent: Monthly data points: ${data.monthly.length}`);
-
-  // Output the first few data points for debugging
-  if (data.daily.length > 0) {
-    console.log("Sample daily data points:", data.daily.slice(0, 3));
-    // Log the first few real data points if any
-    const realPoints = data.daily.filter(p => p.isReal?.temperature);
-    if (realPoints.length > 0) {
-      console.log("Sample REAL data points:", realPoints.slice(0, 3));
-    }
-  }
 
   return (
     <>
@@ -120,7 +161,7 @@ export function DashboardContent({
       <MonthlyOverview 
         data={data.monthly}
         contextName={contextName}
-        stats={monthlyStats}
+        stats={displayMonthlyStats}
         isLoading={isLoadingMonthly}
       />
     </>

@@ -17,13 +17,15 @@ interface MonthlyOverviewProps {
     endTime: string;
   };
   isLoading?: boolean;
+  onStatsCalculated?: (stats: { avgTemp: number; minTemp: number; maxTemp: number; avgHumidity: number }) => void;
 }
 
 export function MonthlyOverview({ 
   data, 
   contextName, 
   stats,
-  isLoading = false
+  isLoading = false,
+  onStatsCalculated
 }: MonthlyOverviewProps) {
   return (
     <div className="mb-16">
@@ -54,7 +56,10 @@ export function MonthlyOverview({
                   </div>
                 </div>
               ) : (
-                <MonthlyChart data={data} />
+                <MonthlyChart 
+                  data={data} 
+                  onStatsCalculated={onStatsCalculated}
+                />
               )}
             </div>
           </div>

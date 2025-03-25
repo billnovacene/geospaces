@@ -71,3 +71,44 @@ export function getTemperatureLegendItems() {
     }
   ];
 }
+
+/**
+ * Simulate progressive loading of monthly data day by day
+ * This gives a visual effect of data appearing gradually
+ */
+export function getProgressiveMonthlyData(data: MonthlyOverviewPoint[], loadPercentage: number) {
+  if (!data || data.length === 0) return [];
+  
+  // Calculate how many days to include based on the percentage
+  const daysToInclude = Math.ceil(data.length * (loadPercentage / 100));
+  
+  // Return a slice of the data based on the percentage (oldest to newest)
+  return data.slice(0, daysToInclude);
+}
+
+/**
+ * Calculate stats based on the currently loaded data
+ */
+export function calculateStatsFromLoadedData(data: MonthlyOverviewPoint[]) {
+  if (!data || data.length === 0) {
+    return {
+      avgTemp: 0,
+      minTemp: 0,
+      maxTemp: 0,
+      avgHumidity: 0
+    };
+  }
+  
+  const sumTemp = data.reduce((sum, point) => sum + point.avgTemp, 0);
+  const minTemp = Math.min(...data.map(point => point.minTemp));
+  const maxTemp = Math.max(...data.map(point => point.maxTemp));
+  const sumHumidity = data.reduce((sum, point) => sum + point.avgHumidity, 0);
+  
+  return {
+    avgTemp: sumTemp / data.length,
+    minTemp,
+    maxTemp,
+    avgHumidity: sumHumidity / data.length
+  };
+}
+

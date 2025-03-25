@@ -1,6 +1,6 @@
 
 import { DailyOverviewPoint, MonthlyOverviewPoint } from "@/services/interfaces/temp-humidity";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { subDays, addDays } from "date-fns";
 import { sensorTypes } from "@/utils/sensorThresholds";
 import { ChartHeader } from "./ChartHeader";
@@ -10,7 +10,8 @@ import { ChartControls } from "./ChartControls";
 import { 
   enhanceDailyChartData, 
   calculateChartRange, 
-  filterRelevantThresholds 
+  filterRelevantThresholds,
+  getProgressiveData
 } from "./utils/chartUtils";
 import { calculateHourlyAveragesFromMonth } from "./utils/monthlyAverageUtils";
 import { toast } from "sonner";
@@ -23,6 +24,8 @@ interface DailyChartProps {
 
 export function DailyChart({ data, monthlyData = [], isMockData = false }: DailyChartProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [visibleData, setVisibleData] = useState<DailyOverviewPoint[]>([]);
   
   // Count real data points - ensuring we check isReal.temperature properly
   const realDataPointsCount = data.filter(point => point.isReal?.temperature === true).length;
@@ -50,6 +53,36 @@ export function DailyChart({ data, monthlyData = [], isMockData = false }: Daily
   // Check if we have any data to display
   const hasAnyData = processedData.some(point => point.temperature !== null);
   
+  // Progressive loading effect
+  useEffect(() => {
+    if (!hasAnyData) return;
+    
+    // Reset progress when data changes
+    setLoadingProgress(0);
+    setVisibleData([]);
+    
+    // Simulate progressive loading
+    const interval = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 5; // Increment by 5% each time
+      });
+    }, 100); // Update every 100ms
+    
+    return () => clearInterval(interval);
+  }, [processedData, hasAnyData]);
+  
+  // Update visible data based on loading progress
+  useEffect(() => {
+    if (!hasAnyData) return;
+    
+    const progressiveData = getProgressiveData(processedData, loadingProgress);
+    setVisibleData(progressiveData);
+  }, [loadingProgress, processedData, hasAnyData]);
+  
   if (!hasAnyData) {
     return (
       <div className="flex items-center justify-center h-[300px] bg-gray-50 rounded-lg">
@@ -64,8 +97,8 @@ export function DailyChart({ data, monthlyData = [], isMockData = false }: Daily
   }
   
   // Process data for chart rendering
-  const enhancedData = enhanceDailyChartData(processedData);
-  const { yAxisMin, yAxisMax } = calculateChartRange(processedData);
+  const enhancedData = enhanceDailyChartData(visibleData);
+  const { yAxisMin, yAxisMax } = calculateChartRange(processedData); // Use full dataset for ranges
   const temperatureConfig = sensorTypes.temperature;
   const relevantThresholds = filterRelevantThresholds(
     temperatureConfig.thresholds, 
@@ -84,6 +117,9 @@ export function DailyChart({ data, monthlyData = [], isMockData = false }: Daily
       setSelectedDate(newDate);
     }
   };
+  
+  // Show loading indicator during progressive loading
+  const isProgressivelyLoading = loadingProgress < 100;
 
   return (
     <div className="w-full h-full">
@@ -93,6 +129,20 @@ export function DailyChart({ data, monthlyData = [], isMockData = false }: Daily
         hasRealData={hasRealData}
         selectedDate={selectedDate}
       />
+      
+      {isProgressivelyLoading && (
+        <div className="mb-2">
+          <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-blue-500 transition-all duration-300 ease-in-out" 
+              style={{ width: `${loadingProgress}%` }}
+            />
+          </div>
+          <p className="text-xs text-gray-500 mt-1 text-right">
+            Loading data: {loadingProgress}%
+          </p>
+        </div>
+      )}
       
       <ChartLegend 
         colors={temperatureConfig.colors} 

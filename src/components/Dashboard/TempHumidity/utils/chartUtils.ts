@@ -64,3 +64,18 @@ export function filterRelevantThresholds(thresholds: number[], yAxisMin: number,
     .filter(threshold => threshold >= yAxisMin && threshold <= yAxisMax)
     .filter(threshold => threshold !== 28); // Exclude 28°C threshold
 }
+
+/**
+ * Simulate a progressive data load by slicing the data array
+ * This is useful for creating animated loading effects for charts
+ */
+export function getProgressiveData(data: DailyOverviewPoint[], loadPercentage: number) {
+  if (!data || data.length === 0) return [];
+  
+  // Calculate how many items to include based on the percentage
+  const itemsToInclude = Math.ceil(data.length * (loadPercentage / 100));
+  
+  // Return a slice of the data based on the percentage
+  return data.slice(0, itemsToInclude);
+}
+
