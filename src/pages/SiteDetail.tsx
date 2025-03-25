@@ -128,13 +128,13 @@ const SiteDetail = () => {
               </h1>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2 mb-10">
+            <div className="grid gap-6 lg:grid-cols-2 mb-8">
               <SiteDetailsCard site={site} calculatedDeviceCount={totalDevicesFromZones} />
               <SiteAdditionalInfoCard site={site} />
             </div>
 
-            <div className="w-full mt-6 mb-10">
-              <Card className="shadow-sm border-0">
+            <div className="w-full mb-8">
+              <Card className="shadow-sm">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-medium mb-4">Zones</h2>
                   <SiteZonesTabs siteId={site.id} />
@@ -142,7 +142,7 @@ const SiteDetail = () => {
               </Card>
             </div>
 
-            <Card className="shadow-sm border-0">
+            <Card className="shadow-sm mb-6">
               <CardContent className="p-6">
                 <h2 className="text-xl font-medium mb-4">Device Measurements</h2>
                 <SiteDevicesMeasurementTable siteId={site.id} />

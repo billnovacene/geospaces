@@ -1,4 +1,3 @@
-
 import { Site } from "@/services/interfaces";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,7 +5,7 @@ import { formatDate, getStatusColor } from "@/utils/formatting";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesCount } from "@/services/devices";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin } from "lucide-react";
+import { MapPin, Building2 } from "lucide-react";
 
 interface SiteDetailsCardProps {
   site: Site;
@@ -14,32 +13,25 @@ interface SiteDetailsCardProps {
 }
 
 export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCardProps) {
-  // Fetch actual device count from the API
   const { data: deviceCount, isLoading: deviceCountLoading } = useQuery({
     queryKey: ["devices-count", site.id],
     queryFn: () => fetchDevicesCount(site.id),
     enabled: !!site.id,
-    // Don't refetch unnecessarily
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   console.log(`SiteDetailsCard: API device count for site ${site.id}: ${deviceCount}`);
 
-  // Generate a placeholder what3words format (since we don't have the actual API)
   const generateWhat3Words = () => {
-    // This is a mock function - in reality you would use the what3words API
-    // Here we're just creating a random but consistent what3words address for demo purposes
     const words = [
       "table", "chair", "lamp", "door", "window", "floor", "wall", "ceiling",
       "book", "pen", "paper", "desk", "phone", "computer", "mouse", "keyboard",
       "plant", "tree", "flower", "grass", "bush", "leaf", "branch", "stem"
     ];
     
-    // Use the site ID to make it deterministic
     const siteIdNum = typeof site.id === 'string' ? parseInt(site.id, 10) : site.id;
     const seed = siteIdNum || 0;
     
-    // Select three words based on the site ID
     const word1 = words[(seed * 7) % words.length];
     const word2 = words[(seed * 13) % words.length];
     const word3 = words[(seed * 19) % words.length];
@@ -47,10 +39,8 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
     return `${word1}.${word2}.${word3}`;
   };
 
-  // Get what3words for this site
   const what3Words = generateWhat3Words();
 
-  // Function to open Google Maps in a new tab
   const openInGoogleMaps = () => {
     if (site.location && site.location.length === 2) {
       const [longitude, latitude] = site.location;
@@ -60,62 +50,58 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Site Details</CardTitle>
+    <Card className="h-full shadow-sm">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl">Site Details</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div>
-          <h3 className="font-medium text-sm text-muted-foreground mb-1">Site ID</h3>
-          <p>{site.id}</p>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="border rounded-md p-3">
+            <h3 className="font-medium text-sm text-muted-foreground mb-1">Site ID</h3>
+            <p className="font-medium">{site.id}</p>
+          </div>
+          <div className="border rounded-md p-3">
+            <h3 className="font-medium text-sm text-muted-foreground mb-1">Project ID</h3>
+            <p className="font-medium">{site.projectId}</p>
+          </div>
         </div>
-        <div>
-          <h3 className="font-medium text-sm text-muted-foreground mb-1">Project ID</h3>
-          <p>{site.projectId}</p>
+        
+        <div className="border rounded-md p-3">
+          <h3 className="font-medium text-sm text-muted-foreground mb-1 flex items-center">
+            <MapPin className="h-4 w-4 mr-2 text-primary" />
+            Location
+          </h3>
+          <p>{site.locationText || "No location provided"}</p>
         </div>
-        <div>
-          <h3 className="font-medium text-sm text-muted-foreground mb-1">Location</h3>
-          <p className="flex items-center">
-            {site.location && site.location.length === 2 && (
-              <MapPin className="h-4 w-4 mr-2 text-primary" />
-            )}
-            {site.locationText || "No location provided"}
-          </p>
-        </div>
+        
         {site.location && site.location.length === 2 && (
-          <div>
+          <div className="border rounded-md p-3">
             <h3 className="font-medium text-sm text-muted-foreground mb-1 flex items-center">
-              <MapPin className="h-4 w-4 mr-1 text-primary" /> 
+              <MapPin className="h-4 w-4 mr-2 text-primary" /> 
               what3words
             </h3>
-            <p className="text-sm font-medium">
-              <Badge variant="outline" className="bg-primary/5 hover:bg-primary/10">
-                {what3Words}
-              </Badge>
-            </p>
+            <Badge variant="outline" className="bg-primary/5 hover:bg-primary/10">
+              {what3Words}
+            </Badge>
           </div>
         )}
-        <div className="pt-2 grid grid-cols-2 gap-4">
-          <Card className="bg-muted/40">
-            <CardContent className="p-4">
-              <div>
-                <p className="text-sm font-medium">Devices</p>
-                {deviceCountLoading ? (
-                  <Skeleton className="h-8 w-16" />
-                ) : (
-                  <p className="text-2xl font-bold">{deviceCount || 0}</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-muted/40">
-            <CardContent className="p-4">
-              <div>
-                <p className="text-sm font-medium">Created</p>
-                <p className="text-sm">{formatDate(site.createdAt)}</p>
-              </div>
-            </CardContent>
-          </Card>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div className="border rounded-md p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Building2 className="h-4 w-4 text-primary" />
+              <p className="text-sm font-medium text-muted-foreground">Devices</p>
+            </div>
+            {deviceCountLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <p className="text-2xl font-semibold">{deviceCount || 0}</p>
+            )}
+          </div>
+          <div className="border rounded-md p-3">
+            <div className="text-sm font-medium text-muted-foreground mb-1">Created</div>
+            <p className="font-medium">{formatDate(site.createdAt)}</p>
+          </div>
         </div>
       </CardContent>
     </Card>
