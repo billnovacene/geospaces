@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
@@ -43,9 +44,14 @@ export function DashboardSidebar() {
     <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
       <SidebarContent className="p-0 flex flex-col h-full">
         <div className="p-5 flex items-center justify-between border-b border-[#E5E7EB] bg-white">
-          <div className="space-y-1.5">
-            <div className="text-sm text-[#8E9196]">Projects</div>
-            <h2 className="text-xl font-bold text-zinc-950">Zircon</h2>
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8 bg-transparent">
+              <AvatarImage src="/lovable-uploads/e04538fb-8a3f-43c4-ba17-b41d6191317c.png" alt="Zircon Logo" />
+            </Avatar>
+            <div className="space-y-1.5">
+              <div className="text-sm text-[#8E9196]">Projects</div>
+              <h2 className="text-xl font-bold text-zinc-950">Zircon</h2>
+            </div>
           </div>
           <Button variant="ghost" size="icon" className="text-[#8E9196]">
             <Settings className="h-5 w-5" />
