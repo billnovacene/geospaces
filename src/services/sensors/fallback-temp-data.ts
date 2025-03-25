@@ -1,6 +1,6 @@
 
 import { TempHumidityResponse } from "../interfaces/temp-humidity";
-import { generateMockData } from "./stats";
+import { generateMockData } from "./mock-data-generator";
 
 /**
  * Attempt to fetch temperature data from a generic API endpoint
@@ -37,12 +37,5 @@ export async function fetchGenericTempHumidityData(siteId?: string, zoneId?: str
  */
 export function generateSimulatedTempHumidityData(): TempHumidityResponse {
   console.warn('⚠️ Falling back to SIMULATED temperature and humidity data');
-  const mockData = generateMockData();
-  return {
-    ...mockData,
-    sourceData: {
-      temperatureSensors: [],
-      humiditySensors: []
-    }
-  };
+  return generateMockData();
 }
