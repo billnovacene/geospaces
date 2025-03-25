@@ -32,34 +32,8 @@ export const ZoneDetailsCard = ({ zone, deviceCount, deviceCountLoading }: ZoneD
         <CardTitle>Zone Details</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          {/* Area display moved to the left column */}
-          <Card className="bg-muted/40">
-            <CardContent className="p-4">
-              <div>
-                <p className="text-sm font-medium flex items-center mb-1">
-                  <MapIcon className="h-4 w-4 mr-1 text-primary" />
-                  Area
-                </p>
-                {areaValue ? (
-                  <div className="flex items-center">
-                    <Badge variant="secondary" className="text-lg font-medium mr-2">
-                      {areaValue}m²
-                    </Badge>
-                    <TooltipWrapper 
-                      content="Area calculated using Turf.js which converts coordinates to a projected system for accurate measurement."
-                    >
-                      <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
-                    </TooltipWrapper>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">Not available</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Devices count stays on the right */}
+        <div className="grid grid-cols-1 gap-4">
+          {/* Devices count at the top */}
           <Card className="bg-muted/40">
             <CardContent className="p-4">
               <div>
@@ -89,12 +63,39 @@ export const ZoneDetailsCard = ({ zone, deviceCount, deviceCountLoading }: ZoneD
             <p>{zone.description}</p>
           </div>
         )}
-        <div className="pt-2">
+        <div className="pt-2 grid grid-cols-2 gap-4">
+          {/* Created date on the left */}
           <Card className="bg-muted/40">
             <CardContent className="p-4">
               <div>
                 <p className="text-sm font-medium">Created</p>
                 <p className="text-sm">{formatDate(zone.createdAt)}</p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Area display moved next to Created date */}
+          <Card className="bg-muted/40">
+            <CardContent className="p-4">
+              <div>
+                <p className="text-sm font-medium flex items-center mb-1">
+                  <MapIcon className="h-4 w-4 mr-1 text-primary" />
+                  Area
+                </p>
+                {areaValue ? (
+                  <div className="flex items-center">
+                    <Badge variant="secondary" className="text-lg font-medium mr-2">
+                      {areaValue}m²
+                    </Badge>
+                    <TooltipWrapper 
+                      content="Area calculated using Turf.js which converts coordinates to a projected system for accurate measurement."
+                    >
+                      <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipWrapper>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Not available</p>
+                )}
               </div>
             </CardContent>
           </Card>
