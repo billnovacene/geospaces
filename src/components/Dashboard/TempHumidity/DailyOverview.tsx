@@ -2,11 +2,12 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DailyChart } from "@/components/Dashboard/TempHumidity/DailyChart";
-import { DailyOverviewPoint } from "@/services/temp-humidity";
+import { DailyOverviewPoint, MonthlyOverviewPoint } from "@/services/temp-humidity";
 import { LoaderCircle } from "lucide-react";
 
 interface DailyOverviewProps {
   data: DailyOverviewPoint[];
+  monthlyData: MonthlyOverviewPoint[];
   isMockData: boolean;
   contextName: string;
   stats: {
@@ -23,6 +24,7 @@ interface DailyOverviewProps {
 
 export function DailyOverview({ 
   data, 
+  monthlyData,
   isMockData, 
   contextName, 
   stats, 
@@ -44,6 +46,7 @@ export function DailyOverview({
     );
   } else {
     console.warn("No real data points found in the daily overview data");
+    console.log("Using monthly data to show average hourly temperatures for the month");
   }
   
   return (
@@ -54,10 +57,13 @@ export function DailyOverview({
             <div className="col-span-1">
               <h2 className="text-xl font-medium mb-4">Daily Overview - {contextName}</h2>
               <p className="text-sm text-gray-600 mb-3">
-                Today's temperatures range from {stats.minTemp}°C to {stats.maxTemp}°C during operating hours.
-                {realDataCount > 0 
-                  ? ` ${realDataPercentage}% of data comes from actual sensor readings.`
-                  : " The current view uses simulated data where sensor readings are unavailable."}
+                {realDataCount > 0 ? (
+                  `Today's temperatures range from ${stats.minTemp}°C to ${stats.maxTemp}°C during operating hours.
+                  ${realDataPercentage}% of data comes from actual sensor readings.`
+                ) : (
+                  `Showing average hourly temperatures for March. 
+                  Typical temperatures range from ${stats.minTemp}°C to ${stats.maxTemp}°C during operating hours.`
+                )}
               </p>
               
               {operatingHours && (
@@ -76,7 +82,7 @@ export function DailyOverview({
               {realDataCount === 0 && !isLoading && (
                 <div className="p-2 bg-amber-50 border border-amber-200 rounded-md mt-2">
                   <p className="text-xs text-amber-700">
-                    No real-time sensor data is available for today. Showing simulated data instead.
+                    No real-time sensor data is available for today. Showing average hourly temperatures for March instead.
                   </p>
                 </div>
               )}
@@ -91,7 +97,11 @@ export function DailyOverview({
                   </div>
                 </div>
               ) : (
-                <DailyChart data={data} isMockData={isMockData && !hasRealDailyData} />
+                <DailyChart 
+                  data={data} 
+                  monthlyData={monthlyData} 
+                  isMockData={isMockData && !hasRealDailyData} 
+                />
               )}
             </div>
           </div>

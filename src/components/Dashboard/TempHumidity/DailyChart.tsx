@@ -1,5 +1,5 @@
 
-import { DailyOverviewPoint } from "@/services/temp-humidity";
+import { DailyOverviewPoint, MonthlyOverviewPoint } from "@/services/temp-humidity";
 import { useState } from "react";
 import { subDays, addDays } from "date-fns";
 import { sensorTypes } from "@/utils/sensorThresholds";
@@ -12,13 +12,15 @@ import {
   calculateChartRange, 
   filterRelevantThresholds 
 } from "./utils/chartUtils";
+import { calculateHourlyAveragesFromMonth } from "./utils/monthlyAverageUtils";
 
 interface DailyChartProps {
   data: DailyOverviewPoint[];
+  monthlyData?: MonthlyOverviewPoint[];
   isMockData?: boolean;
 }
 
-export function DailyChart({ data, isMockData = false }: DailyChartProps) {
+export function DailyChart({ data, monthlyData = [], isMockData = false }: DailyChartProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   
   // Count real data points - ensuring we check isReal.temperature properly
@@ -29,9 +31,18 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
   console.log(`Daily chart rendering: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}, isMockData: ${isMockData}`);
   console.log("Sample isReal flags:", data.slice(0, 3).map(d => d.isReal));
   
+  // If we have no real data and monthly data is available, 
+  // calculate hourly averages from the monthly data
+  let processedData = data;
+  if (!hasRealData && monthlyData && monthlyData.length > 0) {
+    console.log("No real daily data available, calculating hourly averages from monthly data");
+    processedData = calculateHourlyAveragesFromMonth(monthlyData);
+    console.log("Generated hourly averages:", processedData.slice(0, 3));
+  }
+  
   // Process data for chart rendering
-  const enhancedData = enhanceDailyChartData(data);
-  const { yAxisMin, yAxisMax } = calculateChartRange(data);
+  const enhancedData = enhanceDailyChartData(processedData);
+  const { yAxisMin, yAxisMax } = calculateChartRange(processedData);
   const temperatureConfig = sensorTypes.temperature;
   const relevantThresholds = filterRelevantThresholds(
     temperatureConfig.thresholds, 

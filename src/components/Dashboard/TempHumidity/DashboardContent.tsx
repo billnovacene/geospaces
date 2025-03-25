@@ -68,7 +68,10 @@ export function DashboardContent({
       .filter(point => point.temperature !== null && point.temperature !== undefined)
       .map(point => point.temperature);
     
-    if (temps.length === 0) return { minTemp: "0", maxTemp: "0" };
+    if (temps.length === 0) {
+      // If no daily data, use monthly stats
+      return calculateMonthlyStats();
+    }
     
     return {
       minTemp: Math.min(...temps).toFixed(1),
@@ -87,6 +90,7 @@ export function DashboardContent({
   console.log(`DashboardContent rendering: Has real daily data: ${hasRealDailyData}, isMockData: ${isMockData}`);
   console.log(`DashboardContent: Real data points: ${realDailyDataCount}/${data.daily.length} (${(realDailyDataCount/data.daily.length*100).toFixed(1)}%)`);
   console.log(`DashboardContent: Available sensors: ${data?.sourceData?.temperatureSensors?.length || 0} temperature, ${data?.sourceData?.humiditySensors?.length || 0} humidity`);
+  console.log(`DashboardContent: Monthly data points: ${data.monthly.length}`);
 
   // Output the first few data points for debugging
   if (data.daily.length > 0) {
@@ -103,6 +107,7 @@ export function DashboardContent({
       {/* Daily Overview - moved to top */}
       <DailyOverview 
         data={data.daily}
+        monthlyData={data.monthly}
         isMockData={isMockData}
         contextName={contextName}
         stats={dailyStats}

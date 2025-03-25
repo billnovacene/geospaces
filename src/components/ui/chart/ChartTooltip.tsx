@@ -41,6 +41,13 @@ export const ChartTooltipContent = ({
     return null
   }
 
+  // Check if this is data from monthly averages (all data points have isReal === false)
+  const isMonthlyAverage = payload.some(
+    item => item.payload && 
+    item.payload.isReal && 
+    item.payload.isReal.temperature === false
+  );
+
   return (
     <div
       className={className}
@@ -68,6 +75,13 @@ export const ChartTooltipContent = ({
           config={config}
         />
       )}
+      
+      {isMonthlyAverage && (
+        <div className="text-xs text-amber-600 italic mt-1 mb-1">
+          Average for March
+        </div>
+      )}
+      
       <ul className="flex flex-col gap-2.5 pt-1.5">
         {payload.map((item, index) => (
           <TooltipItem
