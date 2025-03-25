@@ -1,10 +1,11 @@
-
 /**
  * Utility functions for calculating zone areas from different coordinate formats
  */
+import * as turf from '@turf/turf';
 
 /**
- * Calculate polygon area using the Shoelace formula (Gauss's area formula)
+ * Calculate polygon area using Turf.js with proper projection for accuracy
+ * This converts from WGS84 (lat/lon) to a projected coordinate system before calculation
  */
 export function calculateArea(coordinates: number[][]) {
   if (!coordinates || coordinates.length < 3) {
@@ -12,24 +13,23 @@ export function calculateArea(coordinates: number[][]) {
   }
   
   try {
-    // Calculate area using the Shoelace formula (Gauss's area formula)
-    let area = 0;
+    // For Turf.js, we need to ensure coordinates are in [longitude, latitude] order
+    // Create a GeoJSON polygon from the coordinates
+    // Note: We need to close the polygon by adding the first point as the last point
+    const closedCoords = [...coordinates];
     
-    for (let i = 0; i < coordinates.length; i++) {
-      const j = (i + 1) % coordinates.length;
-      // Make sure each coordinate is in the expected format [x, y]
-      if (!Array.isArray(coordinates[i]) || coordinates[i].length < 2 ||
-          !Array.isArray(coordinates[j]) || coordinates[j].length < 2) {
-        return null;
-      }
-      
-      // Apply Shoelace formula
-      area += coordinates[i][0] * coordinates[j][1];
-      area -= coordinates[j][0] * coordinates[i][1];
+    // Check if polygon is already closed
+    const firstPoint = coordinates[0];
+    const lastPoint = coordinates[coordinates.length - 1];
+    if (firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]) {
+      closedCoords.push(firstPoint); // Close the polygon
     }
     
-    // Take the absolute value and divide by 2
-    area = Math.abs(area) / 2;
+    // Create a GeoJSON polygon feature
+    const polygon = turf.polygon([closedCoords]);
+    
+    // Calculate area in square meters with proper projection
+    const area = turf.area(polygon);
     
     // Return null if area is too small (might be a calculation error)
     if (area < 0.000001) {
@@ -39,7 +39,7 @@ export function calculateArea(coordinates: number[][]) {
     // Format to 2 decimal places
     return area.toFixed(2);
   } catch (error) {
-    console.error("Error calculating area:", error);
+    console.error("Error calculating area with Turf.js:", error);
     return null;
   }
 }
@@ -56,11 +56,17 @@ export function calculateAreaFromGeoJSON(geoJsonLocation: any) {
       Array.isArray(geoJsonLocation.geometry.coordinates[0]) &&
       geoJsonLocation.geometry.coordinates[0].length >= 3
     ) {
-      return calculateArea(geoJsonLocation.geometry.coordinates[0]);
+      // Create a proper GeoJSON feature from the coordinates
+      const polygon = turf.polygon([geoJsonLocation.geometry.coordinates[0]]);
+      
+      // Calculate area in square meters with proper projection
+      const area = turf.area(polygon);
+      
+      return area.toFixed(2);
     }
     return null;
   } catch (error) {
-    console.error("Error calculating area from GeoJSON:", error);
+    console.error("Error calculating area from GeoJSON with Turf.js:", error);
     return null;
   }
 }

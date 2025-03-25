@@ -78,7 +78,7 @@ export const ZoneAreaDisplay = ({ zone }: ZoneAreaDisplayProps) => {
             ({parseFloat(areaValue).toLocaleString()} square meters)
           </span>
           <TooltipWrapper 
-            content="This area is calculated from the zone's location coordinates using the Shoelace formula (Gauss's area formula)."
+            content="This area is calculated from the zone's coordinates using Turf.js with proper coordinate projection to ensure accurate measurements regardless of location on Earth."
           >
             <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
           </TooltipWrapper>
@@ -92,7 +92,7 @@ export const ZoneAreaDisplay = ({ zone }: ZoneAreaDisplayProps) => {
             (Calculated from location coordinates)
           </span>
           <TooltipWrapper 
-            content="This area is dynamically calculated from the zone's coordinates extracted from its location data using the Shoelace formula."
+            content="Area calculated using Turf.js which converts latitude/longitude (WGS84) to a projected coordinate system before calculating the area for accurate measurements."
           >
             <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
           </TooltipWrapper>
@@ -100,10 +100,12 @@ export const ZoneAreaDisplay = ({ zone }: ZoneAreaDisplayProps) => {
       ) : locationDataExists ? (
         <div className="flex items-center">
           <span className="text-sm text-muted-foreground mr-1">
-            {locationCoordinates && locationCoordinates.length > 0 ? `${locationCoordinates.length} coordinates (need at least 3 for area calculation)` : "Area: Unknown"}
+            {locationCoordinates && locationCoordinates.length > 0 ? 
+              `${locationCoordinates.length} coordinates (need at least 3 for area calculation)` : 
+              "Area: Unknown"}
           </span>
           <TooltipWrapper 
-            content="Area calculation requires at least 3 valid coordinates in the zone's location data. The system is processing the available coordinates."
+            content="Area calculation requires at least 3 valid coordinates. The coordinates will be converted to a projected coordinate system using Turf.js for accurate area measurement."
           >
             <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
           </TooltipWrapper>
