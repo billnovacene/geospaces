@@ -9,6 +9,9 @@ import { ZonesErrorState } from "./ZonesErrorState";
 import { EmptyZonesState } from "./EmptyZonesState";
 import { useQuery } from "@tanstack/react-query";
 import { findZoneSensors } from "@/services/sensors/zone-sensors";
+import { useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface ZonesHierarchyProps {
   siteId: number | null;
@@ -26,6 +29,7 @@ export function ZonesHierarchy({
   const location = useLocation();
   const { zoneId } = useParams<{ zoneId: string }>();
   const activeZoneId = zoneId ? Number(zoneId) : null;
+  const [hideEmptyZones, setHideEmptyZones] = useState(false);
   
   console.log("ZonesHierarchy: Passed siteId:", propsSiteId);
   console.log("ZonesHierarchy: Current activeZoneId:", activeZoneId);
@@ -79,6 +83,17 @@ export function ZonesHierarchy({
         </div>
       </Link>
       
+      <div className="px-5 py-2 flex items-center justify-between border-b border-[#E5E7EB]">
+        <Label htmlFor="hide-empty-zones" className="text-xs text-muted-foreground cursor-pointer">
+          Hide zones without devices
+        </Label>
+        <Switch 
+          id="hide-empty-zones" 
+          checked={hideEmptyZones} 
+          onCheckedChange={setHideEmptyZones}
+        />
+      </div>
+      
       {isLoading ? (
         <ZonesLoadingState />
       ) : error ? (
@@ -98,6 +113,7 @@ export function ZonesHierarchy({
               dashboardPath={dashboardPath}
               effectiveSiteId={effectiveSiteId}
               hideZonesWithoutSensors={hideZonesWithoutSensors}
+              hideEmptyZones={hideEmptyZones}
             />
           ))}
         </div>
