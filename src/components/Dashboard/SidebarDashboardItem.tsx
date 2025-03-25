@@ -20,10 +20,20 @@ export function SidebarDashboardItem({
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
   const [isSelected, setIsSelected] = useState(false);
   
+  // Special handling for Overview dashboard
+  const isOverview = name === "All Data";
+  
   // Determine the correct URL based on current context and passed contextPath
   let contextualTo = to;
   
-  if (to) {
+  if (isOverview && (siteId || zoneId)) {
+    // For Overview, navigate directly to the site or zone detail page instead of a dashboard
+    if (zoneId) {
+      contextualTo = `/zone/${zoneId}`;
+    } else if (siteId) {
+      contextualTo = `/site/${siteId}`;
+    }
+  } else if (to) {
     if (contextPath) {
       // If a contextPath is explicitly provided, use it
       contextualTo = `${contextPath}${to}`;
@@ -36,13 +46,21 @@ export function SidebarDashboardItem({
   
   // Reset selection state when route changes
   useEffect(() => {
-    // Check if this is the active dashboard
-    const isDashboardActive = contextualTo && location.pathname === contextualTo;
-    setIsSelected(isDashboardActive);
-  }, [location.pathname, contextualTo]);
+    // For Overview dashboard, check if we're on the site or zone detail page
+    if (isOverview) {
+      const currentPath = location.pathname;
+      const isZoneDetailPage = zoneId && currentPath === `/zone/${zoneId}`;
+      const isSiteDetailPage = siteId && currentPath === `/site/${siteId}`;
+      setIsSelected(isZoneDetailPage || isSiteDetailPage);
+    } else {
+      // For other dashboards, check if this is the active dashboard
+      const isDashboardActive = contextualTo && location.pathname === contextualTo;
+      setIsSelected(isDashboardActive);
+    }
+  }, [location.pathname, contextualTo, isOverview, siteId, zoneId]);
   
   // Is this dashboard type active anywhere in the app?
-  const isDashboardTypeActive = to && location.pathname.includes(to);
+  const isDashboardTypeActive = !isOverview && to && location.pathname.includes(to);
   
   // Toggle selection when clicked
   const handleToggle = (e: React.MouseEvent) => {
@@ -57,7 +75,7 @@ export function SidebarDashboardItem({
   };
   
   // Replace "All Data" with "Overview" in the display name
-  const displayName = name === "All Data" ? "Overview" : name;
+  const displayName = isOverview ? "Overview" : name;
   
   const content = (
     <div 
