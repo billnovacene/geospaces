@@ -11,6 +11,10 @@ export interface DailyOverviewPoint {
   time: string;
   temperature: number;
   humidity: number;
+  isReal?: {
+    temperature: boolean;
+    humidity: boolean;
+  };
 }
 
 export interface StatsData {

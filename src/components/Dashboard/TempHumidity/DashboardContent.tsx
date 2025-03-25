@@ -47,6 +47,9 @@ export function DashboardContent({ data, contextName = "All Locations", isMockDa
   };
   
   const dailyStats = calculateDailyStats();
+  
+  // Check if we have real temperature data in the daily dataset
+  const hasRealDailyData = data.daily.some(point => point.isReal?.temperature);
 
   return (
     <>
@@ -80,12 +83,14 @@ export function DashboardContent({ data, contextName = "All Locations", isMockDa
                 <h2 className="text-xl font-medium mb-4">Daily Overview - {contextName}</h2>
                 <p className="text-sm text-gray-600">
                   Today's temperatures range from {dailyStats.minTemp}°C to {dailyStats.maxTemp}°C.
-                  The building warms quickly and stays fairly stable during working hours.
+                  {hasRealDailyData 
+                    ? " Data is from actual sensor readings."
+                    : " The current view uses simulated data where sensor readings are unavailable."}
                 </p>
               </div>
               
               <div className="col-span-1 lg:col-span-3">
-                <DailyChart data={data.daily} />
+                <DailyChart data={data.daily} isMockData={isMockData} />
               </div>
             </div>
           </CardContent>
