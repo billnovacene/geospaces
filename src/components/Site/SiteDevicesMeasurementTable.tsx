@@ -2,9 +2,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSiteDevices } from "@/services/devices";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle } from "lucide-react";
 import { TableColumnHeader } from "./TableColumnHeader";
 import { DeviceTableRow } from "./DeviceTableRow";
 import { DevicesTableSkeleton } from "./DevicesTableSkeleton";
@@ -43,11 +41,11 @@ export const SiteDevicesMeasurementTable = ({ siteId }: SiteDevicesMeasurementTa
   const sortedDevicesData = getSortedData(devicesData, sortField, sortDirection);
 
   return (
-    <Card className="w-full mt-6">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl">Devices Measurements</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="rounded-lg border bg-card shadow-sm">
+      <div className="p-6 pb-3 border-b">
+        <h2 className="text-xl font-medium">Devices Measurements</h2>
+      </div>
+      <div className="p-6">
         {isLoading ? (
           <DevicesTableSkeleton />
         ) : error ? (
@@ -62,8 +60,8 @@ export const SiteDevicesMeasurementTable = ({ siteId }: SiteDevicesMeasurementTa
             onSort={handleSort}
           />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

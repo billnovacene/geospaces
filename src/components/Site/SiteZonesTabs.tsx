@@ -25,10 +25,10 @@ export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
   }
 
   return (
-    <Tabs defaultValue="hierarchy" className="mb-8">
-      <TabsList className="mb-4">
-        <TabsTrigger value="hierarchy">Hierarchical View</TabsTrigger>
-        <TabsTrigger value="list">List View</TabsTrigger>
+    <Tabs defaultValue="hierarchy" className="w-full">
+      <TabsList className="mb-4 bg-gray-100">
+        <TabsTrigger value="hierarchy" className="data-[state=active]:bg-white data-[state=active]:text-[#6CAE3E]">Hierarchical View</TabsTrigger>
+        <TabsTrigger value="list" className="data-[state=active]:bg-white data-[state=active]:text-[#6CAE3E]">List View</TabsTrigger>
       </TabsList>
       <TabsContent value="hierarchy">
         <ZonesHierarchyList siteId={siteId} />

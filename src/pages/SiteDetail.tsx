@@ -11,7 +11,7 @@ import { SiteLoadingSkeleton } from "@/components/Site/SiteLoadingSkeleton";
 import { SiteErrorState } from "@/components/Site/SiteErrorState";
 import { SiteDevicesMeasurementTable } from "@/components/Site/SiteDevicesMeasurementTable";
 import { useState, useEffect } from "react";
-import { AlertTriangle, Home, Building2 } from "lucide-react";
+import { AlertTriangle, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -22,9 +22,6 @@ const SiteDetail = () => {
   
   // Check if we have a valid siteId
   const validSiteId = siteId && !isNaN(Number(siteId)) ? Number(siteId) : null;
-  
-  // Log which site we're viewing for debugging
-  console.log(`SiteDetail: Viewing site ${siteId}, valid ID: ${validSiteId}`);
   
   // If we don't have a valid siteId, show an error state
   if (!validSiteId) {
@@ -42,9 +39,9 @@ const SiteDetail = () => {
                   The site you are trying to view does not exist or has an invalid ID.
                   Please select a valid site from the dashboard.
                 </p>
-                <Button asChild>
+                <Button asChild className="bg-[#6CAE3E] hover:bg-[#5A972F]">
                   <Link to="/" className="flex items-center justify-center gap-2">
-                    <Home className="h-4 w-4" />
+                    <Building2 className="h-4 w-4" />
                     Return to Dashboard
                   </Link>
                 </Button>
@@ -65,8 +62,6 @@ const SiteDetail = () => {
   // Log raw site data when it arrives
   useEffect(() => {
     if (site) {
-      console.log(`SiteDetail: Raw site data received:`, site);
-      
       // Show a toast notification when site data is loaded
       toast.success(`Site data loaded for ${site.name}`, {
         id: "site-data-loaded",
@@ -85,8 +80,6 @@ const SiteDetail = () => {
   // Calculate total devices from zones when zones data is available
   useEffect(() => {
     if (zones) {
-      console.log(`SiteDetail: Processing ${zones.length} zones to calculate total devices`);
-      
       // Count total devices across all zones
       let totalDevicesFound = 0;
       
@@ -107,12 +100,10 @@ const SiteDetail = () => {
         }
         
         if (zoneDevices > 0) {
-          console.log(`SiteDetail: Zone ${zone.id} has ${zoneDevices} devices`);
           totalDevicesFound += zoneDevices;
         }
       });
       
-      console.log(`SiteDetail: Total devices calculated from zones: ${totalDevicesFound}`);
       setTotalDevicesFromZones(totalDevicesFound);
     }
   }, [zones, validSiteId]);
@@ -125,27 +116,16 @@ const SiteDetail = () => {
         ) : siteError || !site ? (
           <SiteErrorState />
         ) : (
-          <>
-            <div className="mb-4">
-              <SiteHeader site={site} />
-            </div>
+          <div className="space-y-8">
+            <SiteHeader site={site} />
             
-            <div className="flex items-center space-x-3 mb-8">
-              <div className="rounded-lg bg-primary/10 p-2">
-                <Building2 className="h-6 w-6 text-primary" />
-              </div>
-              <h1 className="text-2xl font-semibold">
-                {site.name} Site Dashboard
-              </h1>
-            </div>
-
-            <div className="grid gap-8 md:grid-cols-2 mb-10">
+            <div className="grid gap-8 md:grid-cols-2">
               <SiteDetailsCard site={site} calculatedDeviceCount={totalDevicesFromZones} />
               <SiteAdditionalInfoCard site={site} />
             </div>
 
             {/* Zones Tabs */}
-            <Card className="shadow-sm border-0 mb-10">
+            <Card className="shadow-sm border-0">
               <CardContent className="p-6">
                 <h2 className="text-xl font-medium mb-4">Zones</h2>
                 <SiteZonesTabs siteId={site.id} />
@@ -153,13 +133,8 @@ const SiteDetail = () => {
             </Card>
 
             {/* Devices Measurements Table */}
-            <Card className="shadow-sm border-0">
-              <CardContent className="p-6">
-                <h2 className="text-xl font-medium mb-4">Device Measurements</h2>
-                <SiteDevicesMeasurementTable siteId={site.id} />
-              </CardContent>
-            </Card>
-          </>
+            <SiteDevicesMeasurementTable siteId={site.id} />
+          </div>
         )}
       </div>
     </SidebarWrapper>
