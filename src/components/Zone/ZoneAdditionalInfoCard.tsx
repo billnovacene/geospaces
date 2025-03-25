@@ -64,8 +64,8 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
       // Handle different location data formats
       if (typeof zone.location === 'object' && !Array.isArray(zone.location)) {
         // If location is an object with geometry property (GeoJSON format)
-        const geoJson = zone.location as any; // Type assertion to avoid TypeScript errors
-        if (geoJson.geometry && geoJson.geometry.coordinates) {
+        const geoJson = zone.location as any; 
+        if (geoJson?.geometry?.coordinates) {
           locationCoordinates = geoJson.geometry.coordinates[0];
           locationDataExists = Array.isArray(locationCoordinates) && locationCoordinates.length > 0;
         }
