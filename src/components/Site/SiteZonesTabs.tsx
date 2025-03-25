@@ -23,7 +23,7 @@ export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
   const { data: apiDeviceCount, isLoading, error } = useQuery({
     queryKey: ["devices-count", siteId],
     queryFn: () => fetchDevicesCountForSite(siteId),
-    enabled: isValidSiteId,
+    enabled: !!isValidSiteId, // Make sure we don't run the query with invalid siteId
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 1, // Limit retries to prevent excessive requests
     refetchOnWindowFocus: false,

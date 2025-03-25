@@ -24,7 +24,9 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
   const { data: allZones = [], isLoading, error } = useQuery({
     queryKey: ["zones", siteId],
     queryFn: () => siteId ? fetchZones(siteId) : Promise.resolve([]),
-    enabled: !!siteId,
+    enabled: !!siteId, // Only run the query if siteId is available
+    retry: 1, // Limit retries
+    refetchOnWindowFocus: false,
   });
 
   // Filter zones based on search term

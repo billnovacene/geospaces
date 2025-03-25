@@ -6,11 +6,16 @@ import { Device, DevicesResponse } from "./device-types";
 
 // Function to fetch devices count for a site
 export const fetchDevicesCountForSite = async (siteId: number): Promise<number> => {
+  if (!siteId || isNaN(Number(siteId))) {
+    console.warn("Invalid siteId provided to fetchDevicesCountForSite:", siteId);
+    return 0;
+  }
+  
   try {
     console.log(`Fetching devices count for site ${siteId} from API...`);
     
     // First check if we have a cached count
-    if (deviceCountsBySite[siteId]) {
+    if (deviceCountsBySite[siteId] !== undefined) {
       console.log(`Using cached device count for site ${siteId}: ${deviceCountsBySite[siteId]}`);
       return deviceCountsBySite[siteId];
     }
@@ -32,13 +37,19 @@ export const fetchDevicesCountForSite = async (siteId: number): Promise<number> 
     return 0;
   } catch (error) {
     console.error(`Error fetching devices count for site ${siteId}:`, error);
-    toast.error("Failed to fetch devices count. Please try again later.");
+    // Don't show a toast for every fetch error as it can be overwhelming
+    // toast.error("Failed to fetch devices count. Please try again later.");
     return 0;
   }
 };
 
 // Function to fetch all devices for a site
 export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
+  if (!siteId || isNaN(Number(siteId))) {
+    console.warn("Invalid siteId provided to fetchSiteDevices:", siteId);
+    return [];
+  }
+  
   try {
     console.log(`Fetching devices for site ${siteId} from API...`);
     
@@ -77,7 +88,8 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
     return [];
   } catch (error) {
     console.error(`Error fetching devices for site ${siteId}:`, error);
-    toast.error("Failed to fetch devices. Please try again later.");
+    // Only show error toast for critical user-initiated actions
+    // toast.error("Failed to fetch devices. Please try again later.");
     return [];
   }
 };
