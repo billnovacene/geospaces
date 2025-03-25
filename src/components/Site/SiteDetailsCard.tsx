@@ -83,6 +83,9 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
         <div>
           <h3 className="font-medium text-sm text-muted-foreground mb-1">Location</h3>
           <p className="flex items-center">
+            {site.location && site.location.length === 2 && (
+              <MapPin className="h-4 w-4 mr-2 text-primary" />
+            )}
             {site.locationText || "No location provided"}
             {site.location && site.location.length === 2 && (
               <TooltipProvider>
