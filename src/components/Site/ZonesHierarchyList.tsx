@@ -21,58 +21,70 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedZones, setExpandedZones] = useState<number[]>([]);
   const hasFetchedRef = useRef(false);
-  
-  // Add a loading state ref to prevent multiple simultaneous requests
   const isLoadingRef = useRef(false);
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   
-  const { data: allZones = [], isLoading, error } = useQuery({
-    queryKey: ["zones", siteId],
-    queryFn: async () => {
-      console.log(`Fetching zones for site ${siteId}`);
-      
-      if (isLoadingRef.current) {
-        console.log("Already loading zones, preventing duplicate request");
-        return [];
+  // Cleanup function for any pending requests
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+  
+  // Fetch zones once when component mounts or siteId changes
+  useEffect(() => {
+    const fetchZonesData = async () => {
+      if (!siteId || isLoadingRef.current || hasFetchedRef.current) {
+        return;
       }
       
-      if (!siteId) {
-        return [];
+      // Abort any existing request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
       
       try {
         isLoadingRef.current = true;
+        setIsLoading(true);
         
-        // Add a timeout to prevent hanging requests
-        const timeoutPromise = new Promise<Zone[]>((_, reject) => {
-          setTimeout(() => reject(new Error("Zones fetch timeout")), 15000);
-        });
+        console.log(`Manually fetching zones for site ${siteId}`);
         
-        const fetchPromise = fetchZones(siteId);
-        return await Promise.race([fetchPromise, timeoutPromise]);
-      } catch (err) {
-        console.error("Error fetching zones:", err);
-        return [];
+        // Create a new abort controller with timeout
+        abortControllerRef.current = new AbortController();
+        const timeoutId = setTimeout(() => {
+          if (abortControllerRef.current) {
+            console.log("Zones fetch timeout - aborting");
+            abortControllerRef.current.abort();
+          }
+        }, 10000); // 10 second timeout
+        
+        // Fetch zones with the abort signal
+        const fetchedZones = await fetchZones(siteId);
+        clearTimeout(timeoutId);
+        
+        console.log(`Fetched ${fetchedZones.length} zones successfully`);
+        setZones(fetchedZones);
+        hasFetchedRef.current = true;
+      } catch (error) {
+        console.error("Error fetching zones:", error);
+        setIsError(true);
       } finally {
         isLoadingRef.current = false;
+        setIsLoading(false);
       }
-    },
-    enabled: !!siteId && !hasFetchedRef.current, // Only fetch if we have a siteId and haven't fetched yet
-    retry: 0, // Disable retries to prevent excessive requests
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-  });
-
-  // Set hasFetched to true after the first query completes
-  useEffect(() => {
-    if (allZones.length > 0 || error) {
-      hasFetchedRef.current = true;
-    }
-  }, [allZones, error]);
+    };
+    
+    fetchZonesData();
+  }, [siteId]);
 
   // Filter zones based on search term - safely handle empty or undefined zones
-  const filteredZones = allZones && allZones.length > 0 
-    ? allZones.filter(zone => 
+  const filteredZones = zones && zones.length > 0 
+    ? zones.filter(zone => 
         zone && zone.name && zone.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
         (zone.type && zone.type.toLowerCase().includes(searchTerm.toLowerCase()))
       )
@@ -92,7 +104,7 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
     ? organizeZonesHierarchy(filteredZones)
     : [];
 
-  if (error) {
+  if (isError) {
     return <ZonesErrorState />;
   }
 
@@ -136,10 +148,10 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
           </div>
         )}
       </CardContent>
-      {siteId && allZones && allZones.length > 0 && (
+      {siteId && zones && zones.length > 0 && (
         <CardFooter className="p-4 text-sm text-muted-foreground flex justify-between items-center">
-          <div>Total zones: {allZones.length}</div>
-          <div>Showing {filteredZones.length} of {allZones.length}</div>
+          <div>Total zones: {zones.length}</div>
+          <div>Showing {filteredZones.length} of {zones.length}</div>
         </CardFooter>
       )}
     </Card>

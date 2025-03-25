@@ -16,34 +16,20 @@ export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
   const [deviceCount, setDeviceCount] = useState<number>(0);
   const [isDeviceCountError, setIsDeviceCountError] = useState<boolean>(false);
   const hasFetchedRef = useRef(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  
-  // Clean up any previous requests when component unmounts
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
   
   // Check if we have a valid siteId
   const isValidSiteId = siteId && !isNaN(Number(siteId));
   
-  // Fetch device count for this site with proper error handling
+  // Fetch device count for this site with proper error handling and strict caching
   const { data: apiDeviceCount, isLoading, error } = useQuery({
     queryKey: ["devices-count", siteId],
     queryFn: async () => {
-      console.log(`Attempting to fetch device count for site ${siteId}`);
-      
-      // Abort any existing request
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+      if (hasFetchedRef.current) {
+        console.log("Already fetched device count, using cached data");
+        return deviceCount;
       }
       
-      // Create a new abort controller
-      abortControllerRef.current = new AbortController();
-      
+      console.log(`Fetching device count for site ${siteId}`);
       try {
         return await fetchDevicesCountForSite(siteId);
       } catch (err) {
@@ -51,19 +37,14 @@ export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
         return 0;
       }
     },
-    enabled: !!isValidSiteId && !hasFetchedRef.current, // Only fetch once to prevent potential loops
-    staleTime: 10 * 60 * 1000, // 10 minutes
+    enabled: !!isValidSiteId,
+    staleTime: Infinity, // Never mark as stale to prevent refetching
+    cacheTime: 30 * 60 * 1000, // Cache for 30 minutes
     retry: 0, // No retries to prevent excessive requests
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    refetchOnReconnect: false,
   });
-  
-  // Set the ref to true after the first fetch
-  useEffect(() => {
-    if (apiDeviceCount !== undefined || error) {
-      hasFetchedRef.current = true;
-    }
-  }, [apiDeviceCount, error]);
   
   // Handle updating deviceCount state when the API response changes
   useEffect(() => {
@@ -71,6 +52,7 @@ export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
       console.log(`Setting device count: ${apiDeviceCount}`);
       setDeviceCount(apiDeviceCount);
       setIsDeviceCountError(false);
+      hasFetchedRef.current = true;
     }
   }, [apiDeviceCount]);
   
@@ -79,6 +61,7 @@ export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
     if (error) {
       console.error("Error fetching device count:", error);
       setIsDeviceCountError(true);
+      hasFetchedRef.current = true;
     }
   }, [error]);
 

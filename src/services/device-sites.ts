@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { deviceCountsBySite } from "./device-cache";
 import { Device, DevicesResponse } from "./device-types";
 
-// Function to fetch devices count for a site
+// Function to fetch devices count for a site with improved caching and timeout handling
 export const fetchDevicesCountForSite = async (siteId: number): Promise<number> => {
   if (!siteId || isNaN(Number(siteId))) {
     console.warn("Invalid siteId provided to fetchDevicesCountForSite:", siteId);
@@ -12,17 +12,17 @@ export const fetchDevicesCountForSite = async (siteId: number): Promise<number> 
   }
   
   try {
-    console.log(`Fetching devices count for site ${siteId} from API...`);
-    
-    // First check if we have a cached count
+    // First check if we have a cached count to avoid any API calls
     if (deviceCountsBySite[siteId] !== undefined) {
       console.log(`Using cached device count for site ${siteId}: ${deviceCountsBySite[siteId]}`);
       return deviceCountsBySite[siteId];
     }
     
+    console.log(`No cached count found, fetching devices count for site ${siteId} from API...`);
+    
     // If not cached, fetch from API with timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout - reduced from 10s
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
     
     try {
       const response = await apiRequest<DevicesResponse>(
@@ -31,7 +31,6 @@ export const fetchDevicesCountForSite = async (siteId: number): Promise<number> 
       );
       
       clearTimeout(timeoutId);
-      console.log(`Devices count API response for site ${siteId}:`, response);
       
       // Store the count in cache
       if (response && typeof response.total === 'number') {
@@ -39,24 +38,24 @@ export const fetchDevicesCountForSite = async (siteId: number): Promise<number> 
         console.log(`Caching device count ${response.total} for site ${siteId}`);
         return response.total;
       }
+      
+      return 0;
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
       if (fetchError.name === 'AbortError') {
         console.warn(`Request timeout for site ${siteId} device count`);
+        return 0;
       } else {
         throw fetchError; // Re-throw non-timeout errors
       }
     }
-    
-    return 0;
   } catch (error) {
     console.error(`Error fetching devices count for site ${siteId}:`, error);
-    // Don't show a toast for every fetch error as it can be overwhelming
     return 0;
   }
 };
 
-// Function to fetch all devices for a site
+// Function to fetch all devices for a site with improved timeout handling
 export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
   if (!siteId || isNaN(Number(siteId))) {
     console.warn("Invalid siteId provided to fetchSiteDevices:", siteId);
@@ -64,11 +63,9 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
   }
   
   try {
-    console.log(`Fetching devices for site ${siteId} from API...`);
-    
-    // Add timeout and nocache parameter to avoid stalling issues
+    // Add timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 12000); // 12 second timeout - reduced from 15s
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
     
     try {
       const nocache = new Date().getTime();
@@ -78,12 +75,10 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
       );
       
       clearTimeout(timeoutId);
-      console.log(`Devices API response for site ${siteId}:`, response);
       
       if (response && response.devices && Array.isArray(response.devices)) {
         // Store the count in cache
         deviceCountsBySite[siteId] = response.total;
-        console.log(`Caching device count ${response.total} for site ${siteId}`);
         
         // Transform the response into the Device interface
         return response.devices.map(device => ({
@@ -103,19 +98,18 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
           ...device // Include any other properties
         }));
       }
+      return [];
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
       if (fetchError.name === 'AbortError') {
         console.warn(`Request timeout for site ${siteId} devices`);
+        return [];
       } else {
-        throw fetchError; // Re-throw non-timeout errors
+        throw fetchError;
       }
     }
-    
-    return [];
   } catch (error) {
     console.error(`Error fetching devices for site ${siteId}:`, error);
-    // Only show error toast for critical user-initiated actions
     return [];
   }
 };
