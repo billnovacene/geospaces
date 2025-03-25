@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Link, useParams, useLocation } from "react-router-dom";
 import { SidebarSection } from "./SidebarSection";
@@ -129,8 +129,8 @@ export function DashboardSidebar() {
       <SidebarFooter className="border-t border-[#E5E7EB] p-4 bg-white">
         <div className="flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
-            <Avatar className="h-7 w-7 bg-black">
-              <div className="text-white text-xs font-bold">N</div>
+            <Avatar className="h-8 w-8 bg-transparent">
+              <AvatarImage src="/lovable-uploads/e04538fb-8a3f-43c4-ba17-b41d6191317c.png" alt="Zircon Logo" />
             </Avatar>
             <div>
               <div className="font-semibold text-sm">Novacene</div>
