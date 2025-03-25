@@ -1,19 +1,25 @@
 
 import { DailyOverviewPoint } from "../interfaces/temp-humidity";
 
+// Define the shape of hourly aggregated data including real data flag
+interface HourlyAggregatedData {
+  values: number[];
+  hasReal: boolean;
+}
+
 // Function to process and aggregate hourly data from raw sensor readings
 export function aggregateHourlyData(
   tempData: Array<{timestamp: string, value: number | string}>,
   humidityData: Array<{timestamp: string, value: number | string}>
 ): {
-  hourlyTemperatures: Record<string, number[]>,
-  hourlyHumidities: Record<string, number[]>,
+  hourlyTemperatures: Record<string, HourlyAggregatedData>,
+  hourlyHumidities: Record<string, HourlyAggregatedData>,
   hasRealTempData: boolean,
   hasRealHumidityData: boolean
 } {
   // Group data by hour
-  const hourlyTemperatures: Record<string, number[]> = {};
-  const hourlyHumidities: Record<string, number[]> = {};
+  const hourlyTemperatures: Record<string, HourlyAggregatedData> = {};
+  const hourlyHumidities: Record<string, HourlyAggregatedData> = {};
   
   // Process temperature data
   tempData.forEach(point => {
@@ -22,13 +28,16 @@ export function aggregateHourlyData(
       const hour = `${datetime.getHours()}:00`;
       
       if (!hourlyTemperatures[hour]) {
-        hourlyTemperatures[hour] = [];
+        hourlyTemperatures[hour] = {
+          values: [],
+          hasReal: true
+        };
       }
       
       // Convert string values to numbers
       const numValue = typeof point.value === 'string' ? parseFloat(point.value) : point.value;
       if (!isNaN(numValue)) {
-        hourlyTemperatures[hour].push(numValue);
+        hourlyTemperatures[hour].values.push(numValue);
       }
     } catch (e) {
       console.warn('Error processing temperature point:', e, point);
@@ -42,13 +51,16 @@ export function aggregateHourlyData(
       const hour = `${datetime.getHours()}:00`;
       
       if (!hourlyHumidities[hour]) {
-        hourlyHumidities[hour] = [];
+        hourlyHumidities[hour] = {
+          values: [],
+          hasReal: true
+        };
       }
       
       // Convert string values to numbers
       const numValue = typeof point.value === 'string' ? parseFloat(point.value) : point.value;
       if (!isNaN(numValue)) {
-        hourlyHumidities[hour].push(numValue);
+        hourlyHumidities[hour].values.push(numValue);
       }
     } catch (e) {
       console.warn('Error processing humidity point:', e, point);
@@ -60,8 +72,8 @@ export function aggregateHourlyData(
   
   if (Object.keys(hourlyTemperatures).length > 0) {
     console.log('Hours with temperature data:', Object.keys(hourlyTemperatures).join(', '));
-    Object.entries(hourlyTemperatures).forEach(([hour, values]) => {
-      console.log(`Hour ${hour}: ${values.length} readings, avg: ${values.reduce((a, b) => a + b, 0) / values.length}`);
+    Object.entries(hourlyTemperatures).forEach(([hour, data]) => {
+      console.log(`Hour ${hour}: ${data.values.length} readings, avg: ${data.values.reduce((a, b) => a + b, 0) / data.values.length}`);
     });
   }
   
@@ -79,8 +91,8 @@ export function aggregateHourlyData(
 
 // Function to create hourly data points with averages
 export function createHourlyDataPoints(
-  hourlyTemperatures: Record<string, number[]>,
-  hourlyHumidities: Record<string, number[]>,
+  hourlyTemperatures: Record<string, HourlyAggregatedData>,
+  hourlyHumidities: Record<string, HourlyAggregatedData>,
   hasRealTempData: boolean,
   hasRealHumidityData: boolean
 ): DailyOverviewPoint[] {
@@ -88,8 +100,11 @@ export function createHourlyDataPoints(
   
   for (let i = 0; i < 24; i++) {
     const hour = `${i}:00`;
-    const tempValues = hourlyTemperatures[hour] || [];
-    const humidityValues = hourlyHumidities[hour] || [];
+    const tempData = hourlyTemperatures[hour];
+    const humidityData = hourlyHumidities[hour];
+    
+    const tempValues = tempData?.values || [];
+    const humidityValues = humidityData?.values || [];
     
     const avgTemp = tempValues.length > 0 
       ? tempValues.reduce((sum, val) => sum + val, 0) / tempValues.length 
@@ -108,8 +123,8 @@ export function createHourlyDataPoints(
       temperature: hasTemp ? avgTemp : (hasRealTempData ? null : 18 + Math.sin(i / 24 * Math.PI * 2) * 6),
       humidity: hasHumidity ? avgHumidity : (hasRealHumidityData ? null : 40 + Math.sin((i / 24 * Math.PI * 2) + 1) * 15),
       isReal: {
-        temperature: hasTemp,
-        humidity: hasHumidity
+        temperature: hasTemp && !!tempData?.hasReal,
+        humidity: hasHumidity && !!humidityData?.hasReal
       }
     });
   }

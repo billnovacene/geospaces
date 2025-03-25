@@ -117,8 +117,8 @@ export async function fetchSensorDataForDay(
     hourlyData = hourlyData.map(point => ({
       ...point,
       isReal: {
-        temperature: hourlyTemperatures[point.time]?.isReal ?? false,
-        humidity: hourlyHumidities[point.time]?.isReal ?? false
+        temperature: hourlyTemperatures[point.time]?.hasReal ?? false,
+        humidity: hourlyHumidities[point.time]?.hasReal ?? false
       }
     }));
     
