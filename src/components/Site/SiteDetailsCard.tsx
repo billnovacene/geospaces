@@ -7,13 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesCount } from "@/services/devices";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin } from "lucide-react";
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
 
 interface SiteDetailsCardProps {
   site: Site;
@@ -87,25 +80,6 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
               <MapPin className="h-4 w-4 mr-2 text-primary" />
             )}
             {site.locationText || "No location provided"}
-            {site.location && site.location.length === 2 && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 ml-1 text-primary hover:text-primary-foreground"
-                      onClick={openInGoogleMaps}
-                    >
-                      <MapPin className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Open in Google Maps</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
           </p>
         </div>
         {site.location && site.location.length === 2 && (
