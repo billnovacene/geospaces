@@ -28,7 +28,7 @@ const App = () => (
       <TooltipProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<ProjectDetail />} />
+            <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/project/:projectId" element={<ProjectDetail />} />
             <Route path="/site" element={<Navigate to="/" replace />} />
