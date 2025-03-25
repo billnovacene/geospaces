@@ -30,10 +30,14 @@ export async function fetchSensorDataForDay(
         if (tempResponse.data && tempResponse.data.length > 0 && tempResponse.data[0].pointData) {
           tempData = tempResponse.data[0].pointData || [];
           console.log(`Received ${tempData.length} temperature data points for day ${date}`);
+        } else {
+          console.warn(`No temperature data points received from API for sensor ${temperatureSensor}`);
         }
       } catch (err) {
         console.warn('Could not fetch temperature data, proceeding with humidity only', err);
       }
+    } else {
+      console.warn('No temperature sensor provided for fetching daily data');
     }
     
     // Get humidity data if sensor is available
@@ -45,6 +49,8 @@ export async function fetchSensorDataForDay(
         if (humidityResponse.data && humidityResponse.data.length > 0 && humidityResponse.data[0].pointData) {
           humidityData = humidityResponse.data[0].pointData || [];
           console.log(`Received ${humidityData.length} humidity data points for day ${date}`);
+        } else {
+          console.warn(`No humidity data points received from API for sensor ${humiditySensor}`);
         }
       } catch (err) {
         console.warn('Could not fetch humidity data, proceeding with temperature only', err);
@@ -62,6 +68,8 @@ export async function fetchSensorDataForDay(
     // Log samples of data for debugging
     if (tempData.length > 0) {
       console.log('Temperature data sample:', tempData.slice(0, 3));
+    } else {
+      console.warn('No temperature data available after filtering');
     }
     
     // Aggregate data by hour

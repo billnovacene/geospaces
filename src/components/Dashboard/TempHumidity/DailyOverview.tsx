@@ -27,9 +27,14 @@ export function DailyOverview({
   contextName, 
   stats, 
   hasRealDailyData,
+  operatingHours,
   isLoading = false
 }: DailyOverviewProps) {
-  console.log(`DailyOverview: isMockData=${isMockData}, hasRealDailyData=${hasRealDailyData}, real points=${data.filter(d => d.isReal?.temperature === true).length}`);
+  const realDataCount = data.filter(d => d.isReal?.temperature === true).length;
+  const totalCount = data.length;
+  const realDataPercentage = totalCount > 0 ? ((realDataCount / totalCount) * 100).toFixed(0) : "0";
+  
+  console.log(`DailyOverview: isMockData=${isMockData}, hasRealDailyData=${hasRealDailyData}, real points=${realDataCount}/${totalCount} (${realDataPercentage}%)`);
   
   return (
     <div className="mb-12">
@@ -41,9 +46,15 @@ export function DailyOverview({
               <p className="text-sm text-gray-600 mb-3">
                 Today's temperatures range from {stats.minTemp}°C to {stats.maxTemp}°C during operating hours.
                 {hasRealDailyData 
-                  ? " Data is from actual sensor readings."
+                  ? ` ${realDataPercentage}% of data comes from actual sensor readings.`
                   : " The current view uses simulated data where sensor readings are unavailable."}
               </p>
+              
+              {operatingHours && (
+                <p className="text-xs text-gray-500 mb-3">
+                  Data filtered to operating hours: {operatingHours.startTime} - {operatingHours.endTime}
+                </p>
+              )}
               
               {isLoading && (
                 <div className="flex items-center gap-2 text-blue-600 mt-4">
@@ -62,7 +73,7 @@ export function DailyOverview({
                   </div>
                 </div>
               ) : (
-                <DailyChart data={data} isMockData={isMockData} />
+                <DailyChart data={data} isMockData={isMockData && !hasRealDailyData} />
               )}
             </div>
           </div>

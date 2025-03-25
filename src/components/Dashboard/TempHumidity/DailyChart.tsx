@@ -38,7 +38,9 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
   
   // Log each point's real/simulated status for debugging
   data.forEach((point, idx) => {
-    console.log(`Point ${idx} (${point.time}): temperature=${point.temperature}, isReal=${point.isReal?.temperature}`);
+    if (idx < 5 || point.isReal?.temperature) { // Only log first 5 points and any real points
+      console.log(`Point ${idx} (${point.time}): temperature=${point.temperature.toFixed(1)}, isReal=${point.isReal?.temperature}`);
+    }
   });
   
   const enhancedData = data.map(point => {
@@ -55,8 +57,10 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
     };
   });
 
-  const actualMinTemp = Math.min(...data.filter(d => d.temperature !== null).map(d => d.temperature));
-  const actualMaxTemp = Math.max(...data.filter(d => d.temperature !== null).map(d => d.temperature));
+  // Calculate actual min and max temps from the data
+  const tempValues = data.filter(d => d.temperature !== null).map(d => d.temperature);
+  const actualMinTemp = tempValues.length > 0 ? Math.min(...tempValues) : 10;
+  const actualMaxTemp = tempValues.length > 0 ? Math.max(...tempValues) : 30;
   
   const yAxisMin = Math.floor(actualMinTemp - 2);
   const yAxisMax = Math.ceil(actualMaxTemp + 2);

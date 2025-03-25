@@ -12,6 +12,10 @@ interface DashboardContentProps {
       startTime: string;
       endTime: string;
     };
+    sourceData?: {
+      temperatureSensors: Array<{id: string; name: string}>;
+      humiditySensors: Array<{id: string; name: string}>;
+    };
   };
   contextName?: string;
   isMockData?: boolean;
@@ -72,10 +76,12 @@ export function DashboardContent({
   
   // Check if we have real temperature data in the daily dataset
   const hasRealDailyData = data.daily.some(point => point.isReal?.temperature === true);
+  const realDailyDataCount = data.daily.filter(point => point.isReal?.temperature === true).length;
 
   // Log data about real vs simulated data for debugging
   console.log(`DashboardContent: Has real daily data: ${hasRealDailyData}`);
-  console.log(`DashboardContent: Real data points: ${data.daily.filter(point => point.isReal?.temperature === true).length}/${data.daily.length}`);
+  console.log(`DashboardContent: Real data points: ${realDailyDataCount}/${data.daily.length} (${(realDailyDataCount/data.daily.length*100).toFixed(1)}%)`);
+  console.log(`DashboardContent: Source sensors: ${data?.sourceData?.temperatureSensors?.length || 0} temperature, ${data?.sourceData?.humiditySensors?.length || 0} humidity`);
 
   return (
     <>
@@ -86,6 +92,7 @@ export function DashboardContent({
         contextName={contextName}
         stats={dailyStats}
         hasRealDailyData={hasRealDailyData}
+        operatingHours={data.operatingHours}
         isLoading={isLoadingDaily}
       />
 

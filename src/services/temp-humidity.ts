@@ -29,18 +29,23 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
       effectiveSiteId = zoneData.siteId.toString();
       console.log(`📍 Zone ${zoneId} belongs to site ${effectiveSiteId}`);
       
+      // Get operating hours from site
+      const siteData = await fetchSite(zoneData.siteId);
+      if (siteData?.fields) {
+        operatingHours = extractOperatingHours(siteData);
+        console.log("⏰ Operating hours for zone data:", operatingHours);
+      }
+      
       // Find temperature and humidity sensors in this zone
       const zoneSensors = await findZoneSensors(Number(zoneId), zoneData.siteId);
       
+      console.log(`Found zone sensors:`, {
+        temperature: zoneSensors.temperature?.length || 0,
+        humidity: zoneSensors.humidity?.length || 0
+      });
+      
       if (zoneSensors.temperature.length > 0 || zoneSensors.humidity.length > 0) {
         console.log(`🌡️ Using REAL zone sensors for zone ${zoneId}:`, zoneSensors);
-        
-        // Get operating hours from site
-        const siteData = await fetchSite(zoneData.siteId);
-        if (siteData?.fields) {
-          operatingHours = extractOperatingHours(siteData);
-          console.log("⏰ Operating hours for zone data:", operatingHours);
-        }
         
         const response = await fetchRealDeviceData(
           effectiveSiteId,
@@ -67,7 +72,7 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
     if (effectiveSiteId && TEMP_SENSORS[effectiveSiteId]) {
       console.log(`🌡️ Fetching REAL temperature data for site ${effectiveSiteId}`);
       
-      // Get operating hours from site
+      // Get operating hours from site if not already set
       if (!operatingHours) {
         const siteData = await fetchSite(Number(effectiveSiteId));
         if (siteData?.fields) {

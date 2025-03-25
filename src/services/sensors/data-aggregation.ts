@@ -57,20 +57,17 @@ export function aggregateHourlyData(
   
   console.log('Processed hourly temperatures:', Object.keys(hourlyTemperatures).length > 0 ? 
     `${Object.keys(hourlyTemperatures).length} hours with data` : 'No temperature data available');
-  console.log('Processed hourly humidities:', Object.keys(hourlyHumidities).length > 0 ? 
-    `${Object.keys(hourlyHumidities).length} hours with data` : 'No humidity data available');
   
-  // Check if we have real data
-  const hasRealTempData = Object.keys(hourlyTemperatures).length > 0;
-  const hasRealHumidityData = Object.keys(hourlyHumidities).length > 0;
-  
-  // Log detailed data for debugging
-  if (hasRealTempData) {
+  if (Object.keys(hourlyTemperatures).length > 0) {
     console.log('Hours with temperature data:', Object.keys(hourlyTemperatures).join(', '));
     Object.entries(hourlyTemperatures).forEach(([hour, values]) => {
       console.log(`Hour ${hour}: ${values.length} readings, avg: ${values.reduce((a, b) => a + b, 0) / values.length}`);
     });
   }
+  
+  // Check if we have real data
+  const hasRealTempData = Object.keys(hourlyTemperatures).length > 0;
+  const hasRealHumidityData = Object.keys(hourlyHumidities).length > 0;
   
   return {
     hourlyTemperatures,
