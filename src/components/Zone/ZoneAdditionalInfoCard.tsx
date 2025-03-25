@@ -90,15 +90,22 @@ export const ZoneAdditionalInfoCard = ({ zone }: ZoneAdditionalInfoCardProps) =>
           <p>{formatDate(zone.updatedAt)}</p>
         </div>
         
-        {/* Always show area section if it has a value */}
-        {areaValue && (
-          <div className="mb-2">
-            <h3 className="font-medium text-sm text-muted-foreground mb-1">Area</h3>
-            <Badge variant="secondary" className="text-sm font-medium">
-              {areaValue} m²
-            </Badge>
-          </div>
-        )}
+        {/* Area information displayed more prominently */}
+        <div className="mb-2">
+          <h3 className="font-medium text-sm text-muted-foreground mb-1">Area</h3>
+          {areaValue ? (
+            <p>
+              <Badge variant="secondary" className="text-sm font-medium mr-2">
+                {areaValue} m²
+              </Badge>
+              <span className="text-sm text-muted-foreground">
+                ({parseFloat(areaValue).toLocaleString()} square meters)
+              </span>
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">Not available</p>
+          )}
+        </div>
         
         {locationDataExists && (
           <div>
