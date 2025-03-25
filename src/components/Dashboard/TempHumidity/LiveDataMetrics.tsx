@@ -2,14 +2,20 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Thermometer, Cloud, AlertCircle, ArrowDown, ArrowUp } from "lucide-react";
+import { Thermometer, Cloud, AlertCircle, ArrowDown, ArrowUp, RefreshCw } from "lucide-react";
 import { getSensorValueColor } from "@/utils/sensorThresholds";
 import { useParams } from "react-router-dom";
 import { useTempHumidityData } from "@/hooks/useTempHumidityData";
+import { Button } from "@/components/ui/button";
 
 export function LiveDataMetrics() {
-  const { zoneId } = useParams<{ zoneId: string }>();
-  const { data, isLoading, error, apiConnectionFailed } = useTempHumidityData();
+  const { zoneId, siteId } = useParams<{ zoneId: string; siteId: string }>();
+  const { data, isLoading, error, apiConnectionFailed, refetch } = useTempHumidityData();
+  
+  // Handle refresh action
+  const handleRefresh = () => {
+    refetch();
+  };
   
   // Check if we have real-time data
   const hasRealTemperatureData = data?.daily?.some(point => point.isReal?.temperature === true);
@@ -28,7 +34,7 @@ export function LiveDataMetrics() {
       <Card className="overflow-hidden border-0 h-full rounded-none shadow-sm animate-pulse">
         <CardContent className="p-0 h-full">
           <div className="px-2 pt-2 flex justify-between items-center">
-            <span className="text-sm font-medium">Zone Temperature</span>
+            <span className="text-sm font-medium">Live Temperature</span>
             <div className="bg-gray-200 h-5 w-16 rounded"></div>
           </div>
           <div className="h-full flex items-center justify-center p-4">
@@ -44,7 +50,7 @@ export function LiveDataMetrics() {
       <Card className="overflow-hidden border-0 h-full rounded-none shadow-sm">
         <CardContent className="p-0 h-full flex flex-col">
           <div className="px-2 pt-2 flex justify-between items-center">
-            <span className="text-sm font-medium">Zone Temperature</span>
+            <span className="text-sm font-medium">Live Temperature</span>
             <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200">Error</Badge>
           </div>
           
@@ -54,9 +60,10 @@ export function LiveDataMetrics() {
               <span className="text-sm font-medium">API connection failed</span>
             </div>
             
-            <p className="text-xs text-center text-muted-foreground mt-1">
-              Unable to retrieve temperature data from the API
-            </p>
+            <Button variant="outline" size="sm" onClick={handleRefresh} className="mt-2">
+              <RefreshCw className="h-3.5 w-3.5 mr-1" />
+              Retry
+            </Button>
           </div>
           
           <div className="h-1 w-full bg-gradient-to-r from-red-200 to-red-300" />
@@ -70,7 +77,7 @@ export function LiveDataMetrics() {
       <Card className="overflow-hidden border-0 h-full rounded-none shadow-sm">
         <CardContent className="p-0 h-full flex flex-col">
           <div className="px-2 pt-2 flex justify-between items-center">
-            <span className="text-sm font-medium">Zone Temperature</span>
+            <span className="text-sm font-medium">Live Temperature</span>
             <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">
               No Data
             </Badge>
@@ -85,8 +92,14 @@ export function LiveDataMetrics() {
             </div>
             
             <p className="text-xs text-center text-muted-foreground mt-1">
-              Zone {zoneId} has no temperature sensors<br />or no recent readings
+              {zoneId ? `Zone ${zoneId}` : siteId ? `Site ${siteId}` : 'This location'} has no 
+              temperature sensors<br />or no recent readings
             </p>
+            
+            <Button variant="outline" size="sm" onClick={handleRefresh} className="mt-2">
+              <RefreshCw className="h-3.5 w-3.5 mr-1" />
+              Refresh Data
+            </Button>
           </div>
           
           <div className="h-1 w-full bg-gradient-to-r from-gray-200 to-gray-300" />
@@ -102,7 +115,7 @@ export function LiveDataMetrics() {
     <Card className="overflow-hidden border-0 h-full rounded-none shadow-sm">
       <CardContent className="p-0 h-full flex flex-col">
         <div className="px-2 pt-2 flex justify-between items-center">
-          <span className="text-sm font-medium">Zone Temperature</span>
+          <span className="text-sm font-medium">Live Temperature</span>
           <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
             Live
           </Badge>

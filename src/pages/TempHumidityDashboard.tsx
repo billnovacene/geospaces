@@ -26,13 +26,23 @@ export default function TempHumidityDashboard() {
   
   const { contextName } = useContextName();
   
-  // Refetch data when the zone changes
+  // Refetch data when the zone or site changes
   useEffect(() => {
-    if (zoneId) {
-      console.log(`TempHumidityDashboard: Zone changed to ${zoneId}, refetching data...`);
+    if (zoneId || siteId) {
+      console.log(`TempHumidityDashboard: Context changed to ${zoneId ? `zone ${zoneId}` : `site ${siteId}`}, refetching data...`);
       refetch();
     }
-  }, [zoneId, refetch]);
+  }, [zoneId, siteId, refetch]);
+  
+  // Show error toast when API connection fails
+  useEffect(() => {
+    if (apiConnectionFailed) {
+      toast.error("API connection failed", {
+        description: `Unable to retrieve temperature data for ${zoneId ? `zone ${zoneId}` : siteId ? `site ${siteId}` : 'dashboard'}.`,
+        duration: 5000,
+      });
+    }
+  }, [apiConnectionFailed, zoneId, siteId]);
   
   return (
     <SidebarWrapper>

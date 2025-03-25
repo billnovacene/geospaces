@@ -1,9 +1,14 @@
 
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, AlertTriangle } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export function ErrorState() {
-  const { zoneId } = useParams<{ zoneId: string }>();
+  const { zoneId, siteId } = useParams<{ zoneId: string; siteId: string }>();
+  
+  const handleRetry = () => {
+    window.location.reload();
+  };
 
   return (
     <div className="text-center p-8 border rounded-lg bg-red-50 border-red-200">
@@ -20,6 +25,15 @@ export function ErrorState() {
               This zone may not have any temperature sensors, or there was an error connecting to the API.
             </p>
           </>
+        ) : siteId ? (
+          <>
+            <p className="text-red-700 max-w-md">
+              Unable to retrieve temperature data for site ID {siteId}.
+            </p>
+            <p className="text-sm text-red-600 mt-2">
+              This site may not have any temperature sensors configured, or there was an error connecting to the API.
+            </p>
+          </>
         ) : (
           <>
             <p className="text-red-700 max-w-md">
@@ -33,12 +47,22 @@ export function ErrorState() {
         
         <div className="mt-4 flex flex-col gap-2">
           <p className="text-xs text-red-500 font-medium">Troubleshooting Steps:</p>
-          <ul className="text-xs text-red-500 list-disc text-left">
-            <li>Verify that the zone has temperature or humidity sensors</li>
+          <ul className="text-xs text-red-500 list-disc text-left pl-4">
+            <li>Verify that the {zoneId ? "zone" : siteId ? "site" : "location"} has temperature or humidity sensors</li>
             <li>Check if the API is accessible</li>
             <li>Ensure the sensors are reporting data</li>
+            <li>Confirm you have permission to view this data</li>
           </ul>
         </div>
+        
+        <Button 
+          variant="outline" 
+          className="mt-4 bg-white text-red-600 border-red-200 hover:bg-red-50"
+          onClick={handleRetry}
+        >
+          <AlertTriangle className="h-4 w-4 mr-2" />
+          Retry Connection
+        </Button>
       </div>
     </div>
   );
