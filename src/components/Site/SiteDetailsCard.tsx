@@ -6,6 +6,7 @@ import { formatDate, getStatusColor } from "@/utils/formatting";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesCount } from "@/services/devices";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MapPin } from "lucide-react";
 
 interface SiteDetailsCardProps {
   site: Site;
@@ -23,6 +24,31 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
   });
 
   console.log(`SiteDetailsCard: API device count for site ${site.id}: ${deviceCount}`);
+
+  // Generate a placeholder what3words format (since we don't have the actual API)
+  const generateWhat3Words = () => {
+    // This is a mock function - in reality you would use the what3words API
+    // Here we're just creating a random but consistent what3words address for demo purposes
+    const words = [
+      "table", "chair", "lamp", "door", "window", "floor", "wall", "ceiling",
+      "book", "pen", "paper", "desk", "phone", "computer", "mouse", "keyboard",
+      "plant", "tree", "flower", "grass", "bush", "leaf", "branch", "stem"
+    ];
+    
+    // Use the site ID to make it deterministic
+    const siteIdNum = typeof site.id === 'string' ? parseInt(site.id, 10) : site.id;
+    const seed = siteIdNum || 0;
+    
+    // Select three words based on the site ID
+    const word1 = words[(seed * 7) % words.length];
+    const word2 = words[(seed * 13) % words.length];
+    const word3 = words[(seed * 19) % words.length];
+    
+    return `${word1}.${word2}.${word3}`;
+  };
+
+  // Get what3words for this site
+  const what3Words = generateWhat3Words();
 
   return (
     <Card>
@@ -44,8 +70,15 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
         </div>
         {site.location && site.location.length === 2 && (
           <div>
-            <h3 className="font-medium text-sm text-muted-foreground mb-1">Coordinates</h3>
-            <p>Longitude: {site.location[0]}, Latitude: {site.location[1]}</p>
+            <h3 className="font-medium text-sm text-muted-foreground mb-1 flex items-center">
+              <MapPin className="h-4 w-4 mr-1 text-primary" /> 
+              what3words
+            </h3>
+            <p className="text-sm font-medium">
+              <Badge variant="outline" className="bg-primary/5 hover:bg-primary/10">
+                {what3Words}
+              </Badge>
+            </p>
           </div>
         )}
         <div className="pt-2 grid grid-cols-2 gap-4">
