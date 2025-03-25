@@ -11,7 +11,6 @@ import { ZoneLoadingSkeleton } from "@/components/Zone/ZoneLoadingSkeleton";
 import { ZoneErrorState } from "@/components/Zone/ZoneErrorState";
 import { ZoneDevices } from "@/components/Zone/ZoneDevices";
 import { SubZonesList } from "@/components/Zone/SubZonesList";
-import { useZoneArea } from "@/hooks/useZoneArea";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
@@ -45,10 +44,6 @@ const ZoneDetail = () => {
   console.log("Zone location data:", zone?.location);
   console.log("Zone device count from API:", deviceCount);
 
-  // Calculate area using the useZoneArea hook
-  const areaValue = useZoneArea(zone);
-  console.log("Calculated area value:", areaValue);
-
   const handleRefresh = () => {
     toast.info("Refreshing zone data...");
     refetchZone();
@@ -78,8 +73,8 @@ const ZoneDetail = () => {
               <ZoneDetailsCard 
                 zone={zone} 
                 deviceCount={deviceCount} 
-                deviceCountLoading={deviceCountLoading} 
-                areaValue={areaValue} 
+                deviceCountLoading={deviceCountLoading}
+                areaValue={null}
               />
               <ZoneAdditionalInfoCard zone={zone} />
             </div>

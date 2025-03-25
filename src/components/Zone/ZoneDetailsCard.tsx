@@ -55,17 +55,6 @@ export const ZoneDetailsCard = ({ zone, deviceCount, deviceCountLoading, areaVal
             </CardContent>
           </Card>
         </div>
-        
-        {areaValue && (
-          <Card className="bg-muted/40">
-            <CardContent className="p-4">
-              <div>
-                <p className="text-sm font-medium">Area</p>
-                <p className="text-2xl font-bold">{areaValue} m²</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </CardContent>
     </Card>
   );
