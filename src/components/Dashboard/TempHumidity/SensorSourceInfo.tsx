@@ -27,7 +27,7 @@ export function SensorSourceInfo({
   
   return (
     <Card className="shadow-sm">
-      <CardContent className="p-6">
+      <CardContent className="pt-6 px-6 pb-8">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium">Data Sources</h3>
           <Button 

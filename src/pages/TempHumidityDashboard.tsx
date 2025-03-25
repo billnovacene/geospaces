@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { SidebarWrapper } from "@/components/Dashboard/Sidebar";
@@ -44,13 +43,10 @@ export default function TempHumidityDashboard() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["temp-humidity-data", siteId, zoneId],
     queryFn: () => fetchTempHumidityData(siteId, zoneId),
-    // Remove the onSettled property and handle this logic in useEffect
   });
 
-  // Handle data source detection in useEffect
   useEffect(() => {
     if (data) {
-      // Check if we're using mock data by examining the API response
       const usingMockData = !data?.sourceData?.temperatureSensors?.length && 
                           !data?.sourceData?.humiditySensors?.length;
       setIsUsingMockData(usingMockData);
@@ -91,7 +87,6 @@ export default function TempHumidityDashboard() {
     }
   }, [data, siteId, zoneId, siteData, zoneData]);
 
-  // Format operating hours for display
   const formatOperatingHours = () => {
     if (data?.operatingHours) {
       return `${data.operatingHours.startTime} - ${data.operatingHours.endTime}`;
@@ -99,7 +94,6 @@ export default function TempHumidityDashboard() {
     return "All hours";
   };
 
-  // Determine data source description with icons
   const getDataSourceDescription = () => {
     if (zoneId && zoneData) {
       return (
@@ -155,15 +149,6 @@ export default function TempHumidityDashboard() {
               <h3 className="text-lg font-medium mb-3">Live Metrics</h3>
               <TempHumidityStats stats={data.stats} />
             </div>
-            
-            <div className="mb-8">
-              <SensorSourceInfo 
-                sourceData={data.sourceData} 
-                isLoading={false}
-                isMockData={isUsingMockData}
-                operatingHours={data.operatingHours}
-              />
-            </div>
           </>
         )}
 
@@ -179,6 +164,17 @@ export default function TempHumidityDashboard() {
             operatingHours={data.operatingHours}
           />
         ) : null}
+
+        {!isLoading && !error && data && (
+          <div className="mt-8">
+            <SensorSourceInfo 
+              sourceData={data.sourceData} 
+              isLoading={false}
+              isMockData={isUsingMockData}
+              operatingHours={data.operatingHours}
+            />
+          </div>
+        )}
       </div>
     </SidebarWrapper>
   );
