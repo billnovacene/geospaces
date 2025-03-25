@@ -1,5 +1,5 @@
 
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZone } from "@/services/api";
 import { fetchDevicesCountForZone } from "@/services/devices";
@@ -13,6 +13,8 @@ import { ZoneDevices } from "@/components/Zone/ZoneDevices";
 import { SubZonesList } from "@/components/Zone/SubZonesList";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
+import { Package } from "lucide-react";
 
 const ZoneDetail = () => {
   const { zoneId } = useParams<{ zoneId: string }>();
@@ -52,24 +54,25 @@ const ZoneDetail = () => {
 
   return (
     <SidebarWrapper>
-      <div className="container mx-auto py-6">
+      <div className="container mx-auto py-6 px-6 md:px-8 lg:px-12">
         {isLoading ? (
           <ZoneLoadingSkeleton />
         ) : error || !zone ? (
           <ZoneErrorState />
         ) : (
           <>
-            <div className="flex justify-between items-start mb-6">
-              <ZoneDetailHeader zone={zone} />
-              <button 
-                onClick={handleRefresh}
-                className="text-xs text-primary hover:underline"
-              >
-                Refresh Data
-              </button>
+            <ZoneDetailHeader zone={zone} />
+            
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="rounded-lg bg-primary/10 p-2">
+                <Package className="h-6 w-6 text-primary" />
+              </div>
+              <h1 className="text-2xl font-semibold">
+                {zone.name} Zone Dashboard
+              </h1>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 mb-8">
+            <div className="grid gap-6 md:grid-cols-2 mb-6">
               <ZoneDetailsCard 
                 zone={zone} 
                 deviceCount={deviceCount} 
@@ -78,20 +81,34 @@ const ZoneDetail = () => {
               <ZoneAdditionalInfoCard zone={zone} />
             </div>
             
-            {/* ZoneDevices - Pass zoneId and siteId */}
-            <ZoneDevices 
-              zoneId={Number(zoneId)} 
-              siteId={zone.siteId} 
-            />
+            <Card className="shadow-sm mb-6">
+              <CardContent className="p-6">
+                <h2 className="text-xl font-medium mb-4">Devices</h2>
+                <ZoneDevices 
+                  zoneId={Number(zoneId)} 
+                  siteId={zone.siteId} 
+                />
+              </CardContent>
+            </Card>
             
-            {/* Sub-Zones List - Pass siteId from zone */}
-            <SubZonesList 
-              parentZoneId={Number(zoneId)} 
-              siteId={zone.siteId}
-            />
+            <Card className="shadow-sm mb-6">
+              <CardContent className="p-6">
+                <h2 className="text-xl font-medium mb-4">Sub-Zones</h2>
+                <SubZonesList 
+                  parentZoneId={Number(zoneId)} 
+                  siteId={zone.siteId}
+                />
+              </CardContent>
+            </Card>
           </>
         )}
       </div>
+      <button 
+        onClick={handleRefresh}
+        className="fixed bottom-4 right-4 text-xs bg-primary/10 text-primary px-3 py-2 rounded-md hover:bg-primary/20"
+      >
+        Refresh Data
+      </button>
     </SidebarWrapper>
   );
 };

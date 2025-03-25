@@ -62,98 +62,90 @@ export function SubZonesList({ parentZoneId, siteId }: SubZonesListProps) {
   }
 
   return (
-    <Card className="col-span-2 mt-6">
-      <CardHeader className="pb-4">
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-          <div>
-            <CardTitle className="text-xl">Sub-Zones</CardTitle>
-            <CardDescription>
-              Child zones contained within this zone
-            </CardDescription>
-          </div>
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search sub-zones..."
-              className="pl-8 max-w-xs"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+    <div className="w-full">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search sub-zones..."
+            className="pl-8 max-w-xs"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="space-y-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-4 p-4 border rounded-md">
-                <div className="space-y-2">
-                  <Skeleton className="h-5 w-40" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-                <div className="ml-auto">
-                  <Skeleton className="h-6 w-20" />
-                </div>
+      </div>
+      
+      {isLoading ? (
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 p-4 border rounded-md">
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-40" />
+                <Skeleton className="h-4 w-24" />
               </div>
-            ))}
-          </div>
-        ) : filteredZones.length === 0 ? (
-          <div className="text-center py-8 border rounded-md bg-muted/30">
-            <p className="text-muted-foreground">No sub-zones found for this zone</p>
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Devices</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredZones.map((zone) => {
-                const statusInfo = getStatusInfo(zone.status || "Unknown");
-                const deviceCount = getDeviceCount(zone);
-                
-                return (
-                  <TableRow key={zone.id}>
-                    <TableCell className="font-medium">{zone.name}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <Home className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
-                        <span>{zone.type || "N/A"}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{deviceCount}</TableCell>
-                    <TableCell>{formatDate(zone.createdAt)}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={statusInfo.color}>
-                        {renderStatusIcon(statusInfo.icon)}
-                        {zone.status || "Unknown"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={`/zone/${zone.id}`}>View Details</Link>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
+              <div className="ml-auto">
+                <Skeleton className="h-6 w-20" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : filteredZones.length === 0 ? (
+        <div className="text-center py-8 border rounded-md bg-muted/30">
+          <p className="text-muted-foreground">No sub-zones found for this zone</p>
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Devices</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredZones.map((zone) => {
+              const statusInfo = getStatusInfo(zone.status || "Unknown");
+              const deviceCount = getDeviceCount(zone);
+              
+              return (
+                <TableRow key={zone.id}>
+                  <TableCell className="font-medium">{zone.name}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <Home className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                      <span>{zone.type || "N/A"}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>{deviceCount}</TableCell>
+                  <TableCell>{formatDate(zone.createdAt)}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={statusInfo.color}>
+                      {renderStatusIcon(statusInfo.icon)}
+                      {zone.status || "Unknown"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to={`/zone/${zone.id}`}>View Details</Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      )}
+      
       {filteredZones.length > 0 && (
-        <CardFooter className="border-t p-4 text-sm text-muted-foreground flex justify-between items-center">
+        <div className="border-t p-4 text-sm text-muted-foreground flex justify-between items-center">
           <div>Total sub-zones: {allZones.length}</div>
           <div>Showing {filteredZones.length} of {allZones.length}</div>
-        </CardFooter>
+        </div>
       )}
-    </Card>
+    </div>
   );
 }
