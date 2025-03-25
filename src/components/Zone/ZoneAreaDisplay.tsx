@@ -1,9 +1,10 @@
 
 import { Badge } from "@/components/ui/badge";
-import { MapIcon } from "lucide-react";
+import { InfoIcon, MapIcon } from "lucide-react";
 import { Zone } from "@/services/interfaces";
 import { calculateArea, calculateAreaFromGeoJSON, extractCoordinates } from "@/utils/areaCalculations";
 import { useEffect, useState } from "react";
+import { TooltipWrapper } from "@/components/UI/TooltipWrapper";
 
 interface ZoneAreaDisplayProps {
   zone: Zone;
@@ -59,39 +60,64 @@ export const ZoneAreaDisplay = ({ zone }: ZoneAreaDisplayProps) => {
           <Badge variant="secondary" className="text-lg font-medium mr-2 py-1.5 px-3">
             {areaFromField}m²
           </Badge>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground mr-1">
             (Zone area from data)
           </span>
+          <TooltipWrapper 
+            content="This area value is stored directly in the zone data and was provided during zone creation or update."
+          >
+            <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+          </TooltipWrapper>
         </div>
       ) : areaValue ? (
         <div className="flex items-center">
           <Badge variant="secondary" className="text-lg font-medium mr-2 py-1.5 px-3">
             {areaValue}m²
           </Badge>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground mr-1">
             ({parseFloat(areaValue).toLocaleString()} square meters)
           </span>
+          <TooltipWrapper 
+            content="This area is calculated from the zone's location coordinates using the Shoelace formula (Gauss's area formula)."
+          >
+            <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+          </TooltipWrapper>
         </div>
       ) : calculatedArea ? (
         <div className="flex items-center">
           <Badge variant="success" className="text-lg font-medium mr-2 py-1.5 px-3">
             {calculatedArea}m²
           </Badge>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground mr-1">
             (Calculated from location coordinates)
           </span>
+          <TooltipWrapper 
+            content="This area is dynamically calculated from the zone's coordinates extracted from its location data using the Shoelace formula."
+          >
+            <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+          </TooltipWrapper>
         </div>
       ) : locationDataExists ? (
         <div className="flex items-center">
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground mr-1">
             Calculating from {locationCoordinates?.length || 0} coordinates...
           </span>
+          <TooltipWrapper 
+            content="Area calculation in progress. The system needs at least 3 coordinates to calculate the area using the Shoelace formula."
+          >
+            <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+          </TooltipWrapper>
         </div>
       ) : (
         <div className="flex items-center">
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground mr-1">
             No valid coordinates found to calculate area
           </span>
+          <TooltipWrapper 
+            content="Area calculation requires at least 3 valid coordinates in the zone's location data. No valid coordinates were found."
+          >
+            <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+          </TooltipWrapper>
         </div>
       )}
     </div>
