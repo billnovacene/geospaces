@@ -1,0 +1,3 @@
+
+# We want to track the .env file for version tracking
+!.env
