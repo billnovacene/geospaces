@@ -1,3 +1,4 @@
+
 import { Site } from "@/services/interfaces";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -75,8 +76,8 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
         </div>
         
         {site.location && site.location.length === 2 && (
-          <div className="border rounded-md p-3">
-            <h3 className="font-medium text-sm text-muted-foreground mb-1 flex items-center">
+          <div className="border rounded-md p-3 flex items-center justify-between">
+            <h3 className="font-medium text-sm text-muted-foreground flex items-center">
               <MapPin className="h-4 w-4 mr-2 text-primary" /> 
               what3words
             </h3>
