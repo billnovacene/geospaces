@@ -15,10 +15,16 @@ export const fetchDevicesCountForSite = async (siteId: number): Promise<number> 
       return deviceCountsBySite[siteId];
     }
     
-    // If not cached, fetch from API
+    // If not cached, fetch from API with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    
     const response = await apiRequest<DevicesResponse>(
-      `/devices?page=1&limit=1&siteid=${siteId}&nodeveui=false`
+      `/devices?page=1&limit=1&siteid=${siteId}&nodeveui=false`,
+      { signal: controller.signal }
     );
+    
+    clearTimeout(timeoutId);
     
     console.log(`Devices count API response for site ${siteId}:`, response);
     
@@ -31,8 +37,13 @@ export const fetchDevicesCountForSite = async (siteId: number): Promise<number> 
     
     return 0;
   } catch (error) {
-    console.error(`Error fetching devices count for site ${siteId}:`, error);
-    toast.error("Failed to fetch devices count. Please try again later.");
+    // Don't show toast for aborted requests
+    if ((error as any)?.name !== 'AbortError') {
+      console.error(`Error fetching devices count for site ${siteId}:`, error);
+      toast.error("Failed to fetch devices count. Please try again later.");
+    } else {
+      console.warn(`Request for site ${siteId} devices count timed out`);
+    }
     return 0;
   }
 };
@@ -44,9 +55,17 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
     
     // Add nocache parameter to avoid caching issues  
     const nocache = new Date().getTime();
+    
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+    
     const response = await apiRequest<DevicesResponse>(
-      `/devices?siteid=${siteId}&limit=100&nodeveui=false&includeSensors=true&nocache=${nocache}`
+      `/devices?siteid=${siteId}&limit=100&nodeveui=false&includeSensors=true&nocache=${nocache}`,
+      { signal: controller.signal }
     );
+    
+    clearTimeout(timeoutId);
     
     console.log(`Devices API response for site ${siteId}:`, response);
     
@@ -76,8 +95,13 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
     
     return [];
   } catch (error) {
-    console.error(`Error fetching devices for site ${siteId}:`, error);
-    toast.error("Failed to fetch devices. Please try again later.");
+    // Don't show toast for aborted requests
+    if ((error as any)?.name !== 'AbortError') {
+      console.error(`Error fetching devices for site ${siteId}:`, error);
+      toast.error("Failed to fetch devices. Please try again later.");
+    } else {
+      console.warn(`Request for site ${siteId} devices timed out`);
+    }
     return [];
   }
 };

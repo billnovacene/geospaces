@@ -2,19 +2,32 @@
 import { CardTitle, CardDescription } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 interface ZonesHierarchyHeaderProps {
   searchTerm: string;
   setSearchTerm: (value: string) => void;
+  totalZones?: number;
+  isLoading?: boolean;
 }
 
-export function ZonesHierarchyHeader({ searchTerm, setSearchTerm }: ZonesHierarchyHeaderProps) {
+export function ZonesHierarchyHeader({ 
+  searchTerm, 
+  setSearchTerm, 
+  totalZones, 
+  isLoading 
+}: ZonesHierarchyHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
       <div>
         <CardTitle className="text-2xl font-bold">Zones Hierarchy</CardTitle>
-        <CardDescription>
+        <CardDescription className="flex items-center gap-2">
           View the hierarchical structure of zones for this site
+          {!isLoading && totalZones !== undefined && (
+            <Badge variant="secondary" className="ml-1">
+              {totalZones} {totalZones === 1 ? 'zone' : 'zones'}
+            </Badge>
+          )}
         </CardDescription>
       </div>
       <div className="relative">

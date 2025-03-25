@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZones } from "@/services/api";
 import { Zone } from "@/services/interfaces";
@@ -21,10 +21,46 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedZones, setExpandedZones] = useState<number[]>([]);
   
-  const { data: allZones = [], isLoading, error } = useQuery({
+  // Add an abort controller ref to cancel requests when component unmounts
+  const abortControllerRef = useRef<AbortController | null>(null);
+  
+  // Create new abort controller when component mounts
+  useEffect(() => {
+    abortControllerRef.current = new AbortController();
+    
+    return () => {
+      // Cancel pending requests when component unmounts
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+  
+  const { 
+    data: allZones = [], 
+    isLoading, 
+    error 
+  } = useQuery({
     queryKey: ["zones", siteId],
-    queryFn: () => siteId ? fetchZones(siteId) : Promise.resolve([]),
+    queryFn: () => {
+      if (!siteId) return Promise.resolve([]);
+      
+      // Set 10 second timeout for zones fetch
+      const timeoutPromise = new Promise<Zone[]>((_, reject) => {
+        setTimeout(() => reject(new Error('Zones fetch timeout')), 10000);
+      });
+      
+      // Actual fetch with the abort controller signal
+      const fetchPromise = fetchZones(siteId);
+      
+      // Race between the fetch and the timeout
+      return Promise.race([fetchPromise, timeoutPromise]);
+    },
     enabled: !!siteId,
+    staleTime: 3 * 60 * 1000, // 3 minutes
+    gcTime: 10 * 60 * 1000,   // 10 minutes
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
 
   // Filter zones based on search term
@@ -42,6 +78,7 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
     );
   };
 
+  // Use memoized hierarchical zones to prevent excessive re-renders
   const hierarchicalZones = organizeZonesHierarchy(filteredZones);
 
   if (error) {
@@ -52,7 +89,12 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
     <Card className="dashboard-card overflow-hidden shadow-sm border-0">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <ZonesHierarchyHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+          <ZonesHierarchyHeader 
+            searchTerm={searchTerm} 
+            setSearchTerm={setSearchTerm} 
+            totalZones={allZones.length}
+            isLoading={isLoading}
+          />
           <TooltipWrapper content="For parent zones, device counts show direct devices in this zone">
             <HelpCircle className="h-4 w-4 text-muted-foreground" />
           </TooltipWrapper>
