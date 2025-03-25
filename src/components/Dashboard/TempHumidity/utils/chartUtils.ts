@@ -31,7 +31,7 @@ export function enhanceDailyChartData(data: DailyOverviewPoint[]) {
     
     return {
       ...point,
-      barColor,
+      barColor, // String type for charts
       // Create a label for the tooltip
       label: isRealDataPoint ? "Real data" : "Simulated data"
     };

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Thermometer, Cloud, AlertCircle, ArrowDown, ArrowUp, RefreshCw } from "lucide-react";
@@ -13,18 +13,18 @@ export function LiveDataMetrics() {
   const { data, isLoading, error, apiConnectionFailed, refetch } = useTempHumidityData();
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   
-  // Update last updated time when data refreshes
+  // Update last updated time when data refreshes - memoize with useCallback
+  const handleRefresh = useCallback(() => {
+    refetch();
+    setLastUpdated(new Date());
+  }, [refetch]);
+  
+  // Update last updated time when data changes
   useEffect(() => {
     if (data) {
       setLastUpdated(new Date());
     }
   }, [data]);
-  
-  // Handle refresh action
-  const handleRefresh = () => {
-    refetch();
-    setLastUpdated(new Date());
-  };
   
   // Check if we have real-time data
   const hasRealTemperatureData = data?.daily?.some(point => point.isReal?.temperature === true);
@@ -129,6 +129,10 @@ export function LiveDataMetrics() {
   const temperatureColor = getSensorValueColor('temperature', latestTemperature);
   const formattedTime = lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   
+  // Extract color classes for use in component
+  const textColorClass = temperatureColor.text;
+  const bgColorClass = temperatureColor.bg;
+  
   return (
     <Card className="overflow-hidden border-0 h-full rounded-none shadow-sm">
       <CardContent className="p-0 h-full flex flex-col">
@@ -141,8 +145,8 @@ export function LiveDataMetrics() {
         
         <div className="px-3 py-4 flex-grow flex items-center justify-center">
           <div className="flex items-center gap-2">
-            <Thermometer className={`h-6 w-6 ${temperatureColor.text}`} />
-            <span className={`text-2xl font-bold ${temperatureColor.text}`}>
+            <Thermometer className={`h-6 w-6 ${textColorClass}`} />
+            <span className={`text-2xl font-bold ${textColorClass}`}>
               {latestTemperature !== null && latestTemperature !== undefined 
                 ? latestTemperature.toFixed(1)
                 : '--'} °C
@@ -165,7 +169,7 @@ export function LiveDataMetrics() {
           </Button>
         </div>
         
-        <div className={`h-1 w-full ${temperatureColor.bg}`} />
+        <div className={`h-1 w-full ${bgColorClass}`} />
       </CardContent>
     </Card>
   );

@@ -23,7 +23,7 @@ export function enhanceMonthlyChartData(data: MonthlyOverviewPoint[]) {
     
     return {
       ...point,
-      barColor,
+      barColor, // String type for charts
     };
   });
 }

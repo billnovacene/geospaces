@@ -77,34 +77,27 @@ export function StatCard({
     }
   };
   
+  // Get the color object with text and bg classes
   const statusColor = getStatusColor(status, sensorType, sensorValue);
-  
-  // Convert Tailwind classes to CSS colors for use with style attribute
-  const getColorFromClass = (colorClass: string) => {
-    if (colorClass.includes("red")) return "#ef4444";
-    if (colorClass.includes("amber")) return "#f59e0b";
-    if (colorClass.includes("green")) return "#10b981";
-    if (colorClass.includes("blue")) return "#3b82f6";
-    if (colorClass.includes("gray")) return "#6b7280";
-    return "#6b7280"; // default gray
-  };
   
   // Format the last seen timestamp if provided
   const lastSeenText = lastSeen ? formatDistanceToNow(new Date(lastSeen), { addSuffix: true }) : 'N/A';
   
-  // Get the appropriate icon
+  // Get the appropriate icon with correct color class
   const getIcon = () => {
+    const iconColor = statusColor.text;
+    
     switch (icon) {
       case 'temperature':
-        return <Thermometer className="h-5 w-5" style={{ color: getColorFromClass(statusColor.text) }} />;
+        return <Thermometer className={`h-5 w-5 ${iconColor}`} />;
       case 'humidity':
-        return <Droplets className="h-5 w-5" style={{ color: getColorFromClass(statusColor.text) }} />;
+        return <Droplets className={`h-5 w-5 ${iconColor}`} />;
       case 'min':
-        return <ArrowDown className="h-5 w-5" style={{ color: getColorFromClass(statusColor.text) }} />;
+        return <ArrowDown className={`h-5 w-5 ${iconColor}`} />;
       case 'max':
-        return <ArrowUp className="h-5 w-5" style={{ color: getColorFromClass(statusColor.text) }} />;
+        return <ArrowUp className={`h-5 w-5 ${iconColor}`} />;
       case 'avg':
-        return <Sun className="h-5 w-5" style={{ color: getColorFromClass(statusColor.text) }} />;
+        return <Sun className={`h-5 w-5 ${iconColor}`} />;
       default:
         return null;
     }
@@ -126,7 +119,7 @@ export function StatCard({
       <CardContent className="p-0 h-full flex flex-col">
         <div className="px-[5px] mx-[5px] py-2 flex-grow flex flex-col justify-center">
           <div className="flex flex-col items-center text-center">
-            {getIcon() && (
+            {icon && (
               <div className="mb-2">
                 {getIcon()}
               </div>

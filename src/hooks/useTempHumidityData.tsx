@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { useParams } from "react-router-dom";
@@ -17,6 +17,7 @@ export function useTempHumidityData() {
   const [loadingStage, setLoadingStage] = useState<'initial' | 'daily' | 'stats' | 'monthly' | 'complete'>('initial');
   const [apiConnectionFailed, setApiConnectionFailed] = useState(false);
   const [logs, setLogs] = useState<LogItem[]>([]);
+  const paramsLoggedRef = useRef(false); // Use ref to track if params logged
   
   // Function to add logs
   const addLog = useCallback((message: string, type: LogItem['type'] = 'info') => {
@@ -29,14 +30,15 @@ export function useTempHumidityData() {
     setLogs([]);
   }, []);
   
-  // Add initial log
+  // Log params only once on component mount, not on every render
   useEffect(() => {
-    addLog(`Dashboard initialized for ${zoneId ? `zone ${zoneId}` : siteId ? `site ${siteId}` : 'all locations'}`, 'info');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  
-  console.log("🔍 useTempHumidityData: Route params:", { siteId, zoneId });
-  addLog(`Route params: siteId=${siteId}, zoneId=${zoneId}`, 'info');
+    if (!paramsLoggedRef.current) {
+      addLog(`Dashboard initialized for ${zoneId ? `zone ${zoneId}` : siteId ? `site ${siteId}` : 'all locations'}`, 'info');
+      addLog(`Route params: siteId=${siteId || 'undefined'}, zoneId=${zoneId || 'undefined'}`, 'info');
+      console.log("🔍 useTempHumidityData: Route params:", { siteId, zoneId });
+      paramsLoggedRef.current = true;
+    }
+  }, [addLog, siteId, zoneId]);
   
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["temp-humidity-data", siteId, zoneId],
