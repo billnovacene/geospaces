@@ -84,9 +84,19 @@ export function DashboardContent({
   const realDailyDataCount = data.daily.filter(point => point.isReal?.temperature === true).length;
 
   // Log data about real vs simulated data for debugging
-  console.log(`DashboardContent: Has real daily data: ${hasRealDailyData}, isMockData: ${isMockData}`);
+  console.log(`DashboardContent rendering: Has real daily data: ${hasRealDailyData}, isMockData: ${isMockData}`);
   console.log(`DashboardContent: Real data points: ${realDailyDataCount}/${data.daily.length} (${(realDailyDataCount/data.daily.length*100).toFixed(1)}%)`);
-  console.log(`DashboardContent: Source sensors: ${data?.sourceData?.temperatureSensors?.length || 0} temperature, ${data?.sourceData?.humiditySensors?.length || 0} humidity`);
+  console.log(`DashboardContent: Available sensors: ${data?.sourceData?.temperatureSensors?.length || 0} temperature, ${data?.sourceData?.humiditySensors?.length || 0} humidity`);
+
+  // Output the first few data points for debugging
+  if (data.daily.length > 0) {
+    console.log("Sample daily data points:", data.daily.slice(0, 3));
+    // Log the first few real data points if any
+    const realPoints = data.daily.filter(p => p.isReal?.temperature);
+    if (realPoints.length > 0) {
+      console.log("Sample REAL data points:", realPoints.slice(0, 3));
+    }
+  }
 
   return (
     <>

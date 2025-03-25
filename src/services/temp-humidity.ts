@@ -39,12 +39,16 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
       // Find temperature and humidity sensors in this zone
       const zoneSensors = await findZoneSensors(Number(zoneId), zoneData.siteId);
       
-      console.log(`Found zone sensors:`, {
+      console.log(`Found zone sensors for zone ${zoneId}:`, {
         temperature: zoneSensors.temperature?.length || 0,
-        humidity: zoneSensors.humidity?.length || 0
+        humidity: zoneSensors.humidity?.length || 0,
+        sensorIds: {
+          temperature: zoneSensors.temperature,
+          humidity: zoneSensors.humidity
+        }
       });
       
-      // This is the fix: Check if we actually have sensors for this zone
+      // Fixed: Check if we actually have sensors for this zone
       if (zoneSensors.temperature.length > 0 || zoneSensors.humidity.length > 0) {
         console.log(`🌡️ Using REAL zone sensors for zone ${zoneId}:`, zoneSensors);
         
@@ -62,15 +66,21 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
             const realDataPoints = response.daily.filter(point => point.isReal?.temperature === true).length;
             console.log(`Found ${realDataPoints}/${response.daily.length} real data points for zone ${zoneId}`);
             
-            // Add source information to the response
-            return {
-              ...response,
-              sourceData: {
-                temperatureSensors: zoneSensors.temperatureSensors,
-                humiditySensors: zoneSensors.humiditySensors
-              },
-              operatingHours
-            };
+            if (realDataPoints > 0) {
+              console.log(`✅ Successfully found real data for zone ${zoneId}`);
+              
+              // Add source information to the response
+              return {
+                ...response,
+                sourceData: {
+                  temperatureSensors: zoneSensors.temperatureSensors,
+                  humiditySensors: zoneSensors.humiditySensors
+                },
+                operatingHours
+              };
+            } else {
+              console.warn(`No real data points found for zone ${zoneId} sensors, will try fallback options`);
+            }
           } else {
             console.warn(`No valid data found in real device response for zone ${zoneId}`);
           }
@@ -116,15 +126,21 @@ export const fetchTempHumidityData = async (siteId?: string, zoneId?: string): P
           const realDataPoints = response.daily.filter(point => point.isReal?.temperature === true).length;
           console.log(`Found ${realDataPoints}/${response.daily.length} real data points for site ${effectiveSiteId}`);
           
-          // Add site sensor information
-          return {
-            ...response,
-            sourceData: SITE_SENSOR_DETAILS[effectiveSiteId] || {
-              temperatureSensors: [],
-              humiditySensors: []
-            },
-            operatingHours
-          };
+          if (realDataPoints > 0) {
+            console.log(`✅ Successfully found real data for site ${effectiveSiteId}`);
+            
+            // Add site sensor information
+            return {
+              ...response,
+              sourceData: SITE_SENSOR_DETAILS[effectiveSiteId] || {
+                temperatureSensors: [],
+                humiditySensors: []
+              },
+              operatingHours
+            };
+          } else {
+            console.warn(`No real data points found for site ${effectiveSiteId}, will try fallback`);
+          }
         } catch (error) {
           console.error(`Error fetching real device data for site ${effectiveSiteId}:`, error);
         }

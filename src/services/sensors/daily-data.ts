@@ -34,6 +34,8 @@ export async function fetchSensorDataForDay(
           // Log a few sample points
           if (tempData.length > 0) {
             console.log('Temperature data samples:', tempData.slice(0, 3));
+          } else {
+            console.warn(`Temperature sensor ${temperatureSensor} returned 0 data points`);
           }
         } else {
           console.warn(`No temperature data points received from API for sensor ${temperatureSensor}`);
@@ -58,6 +60,8 @@ export async function fetchSensorDataForDay(
           // Log a few sample points
           if (humidityData.length > 0) {
             console.log('Humidity data samples:', humidityData.slice(0, 3));
+          } else {
+            console.warn(`Humidity sensor ${humiditySensor} returned 0 data points`);
           }
         } else {
           console.warn(`No humidity data points received from API for sensor ${humiditySensor}`);
@@ -65,6 +69,15 @@ export async function fetchSensorDataForDay(
       } catch (err) {
         console.warn('Could not fetch humidity data, proceeding with temperature only', err);
       }
+    }
+    
+    // Check if we have any real data
+    const hasAnyRealData = tempData.length > 0 || humidityData.length > 0;
+    
+    if (!hasAnyRealData) {
+      console.warn(`No real data found for any sensors. Temp sensor: ${temperatureSensor}, Humidity sensor: ${humiditySensor}`);
+      console.log('Falling back to simulated daily data');
+      return generateMockDailyData();
     }
     
     // Filter data by operating hours if provided
@@ -100,7 +113,16 @@ export async function fetchSensorDataForDay(
       hasRealHumidityData
     );
     
-    // Fill in missing data points
+    // Make sure isReal flags are properly set
+    hourlyData = hourlyData.map(point => ({
+      ...point,
+      isReal: {
+        temperature: hourlyTemperatures[point.time]?.isReal ?? false,
+        humidity: hourlyHumidities[point.time]?.isReal ?? false
+      }
+    }));
+    
+    // Fill in missing data points while preserving the isReal flags
     const processedData = fillMissingDataPoints(hourlyData);
     const realDataPoints = processedData.filter(p => p.isReal?.temperature).length;
     
@@ -115,7 +137,7 @@ export async function fetchSensorDataForDay(
     console.error(`Error fetching sensor data for day ${date}:`, error);
     
     // Return mock data if we can't get real data
-    console.warn('Falling back to simulated daily data');
+    console.warn('Falling back to simulated daily data due to error');
     return generateMockDailyData();
   }
 }

@@ -35,7 +35,16 @@ export function DailyOverview({
   const totalCount = data.length;
   const realDataPercentage = totalCount > 0 ? ((realDataCount / totalCount) * 100).toFixed(0) : "0";
   
-  console.log(`DailyOverview: isMockData=${isMockData}, hasRealDailyData=${hasRealDailyData}, real points=${realDataCount}/${totalCount} (${realDataPercentage}%)`);
+  console.log(`DailyOverview rendering: isMockData=${isMockData}, hasRealDailyData=${hasRealDailyData}, real points=${realDataCount}/${totalCount} (${realDataPercentage}%)`);
+  
+  // Debug log to verify data integrity
+  if (realDataCount > 0) {
+    console.log("Real data found! First 3 real data points:", 
+      data.filter(d => d.isReal?.temperature === true).slice(0, 3)
+    );
+  } else {
+    console.warn("No real data points found in the daily overview data");
+  }
   
   return (
     <div className="mb-12">
@@ -61,6 +70,14 @@ export function DailyOverview({
                 <div className="flex items-center gap-2 text-blue-600 mt-4">
                   <LoaderCircle className="h-4 w-4 animate-spin" />
                   <span className="text-sm font-medium">Loading daily data...</span>
+                </div>
+              )}
+              
+              {realDataCount === 0 && !isLoading && (
+                <div className="p-2 bg-amber-50 border border-amber-200 rounded-md mt-2">
+                  <p className="text-xs text-amber-700">
+                    No real-time sensor data is available for today. Showing simulated data instead.
+                  </p>
                 </div>
               )}
             </div>

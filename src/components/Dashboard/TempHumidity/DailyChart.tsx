@@ -34,9 +34,9 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
   const totalDataPoints = data.length;
   const hasRealData = realDataPointsCount > 0;
   
-  console.log(`Daily chart: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}, isMockData: ${isMockData}`);
+  console.log(`Daily chart rendering: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}, isMockData: ${isMockData}`);
   
-  // Log each point's real/simulated status for debugging
+  // Debug: Log the isReal status for each point to verify data integrity
   data.forEach((point, idx) => {
     const isRealPoint = point.isReal?.temperature === true;
     if (idx < 5 || isRealPoint) { // Only log first 5 points and any real points
@@ -48,6 +48,8 @@ export function DailyChart({ data, isMockData = false }: DailyChartProps) {
     // Use real colors for real data, grey for simulated
     const isRealDataPoint = point.isReal?.temperature === true;
     
+    // For real data, use the temperature-based color
+    // For simulated data, use a light gray
     const barColor = isRealDataPoint 
       ? getSensorValueColor("temperature", point.temperature)
       : "#E5E7EB"; // Gray for simulated data
