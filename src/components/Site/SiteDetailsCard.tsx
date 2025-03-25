@@ -7,6 +7,13 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchDevicesCount } from "@/services/devices";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin } from "lucide-react";
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 
 interface SiteDetailsCardProps {
   site: Site;
@@ -50,6 +57,15 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
   // Get what3words for this site
   const what3Words = generateWhat3Words();
 
+  // Function to open Google Maps in a new tab
+  const openInGoogleMaps = () => {
+    if (site.location && site.location.length === 2) {
+      const [longitude, latitude] = site.location;
+      const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+      window.open(googleMapsUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -66,7 +82,28 @@ export function SiteDetailsCard({ site, calculatedDeviceCount }: SiteDetailsCard
         </div>
         <div>
           <h3 className="font-medium text-sm text-muted-foreground mb-1">Location</h3>
-          <p>{site.locationText || "No location provided"}</p>
+          <p className="flex items-center">
+            {site.locationText || "No location provided"}
+            {site.location && site.location.length === 2 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 ml-1 text-primary hover:text-primary-foreground"
+                      onClick={openInGoogleMaps}
+                    >
+                      <MapPin className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Open in Google Maps</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </p>
         </div>
         {site.location && site.location.length === 2 && (
           <div>
