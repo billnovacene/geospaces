@@ -16,6 +16,16 @@ export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
   const [deviceCount, setDeviceCount] = useState<number>(0);
   const [isDeviceCountError, setIsDeviceCountError] = useState<boolean>(false);
   const hasFetchedRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  
+  // Clean up any previous requests when component unmounts
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
   
   // Check if we have a valid siteId
   const isValidSiteId = siteId && !isNaN(Number(siteId));
@@ -23,9 +33,23 @@ export function SiteZonesTabs({ siteId }: SiteZonesTabsProps) {
   // Fetch device count for this site with proper error handling
   const { data: apiDeviceCount, isLoading, error } = useQuery({
     queryKey: ["devices-count", siteId],
-    queryFn: () => {
+    queryFn: async () => {
       console.log(`Attempting to fetch device count for site ${siteId}`);
-      return fetchDevicesCountForSite(siteId);
+      
+      // Abort any existing request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      
+      // Create a new abort controller
+      abortControllerRef.current = new AbortController();
+      
+      try {
+        return await fetchDevicesCountForSite(siteId);
+      } catch (err) {
+        console.error("Error in device count query:", err);
+        return 0;
+      }
     },
     enabled: !!isValidSiteId && !hasFetchedRef.current, // Only fetch once to prevent potential loops
     staleTime: 10 * 60 * 1000, // 10 minutes

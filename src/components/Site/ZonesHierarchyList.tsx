@@ -22,14 +22,42 @@ export function ZonesHierarchyList({ siteId }: ZonesHierarchyListProps) {
   const [expandedZones, setExpandedZones] = useState<number[]>([]);
   const hasFetchedRef = useRef(false);
   
+  // Add a loading state ref to prevent multiple simultaneous requests
+  const isLoadingRef = useRef(false);
+  
   const { data: allZones = [], isLoading, error } = useQuery({
     queryKey: ["zones", siteId],
-    queryFn: () => {
+    queryFn: async () => {
       console.log(`Fetching zones for site ${siteId}`);
-      return siteId ? fetchZones(siteId) : Promise.resolve([]);
+      
+      if (isLoadingRef.current) {
+        console.log("Already loading zones, preventing duplicate request");
+        return [];
+      }
+      
+      if (!siteId) {
+        return [];
+      }
+      
+      try {
+        isLoadingRef.current = true;
+        
+        // Add a timeout to prevent hanging requests
+        const timeoutPromise = new Promise<Zone[]>((_, reject) => {
+          setTimeout(() => reject(new Error("Zones fetch timeout")), 15000);
+        });
+        
+        const fetchPromise = fetchZones(siteId);
+        return await Promise.race([fetchPromise, timeoutPromise]);
+      } catch (err) {
+        console.error("Error fetching zones:", err);
+        return [];
+      } finally {
+        isLoadingRef.current = false;
+      }
     },
-    enabled: !!siteId && !hasFetchedRef.current, // Only fetch once
-    retry: 0, // No retries
+    enabled: !!siteId && !hasFetchedRef.current, // Only fetch if we have a siteId and haven't fetched yet
+    retry: 0, // Disable retries to prevent excessive requests
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     staleTime: 10 * 60 * 1000, // 10 minutes

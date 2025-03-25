@@ -22,7 +22,7 @@ export const fetchDevicesCountForSite = async (siteId: number): Promise<number> 
     
     // If not cached, fetch from API with timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout - reduced from 10s
     
     try {
       const response = await apiRequest<DevicesResponse>(
@@ -39,7 +39,7 @@ export const fetchDevicesCountForSite = async (siteId: number): Promise<number> 
         console.log(`Caching device count ${response.total} for site ${siteId}`);
         return response.total;
       }
-    } catch (fetchError) {
+    } catch (fetchError: any) {
       clearTimeout(timeoutId);
       if (fetchError.name === 'AbortError') {
         console.warn(`Request timeout for site ${siteId} device count`);
@@ -68,12 +68,12 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
     
     // Add timeout and nocache parameter to avoid stalling issues
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 12000); // 12 second timeout - reduced from 15s
     
     try {
       const nocache = new Date().getTime();
       const response = await apiRequest<DevicesResponse>(
-        `/devices?siteid=${siteId}&limit=100&nodeveui=false&includeSensors=true&nocache=${nocache}`,
+        `/devices?siteid=${siteId}&limit=50&nodeveui=false&includeSensors=true&nocache=${nocache}`,
         { signal: controller.signal }
       );
       
@@ -103,7 +103,7 @@ export const fetchSiteDevices = async (siteId: number): Promise<Device[]> => {
           ...device // Include any other properties
         }));
       }
-    } catch (fetchError) {
+    } catch (fetchError: any) {
       clearTimeout(timeoutId);
       if (fetchError.name === 'AbortError') {
         console.warn(`Request timeout for site ${siteId} devices`);
