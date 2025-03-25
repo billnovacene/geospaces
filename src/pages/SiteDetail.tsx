@@ -1,4 +1,3 @@
-
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSite, fetchZones } from "@/services/api";
@@ -20,13 +19,10 @@ const SiteDetail = () => {
   const { siteId } = useParams<{ siteId: string }>();
   const [totalDevicesFromZones, setTotalDevicesFromZones] = useState<number | null>(null);
   
-  // Check if we have a valid siteId
   const validSiteId = siteId && !isNaN(Number(siteId)) ? Number(siteId) : null;
   
-  // Log which site we're viewing for debugging
   console.log(`SiteDetail: Viewing site ${siteId}, valid ID: ${validSiteId}`);
   
-  // If we don't have a valid siteId, show an error state
   if (!validSiteId) {
     return (
       <SidebarWrapper>
@@ -62,12 +58,10 @@ const SiteDetail = () => {
     enabled: !!validSiteId,
   });
 
-  // Log raw site data when it arrives
   useEffect(() => {
     if (site) {
       console.log(`SiteDetail: Raw site data received:`, site);
       
-      // Show a toast notification when site data is loaded
       toast.success(`Site data loaded for ${site.name}`, {
         id: "site-data-loaded",
         duration: 2000,
@@ -75,29 +69,24 @@ const SiteDetail = () => {
     }
   }, [site]);
 
-  // Fetch zones to calculate total devices directly
   const { data: zones } = useQuery({
     queryKey: ["zones", validSiteId],
     queryFn: () => fetchZones(validSiteId),
     enabled: !!validSiteId,
   });
 
-  // Calculate total devices from zones when zones data is available
   useEffect(() => {
     if (zones) {
       console.log(`SiteDetail: Processing ${zones.length} zones to calculate total devices`);
       
-      // Count total devices across all zones
       let totalDevicesFound = 0;
       
       zones.forEach(zone => {
         let zoneDevices = 0;
         
-        // Handle different types of device count data
         if (typeof zone.devices === 'number') {
           zoneDevices = zone.devices;
         } else if (typeof zone.devices === 'string') {
-          // Check if it's in format "X/Y"
           if (zone.devices.includes('/')) {
             const parts = zone.devices.split('/');
             zoneDevices = parseInt(parts[0], 10) || 0;
@@ -144,15 +133,15 @@ const SiteDetail = () => {
               <SiteAdditionalInfoCard site={site} />
             </div>
 
-            {/* Zones Tabs */}
-            <Card className="shadow-sm border-0 mb-10">
-              <CardContent className="p-6">
-                <h2 className="text-xl font-medium mb-4">Zones</h2>
-                <SiteZonesTabs siteId={site.id} />
-              </CardContent>
-            </Card>
+            <div className="w-full mt-6 mb-10">
+              <Card className="shadow-sm border-0">
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-medium mb-4">Zones</h2>
+                  <SiteZonesTabs siteId={site.id} />
+                </CardContent>
+              </Card>
+            </div>
 
-            {/* Devices Measurements Table */}
             <Card className="shadow-sm border-0">
               <CardContent className="p-6">
                 <h2 className="text-xl font-medium mb-4">Device Measurements</h2>
