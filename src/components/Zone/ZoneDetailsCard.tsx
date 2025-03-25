@@ -32,23 +32,7 @@ export const ZoneDetailsCard = ({ zone, deviceCount, deviceCountLoading }: ZoneD
         <CardTitle>Zone Details</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 gap-4">
-          {/* Devices count at the top */}
-          <Card className="bg-muted/40">
-            <CardContent className="p-4">
-              <div>
-                <p className="text-sm font-medium">Devices</p>
-                {deviceCountLoading ? (
-                  <Skeleton className="h-8 w-16" />
-                ) : (
-                  <p className="text-2xl font-bold">{deviceCount || 0}</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Continue with other zone details */}
+        {/* Basic zone details */}
         <div>
           <h3 className="font-medium text-sm text-muted-foreground mb-1">Zone ID</h3>
           <p>{zone.id}</p>
@@ -63,8 +47,9 @@ export const ZoneDetailsCard = ({ zone, deviceCount, deviceCountLoading }: ZoneD
             <p>{zone.description}</p>
           </div>
         )}
-        <div className="pt-2 grid grid-cols-2 gap-4">
-          {/* Created date on the left */}
+        
+        {/* Created date at the top */}
+        <div className="pt-2">
           <Card className="bg-muted/40">
             <CardContent className="p-4">
               <div>
@@ -73,8 +58,25 @@ export const ZoneDetailsCard = ({ zone, deviceCount, deviceCountLoading }: ZoneD
               </div>
             </CardContent>
           </Card>
+        </div>
+        
+        {/* Device count and Area in a 2-column grid */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Device count on the left */}
+          <Card className="bg-muted/40">
+            <CardContent className="p-4">
+              <div>
+                <p className="text-sm font-medium">Devices</p>
+                {deviceCountLoading ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  <p className="text-2xl font-bold">{deviceCount || 0}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
           
-          {/* Area display moved next to Created date */}
+          {/* Area display on the right */}
           <Card className="bg-muted/40">
             <CardContent className="p-4">
               <div>
