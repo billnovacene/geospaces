@@ -7,29 +7,24 @@ import { NoSiteSelected } from "./NoSiteSelected";
 import { ZonesLoadingState } from "./ZonesLoadingState";
 import { ZonesErrorState } from "./ZonesErrorState";
 import { EmptyZonesState } from "./EmptyZonesState";
-import { useQuery } from "@tanstack/react-query";
-import { findZoneSensors } from "@/services/sensors/zone-sensors";
 
 interface ZonesHierarchyProps {
   siteId: number | null;
   preserveDashboardRoute?: boolean;
   currentDashboard?: string;
-  hideZonesWithoutSensors?: boolean;
 }
 
 export function ZonesHierarchy({ 
   siteId: propsSiteId, 
   preserveDashboardRoute = false,
-  currentDashboard = "",
-  hideZonesWithoutSensors = false
+  currentDashboard = ""
 }: ZonesHierarchyProps) {
   const location = useLocation();
   const { zoneId } = useParams<{ zoneId: string }>();
   const activeZoneId = zoneId ? Number(zoneId) : null;
   
-  console.log("ZonesHierarchy: Passed siteId:", propsSiteId);
-  console.log("ZonesHierarchy: Current activeZoneId:", activeZoneId);
-  console.log("ZonesHierarchy: hideZonesWithoutSensors:", hideZonesWithoutSensors);
+  console.log("🌍 ZonesHierarchy: Passed siteId:", propsSiteId);
+  console.log("🔍 ZonesHierarchy: Current activeZoneId:", activeZoneId);
   
   const {
     effectiveSiteId,
@@ -40,29 +35,22 @@ export function ZonesHierarchy({
     toggleExpanded
   } = useZonesHierarchy(propsSiteId, activeZoneId);
   
-  // Get the current dashboard path if needed
-  const getDashboardPath = () => {
-    if (!preserveDashboardRoute) return '';
-    
-    if (currentDashboard === "temp-humidity") {
-      return '/dashboard/temp-humidity';
-    } else if (location.pathname.includes('/dashboard')) {
-      return '/dashboard';
-    }
-    
-    return '';
-  };
-  
-  const dashboardPath = getDashboardPath();
-  
   // Log rendering information
-  console.log(`Rendering ZonesHierarchy: isLoading=${isLoading}, hasError=${!!error}, zonesCount=${zones?.length}`);
-  console.log(`Zones data:`, zones);
-  console.log(`Preserving dashboard: ${preserveDashboardRoute}, dashboardPath=${dashboardPath}`);
+  console.log(`📊 Rendering ZonesHierarchy: 
+    - isLoading=${isLoading}, 
+    - hasError=${!!error}, 
+    - zonesCount=${zones?.length},
+    - effectiveSiteId=${effectiveSiteId}`);
+  console.log(`🌐 Zones data:`, zones);
   
   if (!effectiveSiteId) {
+    console.warn("⚠️ No effective site ID found");
     return <NoSiteSelected />;
   }
+  
+  const dashboardPath = preserveDashboardRoute && currentDashboard === "temp-humidity" 
+    ? '/dashboard/temp-humidity' 
+    : '';
   
   // Create the site link with appropriate dashboard path
   const siteLink = dashboardPath 
@@ -98,7 +86,6 @@ export function ZonesHierarchy({
               preserveDashboardRoute={preserveDashboardRoute}
               dashboardPath={dashboardPath}
               effectiveSiteId={effectiveSiteId}
-              hideZonesWithoutSensors={hideZonesWithoutSensors}
             />
           ))}
         </div>

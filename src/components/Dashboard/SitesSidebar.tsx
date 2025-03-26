@@ -31,38 +31,23 @@ export function SitesSidebar({
   // When a site is selected, expand it to show zones
   useEffect(() => {
     if (activeSiteId) {
-      console.log("Auto-expanding site in sidebar:", activeSiteId);
+      console.log("🔍 Auto-expanding site in sidebar:", activeSiteId);
       setExpandedSiteId(activeSiteId);
     }
   }, [activeSiteId]);
-  
-  const getDashboardPath = () => {
-    if (!preserveDashboardRoute) return '';
-    
-    if (currentDashboard === "temp-humidity") {
-      return '/dashboard/temp-humidity';
-    } else if (location.pathname.includes('/dashboard')) {
-      return '/dashboard';
-    }
-    
-    return '';
-  };
-  
-  const dashboardPath = getDashboardPath();
   
   const projectId = 145;
   
   const { activeSites, sites, isLoading, error, refetch } = useSitesList(projectId);
   
-  console.log(`SitesSidebar: Rendering with ${sites.length} total sites, ${activeSites.length} active sites`);
-  console.log(`SitesSidebar: Active site ID: ${activeSiteId}, Expanded site ID: ${expandedSiteId}`);
-  console.log(`Preserving dashboard: ${preserveDashboardRoute}, dashboardPath=${dashboardPath}`);
+  console.log(`🏢 SitesSidebar: Rendering with ${sites.length} total sites, ${activeSites.length} active sites`);
+  console.log(`🌐 SitesSidebar: Active site ID: ${activeSiteId}, Expanded site ID: ${expandedSiteId}`);
   
   // Toggle expanded state for a site
   const toggleSiteExpanded = (id: number, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(`Toggling site expansion: ${id}`);
+    console.log(`🔀 Toggling site expansion: ${id}`);
     setExpandedSiteId(expandedSiteId === id ? null : id);
   };
 
