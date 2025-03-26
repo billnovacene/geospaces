@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { Circle, ChevronDown } from "lucide-react";
+import { Circle, ChevronDown, ChevronRight } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface DashboardItemProps {
@@ -112,21 +112,29 @@ export function SidebarDashboardItem({
               <div className="w-2 h-2 rounded-full bg-primary" />
             )}
           </div>
-          <span className={cn(
-            "text-sm font-medium", 
-            isSelected ? "text-primary font-semibold" : 
-            isDashboardTypeActive ? "text-zinc-900" : "text-zinc-800"
-          )}>
-            {displayName}
-          </span>
+          {isSelected && isCollapsed ? (
+            <ChevronRight 
+              size={16} 
+              className="text-primary cursor-pointer" 
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsCollapsed(false);
+              }}
+            />
+          ) : (
+            <span className={cn(
+              "text-sm font-medium", 
+              isSelected ? "text-primary font-semibold" : 
+              isDashboardTypeActive ? "text-zinc-900" : "text-zinc-800"
+            )}>
+              {displayName}
+            </span>
+          )}
         </div>
-        {isSelected && (
+        {isSelected && !isCollapsed && (
           <ChevronDown 
             size={16} 
-            className={cn(
-              "transition-transform duration-200",
-              !isCollapsed && "transform rotate-180"
-            )} 
+            className="transition-transform duration-200" 
           />
         )}
       </div>
