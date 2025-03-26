@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Droplet, AlertCircle, ThermometerSnowflake, Humidity } from "lucide-react";
+import { Droplet, AlertCircle, ThermometerSnowflake, CloudRain } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTempHumidityData } from "@/hooks/useTempHumidityData";
@@ -17,12 +17,20 @@ import { fetchSite } from "@/services/sites";
 import { LogPanel } from "../TempHumidity/LogPanel";
 import { LoadingState } from "../TempHumidity/LoadingState";
 import { ErrorState } from "../TempHumidity/ErrorState";
+import { TempHumidityResponse } from "@/services/interfaces/temp-humidity";
 
 interface DampMoldViewProps {
   contextType: "zone" | "site" | "all";
   contextId: string | null;
   siteId?: string;
   zoneId?: string;
+}
+
+// Extend TempHumidityResponse with dew point properties
+interface ExtendedTempHumidityResponse extends TempHumidityResponse {
+  currentDewPoint?: number;
+  dewPointRisk?: "default" | "destructive" | "outline" | "secondary" | "success";
+  dewPointDifference?: number;
 }
 
 export function DampMoldView({ 
@@ -54,7 +62,7 @@ export function DampMoldView({
   
   // Re-use the temperature and humidity data hook to get the necessary data
   const { 
-    data, 
+    data: rawData, 
     isLoading, 
     error, 
     isUsingMockData,
@@ -69,12 +77,22 @@ export function DampMoldView({
   
   const contextName = zoneId ? zoneName : siteId ? siteName : "All Locations";
   
+  // Process the data to add dew point properties
+  const data: ExtendedTempHumidityResponse = rawData || {};
+  
+  // Add mock dew point data if not available
+  if (data) {
+    data.currentDewPoint = data.currentDewPoint || 12.3;
+    data.dewPointDifference = data.dewPointDifference || 5.2;
+    data.dewPointRisk = data.dewPointRisk || "secondary";
+  }
+  
   if (isLoading || loadingStage !== "complete") {
-    return <LoadingState stage={loadingStage} />;
+    return <LoadingState loadingStage={loadingStage} />;
   }
   
   if (error || apiConnectionFailed) {
-    return <ErrorState error={error} />;
+    return <ErrorState errorMessage={error instanceof Error ? error.message : "Unknown error"} />;
   }
   
   return (
@@ -100,8 +118,10 @@ export function DampMoldView({
                   {data?.currentDewPoint || "12.3"}°C
                 </span>
               </div>
-              <Badge variant={data?.dewPointRisk || "low"} className="capitalize">
-                {data?.dewPointRisk || "Low Risk"}
+              <Badge variant={data?.dewPointRisk || "secondary"} className="capitalize">
+                {data?.dewPointRisk === "destructive" ? "High Risk" : 
+                 data?.dewPointRisk === "secondary" ? "Low Risk" : 
+                 data?.dewPointRisk === "success" ? "Good" : "Moderate Risk"}
               </Badge>
             </div>
             <p className="text-sm text-gray-500">
@@ -132,7 +152,7 @@ export function DampMoldView({
       </Tabs>
       
       <div className="mt-8">
-        <LogPanel logs={logs} clearLogs={clearLogs} title="Damp & Mold Monitoring Logs" />
+        <LogPanel logs={logs} onClearLogs={clearLogs} title="Damp & Mold Monitoring Logs" />
       </div>
     </div>
   );

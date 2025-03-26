@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Droplet, AlertCircle, ThermometerSun, Humidity } from "lucide-react";
+import { Droplet, AlertCircle, ThermometerSun, CloudRain } from "lucide-react";
 
 interface DampMoldStatsProps {
   data: any;
@@ -24,7 +24,7 @@ export function DampMoldStats({ data }: DampMoldStatsProps) {
           <div className="flex flex-col">
             <div className="text-xs text-gray-500 mb-1">Avg. Humidity</div>
             <div className="flex items-center">
-              <Humidity className="h-4 w-4 text-blue-500 mr-1.5" />
+              <CloudRain className="h-4 w-4 text-blue-500 mr-1.5" />
               <span className="text-lg font-semibold">{avgHumidity.toFixed(1)}%</span>
             </div>
           </div>

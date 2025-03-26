@@ -1,7 +1,7 @@
 
 import React from "react";
 import { DashboardSidebar } from "@/components/Dashboard/DashboardSidebar";
-import { Humidity, Droplet } from "lucide-react";
+import { Droplet } from "lucide-react";
 import { SidebarWrapper } from "@/components/Dashboard/SidebarWrapper";
 import { useParams, useLocation } from "react-router-dom";
 import { DampMoldView } from "@/components/Dashboard/DampMold/DampMoldView";

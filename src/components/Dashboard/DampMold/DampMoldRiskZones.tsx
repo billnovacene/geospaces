@@ -55,9 +55,9 @@ export function DampMoldRiskZones({ data, contextType }: DampMoldRiskZonesProps)
   const getRiskBadgeVariant = (riskLevel: string) => {
     switch (riskLevel) {
       case "Severe": return "destructive";
-      case "High": return "orange";
-      case "Moderate": return "yellow";
-      case "Low": return "green";
+      case "High": return "destructive";
+      case "Moderate": return "secondary";
+      case "Low": return "success";
       default: return "secondary";
     }
   };
