@@ -30,37 +30,36 @@ const DampMoldDashboard = () => {
         <div className="container mx-auto py-6 px-4 md:px-6">
           <div className="mb-6">
             <div className="flex flex-col mb-2">
-              <div className="text-sm text-gray-500 flex items-center gap-1 mb-2">
-                <span>Home</span>
-                <span>/</span>
-              </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">Damp & Mold</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">Damp & Mold</h1>
               <p className="text-sm text-gray-500">Damp & Mold</p>
             </div>
           </div>
           
-          {/* Summary stats cards */}
+          {/* Summary stats cards - updated to match Figma design */}
           <div className="grid grid-cols-5 gap-4 mb-8">
             {summaryStats.map((stat, index) => (
-              <Card key={index} className="border-t-4 border-t-blue-500 shadow-sm">
-                <CardContent className="p-4">
-                  <div className="text-3xl font-bold">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-gray-500 mt-1">
-                    {stat.label}
-                  </div>
-                  {stat.type === "high-risk" && (
-                    <div className="w-full h-1 bg-red-500 mt-2"></div>
-                  )}
-                  {stat.type === "caution" && (
-                    <div className="w-full h-1 bg-amber-400 mt-2"></div>
-                  )}
-                  {stat.type === "success" && (
-                    <div className="w-full h-1 bg-green-500 mt-2"></div>
-                  )}
-                </CardContent>
-              </Card>
+              <div key={index} className="flex flex-col space-y-1">
+                <div className="text-4xl font-bold text-gray-900">
+                  {stat.value}
+                </div>
+                <div className="text-sm text-gray-500 mb-1 flex flex-col">
+                  {stat.label.split(' ').map((word, i) => (
+                    <span key={i}>{word}</span>
+                  ))}
+                </div>
+                {stat.type === "high-risk" && (
+                  <div className="w-16 h-1 bg-red-500"></div>
+                )}
+                {stat.type === "caution" && (
+                  <div className="w-16 h-1 bg-amber-400"></div>
+                )}
+                {stat.type === "success" && (
+                  <div className="w-16 h-1 bg-green-500"></div>
+                )}
+                {stat.type === "normal" && (
+                  <div className="w-16 h-1 bg-blue-500"></div>
+                )}
+              </div>
             ))}
           </div>
 
