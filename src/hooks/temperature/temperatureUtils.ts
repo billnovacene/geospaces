@@ -1,7 +1,9 @@
+
 import { useEffect, useRef, useState } from 'react';
+import { LogItem } from './types';
 
 // Utility to check if data is using mock data
-export function checkIfMockData(data: any, addLog: (message: string, type: string) => void) {
+export function checkIfMockData(data: any, addLog: (message: string, type: LogItem['type']) => void) {
   if (!data) return false;
   
   // Check if we have real sensor data
