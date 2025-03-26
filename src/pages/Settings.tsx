@@ -8,8 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Typography } from "@/components/Settings/Typography";
+import { TypographyEditor } from "@/components/Settings/TypographyEditor";
+import { ComponentsSection } from "@/components/Settings/ComponentsSection";
+import { ColorSection } from "@/components/Settings/ColorSection";
 
 const Settings = () => {
+  const [activeTab, setActiveTab] = useState("typography");
+  const [isEditing, setIsEditing] = useState(false);
+
   return (
     <SidebarWrapper>
       <div className="flex-1 overflow-auto bg-[#F9FAFB] min-h-screen">
@@ -23,41 +29,42 @@ const Settings = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="typography" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="typography">Typography</TabsTrigger>
-              <TabsTrigger value="components">Components</TabsTrigger>
-              <TabsTrigger value="colors">Colors</TabsTrigger>
-            </TabsList>
+          <Tabs 
+            value={activeTab} 
+            onValueChange={setActiveTab}
+            className="space-y-4"
+          >
+            <div className="flex justify-between items-center">
+              <TabsList>
+                <TabsTrigger value="typography">Typography</TabsTrigger>
+                <TabsTrigger value="components">Components</TabsTrigger>
+                <TabsTrigger value="colors">Colors</TabsTrigger>
+              </TabsList>
+              
+              {activeTab === "typography" && (
+                <Button 
+                  variant="outline"
+                  onClick={() => setIsEditing(!isEditing)}
+                >
+                  {isEditing ? "View Typography" : "Edit Typography"}
+                </Button>
+              )}
+            </div>
             
             <TabsContent value="typography" className="space-y-4">
-              <Typography />
+              {isEditing ? (
+                <TypographyEditor />
+              ) : (
+                <Typography />
+              )}
             </TabsContent>
             
             <TabsContent value="components">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Components</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Component styles preview coming soon.
-                  </p>
-                </CardContent>
-              </Card>
+              <ComponentsSection />
             </TabsContent>
             
             <TabsContent value="colors">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Colors</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Color palette preview coming soon.
-                  </p>
-                </CardContent>
-              </Card>
+              <ColorSection />
             </TabsContent>
           </Tabs>
         </div>
