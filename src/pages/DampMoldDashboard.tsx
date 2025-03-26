@@ -28,6 +28,7 @@ const DampMoldDashboard = () => {
     <SidebarWrapper>
       <div className="flex-1 overflow-auto bg-[#F9FAFB] min-h-screen">
         <div className="container mx-auto py-6 px-4 md:px-6">
+          {/* Header section with title and stats */}
           <div className="mb-6">
             <div className="flex flex-row items-center justify-between">
               <div className="flex flex-col">

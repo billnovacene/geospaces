@@ -19,11 +19,13 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
   return (
     <Card className="border-0 shadow-sm w-full">
       <CardHeader className="pb-2 w-full">
-        <CardTitle className="text-xl font-medium text-gray-900">Daily Overview</CardTitle>
+        <div className="flex flex-row items-center justify-between">
+          <CardTitle className="text-xl font-medium text-gray-900">Daily Overview</CardTitle>
+        </div>
       </CardHeader>
       <CardContent className="w-full">
         <div className="mt-2 w-full">
-          {/* Chart layout with description on the left */}
+          {/* Chart layout with description on the left - using same alignment pattern as header */}
           <div className="flex flex-col md:flex-row gap-6 w-full">
             <div className="w-full md:w-1/4">
               <p className="text-sm text-gray-700">{chartDescription}</p>
