@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZone } from "@/services/zones";
 import { fetchSite } from "@/services/sites";
-import { useTempHumidityData } from "@/hooks/useTempHumidityData";
 import { LogPanel } from "../TempHumidity/LogPanel";
 import { LoadingState } from "../TempHumidity/LoadingState";
 import { ErrorState } from "../TempHumidity/ErrorState";
@@ -13,6 +12,7 @@ import { RiskGlanceSection } from "./RiskGlanceSection";
 import { DailyOverviewSection } from "./DailyOverviewSection";
 import { MonthlyOverviewSection } from "./MonthlyOverviewSection";
 import { generateMonthlyRiskData } from "./utils/mockRiskData";
+import { generateMockData } from "@/services/sensors/mock-data-generator";
 
 interface DampMoldViewProps {
   contextType?: "zone" | "site" | "all";
@@ -73,63 +73,20 @@ export function DampMoldView({
     enabled: !!siteId && !zoneId,
   });
   
-  // Re-use the temperature and humidity data hook to get the necessary data
-  const { 
-    data: rawData, 
-    isLoading, 
-    error, 
-    isUsingMockData,
-    loadingStage,
-    apiConnectionFailed,
-    logs,
-    clearLogs
-  } = useTempHumidityData({ 
-    forceSiteId: siteId, 
-    forceZoneId: zoneId 
-  });
-  
+  // Use simulated data instead of API data
+  const simulatedData = generateMockData();
   const contextName = zoneId ? zoneName : siteId ? siteName : "All Locations";
   
-  console.log("Raw data:", rawData);
-  console.log("Loading state:", { isLoading, loadingStage, apiConnectionFailed });
+  console.log("Using simulated data:", simulatedData);
   
   // Process the data to add dew point properties
-  const data: ExtendedTempHumidityResponse = rawData || {
-    stats: {
-      avgTemp: 0,
-      minTemp: 0,
-      maxTemp: 0,
-      avgHumidity: 0,
-      status: {
-        avgTemp: 'good',
-        minTemp: 'good',
-        maxTemp: 'good',
-        avgHumidity: 'good'
-      }
-    },
-    daily: [],
-    monthly: [],
-    sourceData: {
-      temperatureSensors: [],
-      humiditySensors: []
-    }
+  const data: ExtendedTempHumidityResponse = {
+    ...simulatedData,
+    currentDewPoint: 12.3,
+    dewPointDifference: 5.2,
+    dewPointRisk: "secondary"
   };
   
-  // Add mock dew point data if not available
-  if (data) {
-    data.currentDewPoint = data.currentDewPoint || 12.3;
-    data.dewPointDifference = data.dewPointDifference || 5.2;
-    data.dewPointRisk = data.dewPointRisk || "secondary";
-  }
-  
-  if (isLoading || loadingStage !== "complete") {
-    return <LoadingState />;
-  }
-  
-  if (error || apiConnectionFailed) {
-    return <ErrorState onRetry={() => {}} />;
-  }
-
   // Get the monthly risk data
   const monthlyRiskData = generateMonthlyRiskData();
   
@@ -160,7 +117,9 @@ export function DampMoldView({
       {/* Only show logs in development environment */}
       {process.env.NODE_ENV === 'development' && (
         <div className="mt-8">
-          <LogPanel logs={logs} onClearLogs={clearLogs} title="Damp & Mold Monitoring Logs" />
+          <LogPanel logs={[
+            { id: '1', message: 'Using simulated data only', type: 'info', timestamp: new Date() }
+          ]} onClearLogs={() => {}} title="Damp & Mold Monitoring Logs" />
         </div>
       )}
     </div>
