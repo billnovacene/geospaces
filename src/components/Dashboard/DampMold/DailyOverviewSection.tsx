@@ -35,9 +35,9 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
           </Tabs>
         </div>
         
-        <div className="mt-2">
+        <div className="mt-2 w-full">
           {/* Day selector and chart */}
-          <div className="flex items-center justify-between text-sm mb-4">
+          <div className="flex items-center justify-between text-sm mb-4 w-full">
             <Button variant="outline" size="sm" className="flex items-center gap-1">
               <ChevronLeft className="h-4 w-4" />
               15th Dec
@@ -52,12 +52,12 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
           </div>
 
           {/* Chart layout with description on the left */}
-          <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col md:flex-row gap-6 w-full">
             <div className="w-full md:w-1/4">
               <p className="text-sm text-gray-700">{chartDescription}</p>
             </div>
             <div className="w-full md:w-3/4">
-              <div className="h-[250px] relative z-0">
+              <div className="h-[250px] relative z-0 w-full">
                 <ChartConfig 
                   chartData={chartData} 
                   xAxisKey={xAxisKey}
