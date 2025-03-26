@@ -21,13 +21,9 @@ export function RiskGlanceSection({
   setTimeRange, 
   monthlyRiskData 
 }: RiskGlanceSectionProps) {
-  const chartDescription = "Building Name has been monitored since 12 June 2023";
-
   return (
     <Card className="border-0 shadow-sm mb-6 w-full">
       <CardHeader>
-        <h2 className="text-xl font-medium text-gray-900">Damp & Mold Risk at a glance</h2>
-        <p className="text-sm text-gray-500">{chartDescription}</p>
         <div className="flex space-x-4 mt-3">
           <Tabs defaultValue={activeTab} className="w-auto" onValueChange={setActiveTab}>
             <TabsList className="bg-gray-100 p-1">
@@ -94,3 +90,4 @@ export function RiskGlanceSection({
     </Card>
   );
 }
+
