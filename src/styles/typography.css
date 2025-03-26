@@ -70,4 +70,22 @@
   .caption {
     @apply text-xs text-gray-400;
   }
+
+  /* Table Typography */
+  .table-header {
+    @apply text-sm font-medium text-muted-foreground;
+  }
+  
+  .table-cell {
+    @apply text-sm text-card-foreground;
+  }
+  
+  /* Navigation Typography */
+  .nav-item {
+    @apply text-sm font-medium text-foreground;
+  }
+  
+  .nav-item-active {
+    @apply text-sm font-medium text-accent-foreground;
+  }
 }

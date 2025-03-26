@@ -84,21 +84,21 @@ const Settings = () => {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Horizontal Navigation</h3>
+                      <h3 className="heading-3">Horizontal Navigation</h3>
                       <Separator />
                       
                       <div className="p-4 border rounded-md">
                         <div className="flex space-x-4 p-4 bg-background rounded-md">
-                          <a href="#" className="px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                          <a href="#" className="px-3 py-2 rounded-md nav-item hover:bg-accent/10 hover:text-accent-foreground">
                             Home
                           </a>
-                          <a href="#" className="px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                          <a href="#" className="px-3 py-2 rounded-md nav-item hover:bg-accent/10 hover:text-accent-foreground">
                             Dashboard
                           </a>
-                          <a href="#" className="px-3 py-2 rounded-md bg-accent text-accent-foreground text-sm font-medium">
+                          <a href="#" className="px-3 py-2 rounded-md bg-accent nav-item-active">
                             Settings
                           </a>
-                          <a href="#" className="px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                          <a href="#" className="px-3 py-2 rounded-md nav-item hover:bg-accent/10 hover:text-accent-foreground">
                             Profile
                           </a>
                         </div>
@@ -106,22 +106,22 @@ const Settings = () => {
                     </div>
                     
                     <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Sidebar Navigation</h3>
+                      <h3 className="heading-3">Sidebar Navigation</h3>
                       <Separator />
                       
                       <div className="p-4 border rounded-md">
                         <div className="w-64 p-4 bg-background rounded-md border">
                           <div className="space-y-1">
-                            <a href="#" className="block px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                            <a href="#" className="block px-3 py-2 rounded-md nav-item hover:bg-accent/10 hover:text-accent-foreground">
                               Home
                             </a>
-                            <a href="#" className="block px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                            <a href="#" className="block px-3 py-2 rounded-md nav-item hover:bg-accent/10 hover:text-accent-foreground">
                               Dashboard
                             </a>
-                            <a href="#" className="block px-3 py-2 rounded-md bg-accent text-accent-foreground text-sm font-medium">
+                            <a href="#" className="block px-3 py-2 rounded-md bg-accent nav-item-active">
                               Settings
                             </a>
-                            <a href="#" className="block px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                            <a href="#" className="block px-3 py-2 rounded-md nav-item hover:bg-accent/10 hover:text-accent-foreground">
                               Profile
                             </a>
                           </div>
@@ -143,31 +143,31 @@ const Settings = () => {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Standard Table</h3>
+                      <h3 className="heading-3">Standard Table</h3>
                       <Separator />
                       
                       <div className="p-4 border rounded-md overflow-auto">
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>ID</TableHead>
-                              <TableHead>Name</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead className="text-right">Actions</TableHead>
+                              <TableHead className="table-header">ID</TableHead>
+                              <TableHead className="table-header">Name</TableHead>
+                              <TableHead className="table-header">Status</TableHead>
+                              <TableHead className="table-header text-right">Actions</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
                             <TableRow>
-                              <TableCell>001</TableCell>
-                              <TableCell>John Doe</TableCell>
-                              <TableCell>Active</TableCell>
-                              <TableCell className="text-right">Edit</TableCell>
+                              <TableCell className="table-cell">001</TableCell>
+                              <TableCell className="table-cell">John Doe</TableCell>
+                              <TableCell className="table-cell">Active</TableCell>
+                              <TableCell className="table-cell text-right">Edit</TableCell>
                             </TableRow>
                             <TableRow>
-                              <TableCell>002</TableCell>
-                              <TableCell>Jane Smith</TableCell>
-                              <TableCell>Inactive</TableCell>
-                              <TableCell className="text-right">Edit</TableCell>
+                              <TableCell className="table-cell">002</TableCell>
+                              <TableCell className="table-cell">Jane Smith</TableCell>
+                              <TableCell className="table-cell">Inactive</TableCell>
+                              <TableCell className="table-cell text-right">Edit</TableCell>
                             </TableRow>
                           </TableBody>
                         </Table>

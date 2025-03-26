@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -76,7 +75,7 @@ export const NavigationEditor = () => {
       <CardContent className="space-y-6">
         {/* Navigation Preview */}
         <div className="p-4 border rounded-md">
-          <h3 className="text-lg font-medium mb-3">Navigation Preview</h3>
+          <h3 className="heading-3 mb-3">Navigation Preview</h3>
           <div className={`flex space-x-4 p-4 rounded-md ${settings.background}`}>
             <a href="#" className={`px-3 py-2 rounded-md ${settings.textColor} ${settings.fontSize} ${settings.fontWeight} ${settings.hoverBackground} ${settings.hoverTextColor}`}>
               Home
@@ -95,7 +94,7 @@ export const NavigationEditor = () => {
         
         {/* Colors */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Colors</h3>
+          <h3 className="heading-3">Colors</h3>
           <Separator />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -166,7 +165,7 @@ export const NavigationEditor = () => {
         
         {/* Typography */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Typography</h3>
+          <h3 className="heading-3">Typography</h3>
           <Separator />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

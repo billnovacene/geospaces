@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -81,7 +80,7 @@ export const TableEditor = () => {
       <CardContent className="space-y-6">
         {/* Table Preview */}
         <div className="p-4 border rounded-md overflow-auto">
-          <h3 className="text-lg font-medium mb-3">Table Preview</h3>
+          <h3 className="heading-3 mb-3">Table Preview</h3>
           <Table className={`${settings.borderColor}`}>
             <TableHeader className={`${settings.headerBackground}`}>
               <TableRow>
@@ -110,7 +109,7 @@ export const TableEditor = () => {
         
         {/* Header Styles */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Header Styles</h3>
+          <h3 className="heading-3">Header Styles</h3>
           <Separator />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -177,7 +176,7 @@ export const TableEditor = () => {
         
         {/* Row Styles */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Row Styles</h3>
+          <h3 className="heading-3">Row Styles</h3>
           <Separator />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
