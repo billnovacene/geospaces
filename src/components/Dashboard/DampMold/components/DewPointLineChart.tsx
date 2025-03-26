@@ -22,7 +22,7 @@ export function DewPointLineChart({ chartData, xAxisKey }: DewPointLineChartProp
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
         data={chartData}
-        margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f1" />
         <XAxis 
@@ -49,8 +49,19 @@ export function DewPointLineChart({ chartData, xAxisKey }: DewPointLineChartProp
             if (name === "riskFactor") return [`${value}`, "Condensation Risk Factor"];
             return [value, name];
           }}
+          wrapperStyle={{ zIndex: 1000 }}
+          cursor={{ strokeDasharray: '3 3' }}
         />
-        <Legend verticalAlign="top" height={36} />
+        <Legend 
+          verticalAlign="top" 
+          height={36}
+          formatter={(value) => {
+            if (value === "surfaceTemperature") return "Surface Temperature";
+            if (value === "dewPoint") return "Dew Point";
+            if (value === "dewPointDelta") return "Temperature Difference";
+            return value;
+          }}
+        />
         <Line 
           type="monotone" 
           dataKey="surfaceTemperature" 

@@ -63,6 +63,10 @@ export const ChartTooltipContent = ({
         outline: "none",
         zIndex: 1000,
         minWidth: "10rem",
+        maxWidth: "15rem",
+        pointerEvents: "auto",
+        overflow: "visible",
+        position: "relative"
       }}
       {...props}
     >

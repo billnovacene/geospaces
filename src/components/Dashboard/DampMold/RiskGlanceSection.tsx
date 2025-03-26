@@ -21,16 +21,16 @@ export function RiskGlanceSection({
   monthlyRiskData 
 }: RiskGlanceSectionProps) {
   return (
-    <Card className="border-0 shadow-sm mb-6 w-full">
-      <CardContent className="w-full py-6"> {/* Added py-6 for vertical padding */}
+    <Card className="border-0 shadow-sm mb-10 w-full">
+      <CardContent className="w-full py-8">
         {activeTab === "today" ? (
-          <div className="w-full space-y-4"> {/* Added space-y-4 for consistent spacing */}
-            <div className="h-[250px] relative z-10 w-full">
+          <div className="w-full space-y-8">
+            <div className="relative w-full">
               <DewPointChart data={null} />
             </div>
           </div>
         ) : (
-          <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/4">
               <p className="text-sm text-gray-700">
                 Monthly data shows historical patterns of humidity and temperature, 
