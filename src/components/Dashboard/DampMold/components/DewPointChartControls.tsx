@@ -13,27 +13,5 @@ export function DewPointChartControls({
   chartType,
   setChartType
 }: DewPointChartControlsProps) {
-  return <div className="flex items-center space-x-4">
-      <Select value={chartType} onValueChange={setChartType}>
-        <SelectTrigger className="w-[120px]">
-          <SelectValue placeholder="Chart Type" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="line">Line Chart</SelectItem>
-          <SelectItem value="area">Area Chart</SelectItem>
-        </SelectContent>
-      </Select>
-      
-      <div className="flex space-x-2">
-        <Badge variant={selectedRange === "day" ? "default" : "outline"} onClick={() => setSelectedRange("day")} className="cursor-pointer bg-green-600">
-          Day
-        </Badge>
-        <Badge variant={selectedRange === "week" ? "default" : "outline"} className="cursor-pointer" onClick={() => setSelectedRange("week")}>
-          Week
-        </Badge>
-        <Badge variant={selectedRange === "month" ? "default" : "outline"} className="cursor-pointer" onClick={() => setSelectedRange("month")}>
-          Month
-        </Badge>
-      </div>
-    </div>;
+  return;
 }
