@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,11 +24,9 @@ export function RiskGlanceSection({
 
   return (
     <Card className="border-0 shadow-sm mb-6 w-full">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <h2 className="text-xl font-medium text-gray-900">Damp & Mold Risk at a glance</h2>
-          <p className="text-sm text-gray-500">{chartDescription}</p>
-        </div>
+      <CardHeader>
+        <h2 className="text-xl font-medium text-gray-900">Damp & Mold Risk at a glance</h2>
+        <p className="text-sm text-gray-500">{chartDescription}</p>
         <div className="flex space-x-4 mt-3">
           <Tabs defaultValue={activeTab} className="w-auto" onValueChange={setActiveTab}>
             <TabsList className="bg-gray-100 p-1">
