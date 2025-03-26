@@ -34,7 +34,7 @@ export function DewPointChart({ data }: DewPointChartProps) {
           setChartType={setChartType}
         />
       </CardHeader>
-      <CardContent className="h-[400px]">
+      <CardContent className="relative z-10">
         <div className="pb-4">
           <p className="text-sm text-gray-500">
             Dew point analysis shows the relationship between surface temperature and dew point temperature.
@@ -42,11 +42,13 @@ export function DewPointChart({ data }: DewPointChartProps) {
           </p>
         </div>
         
-        {chartType === "line" ? (
-          <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} />
-        ) : (
-          <DewPointAreaChart chartData={chartData} xAxisKey={getXAxisKey()} />
-        )}
+        <div className="h-[250px]">
+          {chartType === "line" ? (
+            <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} />
+          ) : (
+            <DewPointAreaChart chartData={chartData} xAxisKey={getXAxisKey()} />
+          )}
+        </div>
       </CardContent>
     </Card>
   );

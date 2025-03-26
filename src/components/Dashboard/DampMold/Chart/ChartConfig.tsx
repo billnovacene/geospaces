@@ -69,6 +69,7 @@ export function ChartConfig({
             return [value, name];
           }}
           wrapperStyle={{ zIndex: 1000 }}
+          cursor={{ strokeDasharray: '3 3', strokeWidth: 2 }}
         />
         <Legend 
           verticalAlign="top" 

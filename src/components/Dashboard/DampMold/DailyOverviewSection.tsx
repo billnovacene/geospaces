@@ -57,7 +57,7 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
               <p className="text-sm text-gray-700">{chartDescription}</p>
             </div>
             <div className="w-full md:w-3/4">
-              <div className="h-[250px]">
+              <div className="h-[250px] relative z-0">
                 <ChartConfig 
                   chartData={chartData} 
                   xAxisKey={xAxisKey}

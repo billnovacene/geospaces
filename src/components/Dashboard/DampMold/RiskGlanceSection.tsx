@@ -46,28 +46,28 @@ export function RiskGlanceSection({
         </div>
         
         {activeTab === "today" ? (
-          <div className="flex gap-6">
-            <div className="w-1/4">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-1/4">
               <p className="text-sm text-gray-700">
                 This chart shows the current day's dew point analysis and temperature readings, 
                 helping identify potential condensation risks in real-time.
               </p>
             </div>
-            <div className="w-3/4">
-              <div className="h-[250px]">
+            <div className="w-full md:w-3/4">
+              <div className="h-[250px] relative z-10">
                 <DewPointChart data={null} />
               </div>
             </div>
           </div>
         ) : (
-          <div className="flex gap-6">
-            <div className="w-1/4">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-1/4">
               <p className="text-sm text-gray-700">
                 Monthly data shows historical patterns of humidity and temperature, 
                 highlighting zones that have experienced sustained high-risk conditions.
               </p>
             </div>
-            <div className="w-3/4">
+            <div className="w-full md:w-3/4">
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
