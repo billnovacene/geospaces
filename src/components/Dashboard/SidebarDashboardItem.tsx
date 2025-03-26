@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { Circle, ChevronDown, ChevronRight } from "lucide-react";
+import { Circle, ChevronDown, ChevronRight, ChevronUp } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface DashboardItemProps {
@@ -92,55 +92,50 @@ export function SidebarDashboardItem({
   // Replace "All Data" with "Overview" in the display name
   const displayName = isOverview ? "Overview" : name;
   
-  const content = (
-    <div 
-      className={cn(
-        "flex items-center py-2.5 px-5 cursor-pointer bg-white sidebar-hover-item",
-        (isSelected || isDashboardTypeActive) && "bg-[#F9F9FA]"
-      )}
-      onClick={handleToggle}
-    >
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            "flex items-center justify-center w-4 h-4 rounded-full border",
-            isSelected 
-              ? "border-primary bg-white" 
-              : "border-zinc-300 bg-white"
-          )}>
-            {isSelected && (
-              <div className="w-2 h-2 rounded-full bg-primary" />
+  // Create the dashboard item content based on the selection state
+  const renderContent = () => {
+    // Selected item with special styling
+    if (isSelected) {
+      return (
+        <div className="flex items-center py-2.5 px-5 cursor-pointer bg-white">
+          <div className="flex items-center gap-3 w-full">
+            {isSelected ? (
+              <>
+                {/* Blue dot for selected item */}
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span className="text-sm font-medium text-primary uppercase">{displayName}</span>
+                {isCollapsed ? (
+                  <ChevronDown size={16} className="ml-auto text-gray-400" />
+                ) : (
+                  <ChevronUp size={16} className="ml-auto text-gray-400" />
+                )}
+              </>
+            ) : (
+              <>
+                <Circle size={14} className="text-zinc-400" />
+                <span className="text-sm font-medium text-zinc-800">{displayName}</span>
+              </>
             )}
           </div>
-          {isSelected && isCollapsed ? (
-            <div className="flex items-center justify-between w-full">
-              <span className="text-sm font-medium text-primary font-semibold">{displayName}</span>
-              <ChevronRight size={16} className="text-zinc-400" />
-            </div>
-          ) : (
-            <span className={cn(
-              "text-sm font-medium", 
-              isSelected ? "text-primary font-semibold" : 
-              isDashboardTypeActive ? "text-zinc-900" : "text-zinc-800"
-            )}>
-              {displayName}
-            </span>
-          )}
         </div>
-        {isSelected && !isCollapsed && (
-          <ChevronDown 
-            size={16} 
-            className="transition-transform duration-200" 
-          />
-        )}
+      );
+    }
+    
+    // Regular unselected item
+    return (
+      <div className="flex items-center py-2.5 px-5 cursor-pointer hover:bg-gray-50">
+        <div className="flex items-center gap-3 w-full">
+          <Circle size={14} className="text-zinc-400" />
+          <span className="text-sm font-medium text-zinc-800">{displayName}</span>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
   
   // Only wrap in Link if not already selected
   if (contextualTo && !isSelected) {
-    return <Link to={contextualTo}>{content}</Link>;
+    return <Link to={contextualTo}>{renderContent()}</Link>;
   }
   
-  return content;
+  return renderContent();
 }
