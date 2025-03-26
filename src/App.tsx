@@ -9,6 +9,7 @@ import SiteDetail from "./pages/SiteDetail";
 import ZoneDetail from "./pages/ZoneDetail";
 import TempHumidityDashboard from "./pages/TempHumidityDashboard";
 import DampMoldDashboard from "./pages/DampMoldDashboard";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import React from "react";
 
@@ -46,6 +47,9 @@ const App = () => (
             {/* Zone-specific dashboards */}
             <Route path="/zone/:zoneId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
             <Route path="/zone/:zoneId/dashboard/damp-mold" element={<DampMoldDashboard />} />
+            
+            {/* Settings */}
+            <Route path="/settings" element={<Settings />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
