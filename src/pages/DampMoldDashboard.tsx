@@ -7,6 +7,7 @@ import { useParams, useLocation } from "react-router-dom";
 import { DampMoldView } from "@/components/Dashboard/DampMold/DampMoldView";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
+import { SummaryStats } from "@/components/Dashboard/DampMold/SummaryStats";
 
 const DampMoldDashboard = () => {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
@@ -36,62 +37,9 @@ const DampMoldDashboard = () => {
                 <p className="text-sm text-gray-500">Damp & Mold</p>
               </div>
               
-              {/* Summary stats cards in a row */}
-              <div className="hidden md:flex space-x-4">
-                {summaryStats.map((stat, index) => (
-                  <div key={index} className="flex flex-col space-y-1">
-                    <div className="text-2xl font-bold text-gray-900">
-                      {stat.value}
-                    </div>
-                    <div className="text-xs text-gray-500 mb-1">
-                      {stat.label.split(' ').map((word, i) => (
-                        <span key={i} className="block leading-tight">{word}</span>
-                      ))}
-                    </div>
-                    {stat.type === "high-risk" && (
-                      <div className="w-full h-1 bg-red-500"></div>
-                    )}
-                    {stat.type === "caution" && (
-                      <div className="w-full h-1 bg-amber-400"></div>
-                    )}
-                    {stat.type === "success" && (
-                      <div className="w-full h-1 bg-green-500"></div>
-                    )}
-                    {stat.type === "normal" && (
-                      <div className="w-full h-1 bg-blue-500"></div>
-                    )}
-                  </div>
-                ))}
-              </div>
+              {/* Summary stats displayed via the new component */}
+              <SummaryStats stats={summaryStats} />
             </div>
-          </div>
-          
-          {/* Mobile view for stats - only show on small screens */}
-          <div className="grid grid-cols-5 gap-4 mb-8 md:hidden mx-auto w-3/4">
-            {summaryStats.map((stat, index) => (
-              <div key={index} className="flex flex-col space-y-1">
-                <div className="text-4xl font-bold text-gray-900">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-gray-500 mb-1 flex flex-col">
-                  {stat.label.split(' ').map((word, i) => (
-                    <span key={i}>{word}</span>
-                  ))}
-                </div>
-                {stat.type === "high-risk" && (
-                  <div className="w-16 h-1 bg-red-500"></div>
-                )}
-                {stat.type === "caution" && (
-                  <div className="w-16 h-1 bg-amber-400"></div>
-                )}
-                {stat.type === "success" && (
-                  <div className="w-16 h-1 bg-green-500"></div>
-                )}
-                {stat.type === "normal" && (
-                  <div className="w-16 h-1 bg-blue-500"></div>
-                )}
-              </div>
-            ))}
           </div>
 
           <DampMoldView />
