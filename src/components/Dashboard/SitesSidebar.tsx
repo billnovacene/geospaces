@@ -1,9 +1,8 @@
 
 import { useParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ExternalLink, Circle } from "lucide-react";
+import { Circle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SiteListItem } from "@/components/Site/SiteListItem";
 import { SitesSidebarError } from "./SitesSidebarError";
 import { SitesSidebarEmpty } from "./SitesSidebarEmpty";
 import { useSitesList } from "@/hooks/useSitesList";
@@ -86,7 +85,7 @@ export function SitesSidebar({
             {activeSites.map(site => (
               <div key={site.id} className={cn(
                 "flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
-                activeSiteId === site.id && "bg-[#F9F9FA] border-l-4 border-primary"
+                activeSiteId === site.id && "bg-[#F5F5F6] border-l-[3px] border-primary pl-4"
               )}>
                 <Link to={preserveDashboardRoute && dashboardPath ? `/site/${site.id}${dashboardPath}` : `/site/${site.id}`} className="flex items-center gap-3 w-full">
                   {activeSiteId === site.id ? (
