@@ -125,25 +125,25 @@ export function DampMoldView({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <DampRiskIndicator data={data} />
         <DampMoldStats data={data} />
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-50 to-white border border-blue-100">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-medium">Dew Point Analysis</CardTitle>
+            <CardTitle className="text-lg font-medium text-blue-800">Dew Point Analysis</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <ThermometerSnowflake className="h-5 w-5 text-blue-500" />
-                <span className="text-2xl font-bold">
+                <span className="text-2xl font-bold text-blue-800">
                   {data?.currentDewPoint || "12.3"}°C
                 </span>
               </div>
-              <Badge variant={data?.dewPointRisk || "secondary"} className="capitalize">
+              <Badge variant={data?.dewPointRisk || "secondary"} className="capitalize bg-blue-100 text-blue-700 hover:bg-blue-200">
                 {data?.dewPointRisk === "destructive" ? "High Risk" : 
                  data?.dewPointRisk === "secondary" ? "Low Risk" : 
                  data?.dewPointRisk === "success" ? "Good" : "Moderate Risk"}
               </Badge>
             </div>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-blue-600">
               Current dew point is {data?.dewPointDifference || "5.2"}°C below surface temperature
             </p>
           </CardContent>
@@ -151,10 +151,10 @@ export function DampMoldView({
       </div>
       
       <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-3 mb-6">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="dewpoint">Dew Point Analysis</TabsTrigger>
-          <TabsTrigger value="risk-zones">Risk Zones</TabsTrigger>
+        <TabsList className="grid grid-cols-3 mb-6 bg-blue-50 p-1">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-blue-700">Overview</TabsTrigger>
+          <TabsTrigger value="dewpoint" className="data-[state=active]:bg-white data-[state=active]:text-blue-700">Dew Point Analysis</TabsTrigger>
+          <TabsTrigger value="risk-zones" className="data-[state=active]:bg-white data-[state=active]:text-blue-700">Risk Zones</TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-6">

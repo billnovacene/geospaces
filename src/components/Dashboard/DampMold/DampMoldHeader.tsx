@@ -21,7 +21,7 @@ export function DampMoldHeader({
       <Breadcrumb className="mb-4">
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center text-blue-600 hover:text-blue-800">
               <Home className="mr-1 h-3 w-3" />
               Home
             </Link>
@@ -30,7 +30,7 @@ export function DampMoldHeader({
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to="/dashboard/damp-mold" className="flex items-center">
+            <Link to="/dashboard/damp-mold" className="flex items-center text-blue-600 hover:text-blue-800">
               <LayoutDashboard className="mr-1 h-3 w-3" />
               Dashboards
             </Link>
@@ -39,7 +39,7 @@ export function DampMoldHeader({
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to="#" className="flex items-center font-medium">
+            <Link to="#" className="flex items-center font-medium text-blue-700">
               <Droplet className="mr-1 h-3 w-3" />
               Damp & Mold
             </Link>
@@ -49,7 +49,7 @@ export function DampMoldHeader({
           <>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink className="font-medium">
+              <BreadcrumbLink className="font-medium text-blue-800">
                 {contextName}
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -58,7 +58,7 @@ export function DampMoldHeader({
       </Breadcrumb>
       
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-blue-900">
           {contextType === "zone" && `Zone: ${contextName}`}
           {contextType === "site" && `Site: ${contextName}`}
           {contextType === "all" && "All Locations"}
@@ -66,9 +66,9 @@ export function DampMoldHeader({
       </div>
       
       {isUsingMockData && (
-        <Card className="bg-yellow-50 border-yellow-200 mb-4">
-          <CardContent className="p-3 flex items-center text-sm text-yellow-800">
-            <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
+        <Card className="bg-amber-50 border-amber-200 mb-4">
+          <CardContent className="p-3 flex items-center text-sm text-amber-800">
+            <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0 text-amber-600" />
             <p>
               Using simulated data for demonstration. Connect real sensors for accurate monitoring.
             </p>
