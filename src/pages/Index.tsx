@@ -2,8 +2,8 @@
 import { Navigate } from "react-router-dom";
 
 const Index = () => {
-  // Redirect to project detail page instead of just "/"
-  return <Navigate to="/dashboard/temp-humidity" replace />;
+  // Redirect to damp-mold dashboard page
+  return <Navigate to="/dashboard/damp-mold" replace />;
 };
 
 export default Index;

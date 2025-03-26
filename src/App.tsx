@@ -8,6 +8,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import SiteDetail from "./pages/SiteDetail";
 import ZoneDetail from "./pages/ZoneDetail";
 import TempHumidityDashboard from "./pages/TempHumidityDashboard";
+import DampMoldDashboard from "./pages/DampMoldDashboard";
 import NotFound from "./pages/NotFound";
 import React from "react";
 
@@ -34,8 +35,11 @@ const App = () => (
             <Route path="/site/:siteId" element={<SiteDetail />} />
             <Route path="/zone/:zoneId" element={<ZoneDetail />} />
             <Route path="/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
+            <Route path="/dashboard/damp-mold" element={<DampMoldDashboard />} />
             <Route path="/site/:siteId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
+            <Route path="/site/:siteId/dashboard/damp-mold" element={<DampMoldDashboard />} />
             <Route path="/zone/:zoneId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
+            <Route path="/zone/:zoneId/dashboard/damp-mold" element={<DampMoldDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

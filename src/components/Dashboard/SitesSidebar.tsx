@@ -1,3 +1,4 @@
+
 import { useParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Circle } from "lucide-react";
@@ -50,9 +51,9 @@ export function SitesSidebar({
     setExpandedSiteId(expandedSiteId === id ? null : id);
   };
 
-  // Define the dashboard path
-  const dashboardPath = preserveDashboardRoute && currentDashboard === "temp-humidity" 
-    ? '/dashboard/temp-humidity' 
+  // Define the dashboard path based on the current dashboard
+  const dashboardPath = preserveDashboardRoute && currentDashboard 
+    ? `/dashboard/${currentDashboard}` 
     : '';
 
   return (

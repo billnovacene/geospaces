@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
-import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
+import { Settings, Search, MoreVertical, Home, Building, Package, Droplet } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ export function DashboardSidebar() {
   // Check if we're on a dashboard route
   const isDashboardRoute = location.pathname.includes('/dashboard');
   const isTempHumidityRoute = location.pathname.includes('/dashboard/temp-humidity');
+  const isDampMoldRoute = location.pathname.includes('/dashboard/damp-mold');
   
   const validSiteId = siteId && !isNaN(Number(siteId)) ? Number(siteId) : null;
   const validZoneId = zoneId && !isNaN(Number(zoneId)) ? Number(zoneId) : null;
@@ -47,7 +49,7 @@ export function DashboardSidebar() {
   
   // Log important information for debugging
   console.log(`DashboardSidebar: siteId=${validSiteId}, zoneId=${validZoneId}, effectiveSiteId=${effectiveSiteId}`);
-  console.log(`DashboardSidebar: isDashboardRoute=${isDashboardRoute}, isTempHumidityRoute=${isTempHumidityRoute}`);
+  console.log(`DashboardSidebar: isDashboardRoute=${isDashboardRoute}, isTempHumidityRoute=${isTempHumidityRoute}, isDampMoldRoute=${isDampMoldRoute}`);
   
   return (
     <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
@@ -78,6 +80,11 @@ export function DashboardSidebar() {
               contextPath={zoneId ? `/zone/${zoneId}` : (siteId ? `/site/${siteId}` : '')}
             />
             <SidebarDashboardItem 
+              name="Damp & Mold" 
+              to="/dashboard/damp-mold" 
+              contextPath={zoneId ? `/zone/${zoneId}` : (siteId ? `/site/${siteId}` : '')}
+            />
+            <SidebarDashboardItem 
               name="Energy" 
               contextPath={zoneId ? `/zone/${zoneId}` : (siteId ? `/site/${siteId}` : '')}
             />
@@ -90,15 +97,30 @@ export function DashboardSidebar() {
 
         <div className="overflow-y-auto flex-1">
           {/* Direct SitesSidebar without SidebarSection wrapper */}
-          <SitesSidebar preserveDashboardRoute={isDashboardRoute} currentDashboard={isTempHumidityRoute ? "temp-humidity" : ""} />
+          <SitesSidebar 
+            preserveDashboardRoute={isDashboardRoute} 
+            currentDashboard={
+              isTempHumidityRoute 
+                ? "temp-humidity" 
+                : isDampMoldRoute 
+                  ? "damp-mold" 
+                  : ""
+            } 
+          />
 
           <SidebarSection title="Zones">
             {effectiveSiteId ? (
               <ZonesHierarchy 
                 siteId={effectiveSiteId} 
                 preserveDashboardRoute={isDashboardRoute}
-                currentDashboard={isTempHumidityRoute ? "temp-humidity" : ""}
-                hideZonesWithoutSensors={isTempHumidityRoute}
+                currentDashboard={
+                  isTempHumidityRoute 
+                    ? "temp-humidity" 
+                    : isDampMoldRoute 
+                      ? "damp-mold" 
+                      : ""
+                }
+                hideZonesWithoutSensors={isTempHumidityRoute || isDampMoldRoute}
               />
             ) : validZoneId && zoneData ? (
               <div className="py-2.5 px-5 text-sm bg-white">

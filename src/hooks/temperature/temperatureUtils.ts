@@ -42,7 +42,7 @@ export function useLogParamsOnce(
   siteId: string | undefined, 
   zoneId: string | undefined, 
   props: any,
-  addLog: (message: string, type: string) => void
+  addLog: (message: string, type: LogItem['type']) => void
 ) {
   const paramsLoggedRef = useRef(false);
   
@@ -70,7 +70,7 @@ export function useLogParamsOnce(
 }
 
 // Hook to simulate staged loading
-export function useStagedLoading(isLoading: boolean, data: any, addLog: (message: string, type: string) => void) {
+export function useStagedLoading(isLoading: boolean, data: any, addLog: (message: string, type: LogItem['type']) => void) {
   const [loadingStage, setLoadingStage] = useState<'initial' | 'daily' | 'stats' | 'monthly' | 'complete'>('initial');
 
   useEffect(() => {
