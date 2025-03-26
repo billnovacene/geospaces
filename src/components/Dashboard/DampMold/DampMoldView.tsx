@@ -118,7 +118,7 @@ export function DampMoldView({
       {process.env.NODE_ENV === 'development' && (
         <div className="mt-8">
           <LogPanel logs={[
-            { id: '1', message: 'Using simulated data only', type: 'info', timestamp: new Date() }
+            { id: '1', message: 'Using simulated data only', type: 'info', timestamp: new Date().toISOString() }
           ]} onClearLogs={() => {}} title="Damp & Mold Monitoring Logs" />
         </div>
       )}
