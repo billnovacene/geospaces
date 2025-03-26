@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -11,14 +10,14 @@ interface TypographySettings {
   headings: {
     h1: { size: string; weight: string; tracking: string; };
     h2: { size: string; weight: string; tracking: string; };
-    h3: { size: string; weight: string; };
-    h4: { size: string; weight: string; };
+    h3: { size: string; weight: string; tracking: string; };
+    h4: { size: string; weight: string; tracking: string; };
   };
   body: {
     large: { size: string; };
     normal: { size: string; };
     small: { size: string; };
-  };
+  }
 }
 
 const defaultSettings: TypographySettings = {
