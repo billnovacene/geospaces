@@ -5,7 +5,6 @@ import { DashboardMainContent } from "@/components/Dashboard/TempHumidity/Dashbo
 import { useTempHumidityData } from "@/hooks/useTempHumidityData";
 import { useContextName } from "@/components/Dashboard/TempHumidity/useContextName";
 import { useParams, useLocation } from "react-router-dom";
-import { ZonesHierarchy } from "@/components/Dashboard/ZonesHierarchy";
 import { LogPanel } from "@/components/Dashboard/TempHumidity/LogPanel";
 import { SpecificZoneView } from "@/components/Dashboard/TempHumidity/SpecificZoneView";
 import { useEffect } from "react";
@@ -77,31 +76,7 @@ export default function TempHumidityDashboard() {
   return (
     <SidebarWrapper>
       <div className="flex h-screen overflow-hidden">
-        {/* Sidebar showing only zones with temperature sensors */}
-        <div className="hidden md:block w-64 border-r overflow-y-auto bg-[#FAFAFA]">
-          <div className="py-4">
-            <div className="px-5 flex justify-between items-center mb-2">
-              <h3 className="font-medium text-sm">Temperature Zones</h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 w-7 p-0" 
-                onClick={handleRefresh}
-                title="Refresh data"
-              >
-                <RefreshCw size={14} />
-              </Button>
-            </div>
-            <ZonesHierarchy
-              siteId={effectiveSiteId ? Number(effectiveSiteId) : null}
-              preserveDashboardRoute={true}
-              currentDashboard="temp-humidity"
-              hideZonesWithoutSensors={true}
-            />
-          </div>
-        </div>
-        
-        {/* Main content */}
+        {/* Main content - removed the sidebar with ZonesHierarchy */}
         <div className="flex-1 overflow-y-auto">
           <div className="container mx-auto py-8 px-6 md:px-8 lg:px-12">
             {/* Header section with breadcrumbs and badges */}
