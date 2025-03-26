@@ -1,22 +1,18 @@
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTempHumidityData } from "@/services/temp-humidity";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { TempHumidityHookProps } from "./temperature/types";
+import { useTemperatureLogs } from "./temperature/useTemperatureLogs";
+import { 
+  checkIfMockData, 
+  useLogParamsOnce, 
+  useStagedLoading 
+} from "./temperature/temperatureUtils";
 
-interface LogItem {
-  message: string;
-  timestamp: string;
-  type: 'info' | 'error' | 'warning' | 'success' | 'api';
-}
-
-interface UseTempHumidityDataProps {
-  forceSiteId?: string;
-  forceZoneId?: string;
-}
-
-export function useTempHumidityData(props?: UseTempHumidityDataProps) {
+export function useTempHumidityData(props?: TempHumidityHookProps) {
   const { siteId: routeSiteId, zoneId: routeZoneId } = useParams<{ siteId: string; zoneId: string }>();
   
   // Use forced IDs from props if provided, otherwise use route params
@@ -24,45 +20,13 @@ export function useTempHumidityData(props?: UseTempHumidityDataProps) {
   const zoneId = props?.forceZoneId || routeZoneId;
   
   const [isUsingMockData, setIsUsingMockData] = useState(false);
-  const [loadingStage, setLoadingStage] = useState<'initial' | 'daily' | 'stats' | 'monthly' | 'complete'>('initial');
   const [apiConnectionFailed, setApiConnectionFailed] = useState(false);
-  const [logs, setLogs] = useState<LogItem[]>([]);
-  const paramsLoggedRef = useRef(false);
   
-  // Reset params logged ref when IDs change
-  useEffect(() => {
-    paramsLoggedRef.current = false;
-    console.log(`🔄 useTempHumidityData: IDs changed, resetting paramsLoggedRef`);
-  }, [siteId, zoneId]);
+  // Use our custom logging hook
+  const { logs, addLog, clearLogs } = useTemperatureLogs();
   
-  // Function to add logs
-  const addLog = useCallback((message: string, type: LogItem['type'] = 'info') => {
-    const timestamp = new Date().toISOString().split('T')[1].substring(0, 12);
-    setLogs(prevLogs => [...prevLogs, { message, timestamp, type }]);
-  }, []);
-  
-  // Clear logs
-  const clearLogs = useCallback(() => {
-    setLogs([]);
-  }, []);
-  
-  // Log params only once on component mount, not on every render
-  useEffect(() => {
-    if (!paramsLoggedRef.current) {
-      addLog(`Dashboard initialized for ${zoneId ? `zone ${zoneId}` : siteId ? `site ${siteId}` : 'all locations'}`, 'info');
-      addLog(`Using params: siteId=${siteId || 'undefined'}, zoneId=${zoneId || 'undefined'}`, 'info');
-      
-      console.log("🔍 useTempHumidityData: Using params:", { siteId, zoneId });
-      console.log("🔍 Props or route params:", { 
-        forceSiteId: props?.forceSiteId, 
-        forceZoneId: props?.forceZoneId,
-        routeSiteId,
-        routeZoneId
-      });
-      
-      paramsLoggedRef.current = true;
-    }
-  }, [addLog, siteId, zoneId, props?.forceSiteId, props?.forceZoneId, routeSiteId, routeZoneId]);
+  // Log parameters only once using our custom hook
+  useLogParamsOnce(siteId, zoneId, props, addLog);
   
   // Create a query key that depends on both siteId and zoneId
   const queryKey = ["temp-humidity-data", siteId, zoneId];
@@ -120,67 +84,14 @@ export function useTempHumidityData(props?: UseTempHumidityDataProps) {
     retry: 2,
   });
 
-  // Staged loading effect
-  useEffect(() => {
-    if (isLoading) {
-      setLoadingStage('initial');
-      return;
-    }
-    
-    if (data) {
-      // Simulate staged loading for better UX
-      const stageSequence = async () => {
-        setLoadingStage('daily');
-        addLog('Processing daily data...', 'info');
-        await new Promise(resolve => setTimeout(resolve, 300)); // Short delay
-        
-        setLoadingStage('stats');
-        addLog('Calculating temperature statistics...', 'info');
-        await new Promise(resolve => setTimeout(resolve, 400)); // Slightly longer delay
-        
-        setLoadingStage('monthly');
-        addLog('Processing monthly trends...', 'info');
-        await new Promise(resolve => setTimeout(resolve, 500)); // Longer delay for monthly data
-        
-        setLoadingStage('complete');
-        addLog('Dashboard data loading complete', 'success');
-      };
-      
-      stageSequence();
-    }
-  }, [isLoading, data, addLog]);
+  // Use our custom staged loading hook
+  const loadingStage = useStagedLoading(isLoading, data, addLog);
 
   // Check if using mock data
   useEffect(() => {
     if (data) {
-      // Check if we have real sensor data
-      const hasTempSensors = data?.sourceData?.temperatureSensors?.length > 0;
-      const hasHumiditySensors = data?.sourceData?.humiditySensors?.length > 0;
-      const hasRealDataPoints = data.daily?.some(point => point.isReal?.temperature === true);
-      
-      // If we have sensors but no real data points, log warning
-      if ((hasTempSensors || hasHumiditySensors) && !hasRealDataPoints) {
-        console.warn('⚠️ Sensors available but no real data points found!');
-        addLog('Sensors available but no real data points found', 'warning');
-      }
-      
-      // Only mark as using mock data if we have NO sensors AND no real data points
-      const usingMockData = !hasTempSensors && !hasHumiditySensors;
+      const usingMockData = checkIfMockData(data, addLog);
       setIsUsingMockData(usingMockData);
-      
-      if (usingMockData) {
-        addLog('Using simulated data - no real sensors found', 'warning');
-      } else if (hasRealDataPoints) {
-        addLog('Using real sensor data from API', 'success');
-      } else {
-        addLog('Using historical API data - no real-time readings available', 'info');
-      }
-      
-      console.log(`📊 Data source: ${usingMockData ? "SIMULATED" : "REAL API"} data, has real data points: ${hasRealDataPoints}`);
-      console.log("📡 Sensors:", {
-        temperature: data?.sourceData?.temperatureSensors || [],
-        humidity: data?.sourceData?.humiditySensors || []
-      });
     }
     
     if (error) {
