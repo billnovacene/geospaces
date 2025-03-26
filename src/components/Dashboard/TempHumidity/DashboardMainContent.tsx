@@ -5,9 +5,10 @@ import { DashboardContent } from "@/components/Dashboard/TempHumidity/DashboardC
 import { SensorSourceInfo } from "@/components/Dashboard/TempHumidity/SensorSourceInfo";
 import { DashboardStatsSection } from "@/components/Dashboard/TempHumidity/DashboardStatsSection";
 import { TempHumidityResponse, StatsData } from "@/services/interfaces/temp-humidity";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { generateMockData } from "@/services/sensors/mock-data-generator";
 
 interface DashboardMainContentProps {
   data: TempHumidityResponse | undefined;
@@ -49,42 +50,72 @@ export function DashboardMainContent({
     return <ErrorState onRetry={onRetry} />;
   }
   
+  // Generate mock data if no data is available
+  const simulatedData = generateMockData();
+  const displayData = (!data || data.daily.length === 0) ? simulatedData : data;
+  
+  // If original data was empty, but we're now using simulated data
   if (!data || data.daily.length === 0) {
     return (
-      <div className="p-8 border rounded-lg bg-amber-50 border-amber-200 text-center">
-        <div className="flex flex-col items-center gap-2">
-          <AlertTriangle className="h-8 w-8 text-amber-600" />
-          <h3 className="text-lg font-medium text-amber-800">No Temperature Data Available</h3>
-          <p className="text-amber-700 max-w-md">
-            No temperature data could be retrieved from the API for this {contextName}.
-          </p>
-          <p className="text-sm text-amber-600 mt-2">
-            Try selecting a different site or zone that has temperature sensors.
-          </p>
-          
-          {onRetry && (
-            <Button
-              variant="outline"
-              className="mt-4 bg-white text-amber-600 border-amber-200 hover:bg-amber-50"
-              onClick={onRetry}
-            >
-              Retry Data Fetch
-            </Button>
-          )}
+      <>
+        <div className="p-8 border rounded-lg bg-amber-50 border-amber-200 text-center mb-8">
+          <div className="flex flex-col items-center gap-2">
+            <AlertTriangle className="h-8 w-8 text-amber-600" />
+            <h3 className="text-lg font-medium text-amber-800">No Real Temperature Data Available</h3>
+            <p className="text-amber-700 max-w-md">
+              No temperature data could be retrieved from the API for this {contextName}.
+              Showing simulated data below instead.
+            </p>
+            
+            {onRetry && (
+              <Button
+                variant="outline"
+                className="mt-4 bg-white text-amber-600 border-amber-200 hover:bg-amber-50"
+                onClick={onRetry}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Retry Data Fetch
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+        
+        {/* Display simulated data */}
+        <DashboardStatsSection 
+          stats={displayData.stats} 
+          isLoading={false} 
+          loadingStage="complete"
+        />
+
+        <DashboardContent 
+          data={displayData} 
+          contextName={contextName} 
+          isMockData={true}
+          operatingHours={displayData.operatingHours}
+          isLoadingMonthly={false}
+          isLoadingDaily={false}
+          onStatsCalculated={handleStatsCalculated}
+        />
+        
+        <div className="mb-8 p-3 border border-blue-200 bg-blue-50 rounded-lg mt-8">
+          <p className="text-sm text-blue-700">
+            <span className="font-medium">Simulated data:</span> No temperature sensors found for {contextName}.
+            All data shown is simulated.
+          </p>
+        </div>
+      </>
     );
   }
 
   // Count real data points
-  const realDataPoints = data.daily.filter(point => point.isReal?.temperature === true).length;
-  const totalDataPoints = data.daily.length;
+  const realDataPoints = displayData.daily.filter(point => point.isReal?.temperature === true).length;
+  const totalDataPoints = displayData.daily.length;
   const hasRealData = realDataPoints > 0;
   
   // Merge progressively calculated stats with API stats
   const displayStats = progressiveStats 
-    ? { ...data.stats, ...progressiveStats }
-    : data.stats;
+    ? { ...displayData.stats, ...progressiveStats }
+    : displayData.stats;
 
   return (
     <>
@@ -96,10 +127,10 @@ export function DashboardMainContent({
       />
 
       <DashboardContent 
-        data={data} 
+        data={displayData} 
         contextName={contextName} 
         isMockData={isUsingMockData}
-        operatingHours={data.operatingHours}
+        operatingHours={displayData.operatingHours}
         isLoadingMonthly={loadingStage === 'stats' || loadingStage === 'monthly'}
         isLoadingDaily={loadingStage === 'daily'}
         onStatsCalculated={handleStatsCalculated}
@@ -108,10 +139,10 @@ export function DashboardMainContent({
       {loadingStage === 'complete' && (
         <div className="mt-8 mb-8">
           <SensorSourceInfo 
-            sourceData={data.sourceData} 
+            sourceData={displayData.sourceData} 
             isLoading={false}
             isMockData={isUsingMockData}
-            operatingHours={data.operatingHours}
+            operatingHours={displayData.operatingHours}
           />
         </div>
       )}
