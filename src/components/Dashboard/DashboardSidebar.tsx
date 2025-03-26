@@ -140,7 +140,10 @@ export function DashboardSidebar() {
             </Avatar>
             <div>
               <div className="font-semibold text-sm">Novacene</div>
-              <div className="text-xs text-[#8E9196]">v{APP_VERSION}</div>
+              <div className="flex flex-col">
+                <span className="text-xs font-medium text-primary">GeoSpaces</span>
+                <span className="text-xs text-[#8E9196] font-mono">v{APP_VERSION}</span>
+              </div>
             </div>
           </div>
           <Button variant="ghost" size="icon" className="text-[#8E9196]">
