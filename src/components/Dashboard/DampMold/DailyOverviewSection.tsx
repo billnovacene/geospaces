@@ -17,19 +17,14 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
   const chartData = generateMockData(timeRange);
   const xAxisKey = getXAxisKey(timeRange);
 
+  const chartDescription = "Lowest temps rarely dip below 8°C, highest near 22°C. Humidity remains about 47%, showing steady indoor conditions with minor fluctuations linked to weather or occupancy.";
+
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl font-bold text-gray-900">Daily Overview</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-700 mb-6">
-          Lowest temps rarely dip below <span className="font-semibold">8°C</span>, 
-          highest near <span className="font-semibold">22°C</span>. Humidity remains 
-          about <span className="font-semibold">47%</span>, showing steady indoor 
-          conditions with minor fluctuations linked to weather or occupancy.
-        </p>
-        
         {/* Tabs for switching between today and month views */}
         <Tabs defaultValue={timeRange} className="w-auto mb-4" onValueChange={setTimeRange}>
           <TabsList className="bg-gray-100 p-1">
@@ -38,7 +33,7 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
           </TabsList>
         </Tabs>
         
-        <div className="h-[300px] mt-6">
+        <div className="mt-6">
           {/* Day selector and chart */}
           <div className="flex items-center justify-between text-sm mb-4">
             <Button variant="outline" size="sm" className="flex items-center gap-1">
@@ -54,10 +49,12 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
             </Button>
           </div>
 
-          {/* Chart for daily overview */}
-          <div className="h-[250px]">
-            <ChartConfig chartData={chartData} xAxisKey={xAxisKey} />
-          </div>
+          {/* Chart for daily overview with description */}
+          <ChartConfig 
+            chartData={chartData} 
+            xAxisKey={xAxisKey} 
+            description={chartDescription}
+          />
         </div>
       </CardContent>
     </Card>

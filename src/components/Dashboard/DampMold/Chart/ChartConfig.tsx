@@ -1,3 +1,4 @@
+
 import React from "react";
 import { 
   ComposedChart, 
@@ -25,9 +26,9 @@ export function ChartConfig({
   description 
 }: ChartConfigProps) {
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-start space-x-6">
       {description && (
-        <div className="w-1/4 text-sm text-gray-700 pr-4">
+        <div className="w-1/4 text-sm text-gray-700">
           {description}
         </div>
       )}
