@@ -22,9 +22,9 @@ export function RiskGlanceSection({
 }: RiskGlanceSectionProps) {
   return (
     <Card className="border-0 shadow-sm mb-6 w-full">
-      <CardContent className="w-full">
+      <CardContent className="w-full py-6"> {/* Added py-6 for vertical padding */}
         {activeTab === "today" ? (
-          <div className="w-full">
+          <div className="w-full space-y-4"> {/* Added space-y-4 for consistent spacing */}
             <div className="h-[250px] relative z-10 w-full">
               <DewPointChart data={null} />
             </div>
