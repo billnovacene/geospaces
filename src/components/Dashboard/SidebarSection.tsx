@@ -19,19 +19,18 @@ export function SidebarSection({
 
   return (
     <Collapsible 
-      defaultOpen={defaultOpen} 
-      className="w-full"
       open={isOpen}
       onOpenChange={setIsOpen}
+      className="w-full"
     >
-      <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-white border-b border-gray-100">
-        <span>{title}</span>
-        <CollapsibleTrigger className="focus:outline-none hover:text-foreground">
-          <span className="inline-block">
+      <CollapsibleTrigger className="w-full">
+        <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-white border-b border-gray-100 cursor-pointer">
+          <span>{title}</span>
+          <span>
             {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </span>
-        </CollapsibleTrigger>
-      </div>
+        </div>
+      </CollapsibleTrigger>
       <CollapsibleContent>
         {children}
       </CollapsibleContent>
