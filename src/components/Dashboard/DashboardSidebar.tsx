@@ -140,7 +140,7 @@ export function DashboardSidebar() {
             <div>
               <div className="font-semibold text-sm">Novacene</div>
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-primary">GeoSpaces</span>
+                <span className="text-xs font-medium text-primary font-['Signal'] tracking-tighter">GEOSPACES</span>
                 <span className="text-xs text-black font-mono">v{APP_VERSION}</span>
               </div>
             </div>
