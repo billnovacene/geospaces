@@ -4,24 +4,32 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DewPointChart } from "./DewPointChart";
 
 interface RiskGlanceSectionProps {
   activeTab: string;
+  setActiveTab: (value: string) => void;
   timeRange: string;
   setTimeRange: (value: string) => void;
   monthlyRiskData: any[];
 }
 
-export function RiskGlanceSection({ activeTab, timeRange, setTimeRange, monthlyRiskData }: RiskGlanceSectionProps) {
+export function RiskGlanceSection({ 
+  activeTab, 
+  setActiveTab,
+  timeRange, 
+  setTimeRange, 
+  monthlyRiskData 
+}: RiskGlanceSectionProps) {
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader className="pb-2">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Damp & Mould Risk at a glance</h2>
+          <h2 className="text-xl font-bold text-gray-900">Damp & Mold Risk at a glance</h2>
           <p className="text-sm text-gray-500">Building Name has been monitored since 12 June 2023</p>
         </div>
         <div className="flex space-x-4 mt-3">
-          <Tabs defaultValue={timeRange} className="w-auto" onValueChange={setTimeRange}>
+          <Tabs defaultValue={activeTab} className="w-auto" onValueChange={setActiveTab}>
             <TabsList className="bg-gray-100 p-1">
               <TabsTrigger value="today" className="data-[state=active]:bg-white">Today</TabsTrigger>
               <TabsTrigger value="month" className="data-[state=active]:bg-white">Month</TabsTrigger>
@@ -35,14 +43,9 @@ export function RiskGlanceSection({ activeTab, timeRange, setTimeRange, monthlyR
           14:10 | Fri 4 Oct <span className="text-base font-medium text-gray-700 ml-1">22 °C</span>
         </div>
         
-        {activeTab === "daily" ? (
+        {activeTab === "today" ? (
           <div className="h-[300px] mt-4">
-            {/* This will be replaced by the actual chart component */}
-            <img 
-              src="/lovable-uploads/c7617745-f793-43e6-b68e-1739f76d0a94.png" 
-              alt="Damp and mold risk chart" 
-              className="w-full h-full object-contain"
-            />
+            <DewPointChart data={null} />
           </div>
         ) : (
           <div className="overflow-x-auto">

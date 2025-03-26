@@ -4,12 +4,19 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChartConfig } from "./Chart/ChartConfig";
+import { generateMockData, getXAxisKey } from "./Chart/mockDataUtils";
 
 interface DailyOverviewSectionProps {
   timeRange: string;
+  setTimeRange: (value: string) => void;
 }
 
-export function DailyOverviewSection({ timeRange }: DailyOverviewSectionProps) {
+export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewSectionProps) {
+  // Generate appropriate mock data based on the timeRange
+  const chartData = generateMockData(timeRange);
+  const xAxisKey = getXAxisKey(timeRange);
+
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader className="pb-2">
@@ -23,8 +30,8 @@ export function DailyOverviewSection({ timeRange }: DailyOverviewSectionProps) {
           conditions with minor fluctuations linked to weather or occupancy.
         </p>
         
-        {/* Second chart section (bar chart) */}
-        <Tabs defaultValue={timeRange} className="w-auto mb-4">
+        {/* Tabs for switching between today and month views */}
+        <Tabs defaultValue={timeRange} className="w-auto mb-4" onValueChange={setTimeRange}>
           <TabsList className="bg-gray-100 p-1">
             <TabsTrigger value="today" className="data-[state=active]:bg-white">Today</TabsTrigger>
             <TabsTrigger value="month" className="data-[state=active]:bg-white">Month</TabsTrigger>
@@ -32,7 +39,7 @@ export function DailyOverviewSection({ timeRange }: DailyOverviewSectionProps) {
         </Tabs>
         
         <div className="h-[300px] mt-6">
-          {/* Day selector and bar chart */}
+          {/* Day selector and chart */}
           <div className="flex items-center justify-between text-sm mb-4">
             <Button variant="outline" size="sm" className="flex items-center gap-1">
               <ChevronLeft className="h-4 w-4" />
@@ -47,10 +54,9 @@ export function DailyOverviewSection({ timeRange }: DailyOverviewSectionProps) {
             </Button>
           </div>
 
-          {/* Placeholder for bar chart */}
-          <div className="h-[250px] bg-gray-50 flex items-center justify-center">
-            {/* This would be replaced with the actual bar chart component */}
-            <div className="text-gray-400">Bar chart visualization will be displayed here</div>
+          {/* Chart for daily overview */}
+          <div className="h-[250px]">
+            <ChartConfig chartData={chartData} xAxisKey={xAxisKey} />
           </div>
         </div>
       </CardContent>

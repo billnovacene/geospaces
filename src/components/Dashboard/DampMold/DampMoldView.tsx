@@ -11,6 +11,7 @@ import { ErrorState } from "../TempHumidity/ErrorState";
 import { TempHumidityResponse } from "@/services/interfaces/temp-humidity";
 import { RiskGlanceSection } from "./RiskGlanceSection";
 import { DailyOverviewSection } from "./DailyOverviewSection";
+import { MonthlyOverviewSection } from "./MonthlyOverviewSection";
 import { generateMonthlyRiskData } from "./utils/mockRiskData";
 
 interface DampMoldViewProps {
@@ -37,8 +38,9 @@ export function DampMoldView({
   siteId: propsSiteId,
   zoneId: propsZoneId 
 }: DampMoldViewProps) {
-  const [activeTab, setActiveTab] = useState("daily");
-  const [timeRange, setTimeRange] = useState("today");
+  const [activeTab, setActiveTab] = useState("today");
+  const [dailyTimeRange, setDailyTimeRange] = useState("today");
+  const [monthlyTimeRange, setMonthlyTimeRange] = useState("month");
   const params = useParams<{ siteId: string; zoneId: string }>();
   
   // Use params if props are not provided
@@ -136,13 +138,24 @@ export function DampMoldView({
       {/* "Risk at a glance" section */}
       <RiskGlanceSection 
         activeTab={activeTab} 
-        timeRange={timeRange} 
-        setTimeRange={setTimeRange} 
+        setActiveTab={setActiveTab}
+        timeRange={dailyTimeRange} 
+        setTimeRange={setDailyTimeRange} 
         monthlyRiskData={monthlyRiskData} 
       />
 
       {/* Daily Overview section with description */}
-      <DailyOverviewSection timeRange={timeRange} />
+      <DailyOverviewSection 
+        timeRange={dailyTimeRange} 
+        setTimeRange={setDailyTimeRange}
+      />
+      
+      {/* Monthly Overview section */}
+      <MonthlyOverviewSection 
+        timeRange={monthlyTimeRange}
+        setTimeRange={setMonthlyTimeRange}
+        monthlyRiskData={monthlyRiskData} 
+      />
       
       {/* Only show logs in development environment */}
       {process.env.NODE_ENV === 'development' && (
