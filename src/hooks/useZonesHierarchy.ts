@@ -35,7 +35,10 @@ export function useZonesHierarchy(propsSiteId: number | null, activeZoneId: numb
   // Fetch zones hierarchy data for the sidebar
   const { data: zones = [], isLoading, error } = useQuery({
     queryKey: ["zones-hierarchy", effectiveSiteId],
-    queryFn: () => effectiveSiteId ? fetchZonesHierarchy(effectiveSiteId) : Promise.resolve([]),
+    queryFn: () => {
+      console.log(`Fetching zones hierarchy for siteId: ${effectiveSiteId}`);
+      return effectiveSiteId ? fetchZonesHierarchy(effectiveSiteId) : Promise.resolve([]);
+    },
     enabled: !!effectiveSiteId,
   });
   

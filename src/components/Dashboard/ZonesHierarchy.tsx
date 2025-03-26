@@ -57,6 +57,7 @@ export function ZonesHierarchy({
   
   // Log rendering information
   console.log(`Rendering ZonesHierarchy: isLoading=${isLoading}, hasError=${!!error}, zonesCount=${zones?.length}`);
+  console.log(`Zones data:`, zones);
   console.log(`Preserving dashboard: ${preserveDashboardRoute}, dashboardPath=${dashboardPath}`);
   
   if (!effectiveSiteId) {
