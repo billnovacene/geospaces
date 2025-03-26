@@ -2,8 +2,6 @@
 import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ChartConfig } from "./Chart/ChartConfig";
 import { generateMockData, getXAxisKey } from "./Chart/mockDataUtils";
 
@@ -34,21 +32,6 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
         </Tabs>
         
         <div className="mt-2 w-full">
-          {/* Day selector and chart */}
-          <div className="flex items-center justify-between text-sm mb-4 w-full">
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <ChevronLeft className="h-4 w-4" />
-              15th Dec
-            </Button>
-            <div className="text-gray-500">
-              08:00 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12:00 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18:00
-            </div>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              16th Dec
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-
           {/* Chart layout with description on the left */}
           <div className="flex flex-col md:flex-row gap-6 w-full">
             <div className="w-full md:w-1/4">
