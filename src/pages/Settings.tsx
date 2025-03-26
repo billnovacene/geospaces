@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Typography } from "@/components/Settings/Typography";
-import { TypographyEditor } from "@/components/Settings/TypographyEditor";
+import { TypographyEditor } from "@/components/Settings/Typography/TypographyEditor";
 import { ComponentsSection } from "@/components/Settings/ComponentsSection";
 import { ColorSection } from "@/components/Settings/ColorSection";
 import { NavigationEditor } from "@/components/Settings/NavigationEditor";
