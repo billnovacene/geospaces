@@ -25,7 +25,7 @@ export function DewPointChart({ data }: DewPointChartProps) {
   
   return (
     <Card className="w-full">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 w-full">
+      <CardHeader className="flex flex-row items-center justify-between w-full">
         <CardTitle className="text-lg font-medium">Dew Point Analysis</CardTitle>
         <DewPointChartControls 
           selectedRange={selectedRange}
@@ -34,7 +34,7 @@ export function DewPointChart({ data }: DewPointChartProps) {
           setChartType={setChartType}
         />
       </CardHeader>
-      <CardContent className="relative z-10">
+      <CardContent className="relative z-10 w-full">
         <div className="flex flex-col md:flex-row gap-6 w-full">
           <div className="w-full md:w-1/4">
             <p className="text-sm text-gray-700">

@@ -24,8 +24,8 @@ export function RiskGlanceSection({
   const chartDescription = "Building Name has been monitored since 12 June 2023";
 
   return (
-    <Card className="border-0 shadow-sm mb-6">
-      <CardHeader className="pb-2">
+    <Card className="border-0 shadow-sm mb-6 w-full">
+      <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <h2 className="text-xl font-medium text-gray-900">Damp & Mold Risk at a glance</h2>
           <p className="text-sm text-gray-500">{chartDescription}</p>
@@ -39,7 +39,7 @@ export function RiskGlanceSection({
           </Tabs>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="w-full">
         {/* Sample time indicator */}
         <div className="text-xs text-center text-gray-500 mb-4">
           14:10 | Fri 4 Oct <span className="text-base font-medium text-gray-700 ml-1">22 °C</span>
@@ -47,7 +47,7 @@ export function RiskGlanceSection({
         
         {activeTab === "today" ? (
           <div className="w-full">
-            <div className="h-[250px] relative z-10">
+            <div className="h-[250px] relative z-10 w-full">
               <DewPointChart data={null} />
             </div>
           </div>

@@ -20,13 +20,13 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
   const chartDescription = "Lowest temps rarely dip below 8°C, highest near 22°C. Humidity remains about 47%, showing steady indoor conditions with minor fluctuations linked to weather or occupancy.";
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-2">
+    <Card className="border-0 shadow-sm w-full">
+      <CardHeader className="pb-2 w-full">
         <CardTitle className="text-xl font-medium text-gray-900">Daily Overview</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="w-full">
         {/* Tabs for switching between today and month views */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 w-full">
           <Tabs defaultValue={timeRange} className="w-auto" onValueChange={setTimeRange}>
             <TabsList className="bg-gray-100 p-1">
               <TabsTrigger value="today" className="data-[state=active]:bg-white">Today</TabsTrigger>
