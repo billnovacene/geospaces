@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { Circle, ChevronDown, ChevronRight, ChevronUp } from "lucide-react";
+import { Circle, ChevronDown, ChevronUp } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface DashboardItemProps {
@@ -20,7 +20,7 @@ export function SidebarDashboardItem({
   const location = useLocation();
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
   const [isSelected, setIsSelected] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   
   // Special handling for Overview dashboard
   const isOverview = name === "All Data";
@@ -58,84 +58,82 @@ export function SidebarDashboardItem({
       const isHomePage = currentPath === "/" || currentPath === "/index";
       const newIsSelected = isZoneDetailPage || isSiteDetailPage || isHomePage;
       setIsSelected(newIsSelected);
-      
-      // Collapse when selected
-      if (newIsSelected && !isCollapsed) {
-        setIsCollapsed(true);
-      }
     } else {
       // For other dashboards, check if this is the active dashboard
       const isDashboardActive = contextualTo && location.pathname === contextualTo;
       setIsSelected(isDashboardActive);
-      
-      // Collapse when selected
-      if (isDashboardActive && !isCollapsed) {
-        setIsCollapsed(true);
-      }
     }
   }, [location.pathname, contextualTo, isOverview, siteId, zoneId]);
   
   // Is this dashboard type active anywhere in the app?
   const isDashboardTypeActive = !isOverview && to && location.pathname.includes(to);
   
-  // Toggle selection when clicked
-  const handleToggle = (e: React.MouseEvent) => {
+  // Toggle dropdown when clicked for selected items
+  const handleToggle = () => {
     if (isSelected) {
-      e.preventDefault(); // Prevent navigation if already selected
-      setIsCollapsed(!isCollapsed); // Toggle collapse state
-    } else {
-      setIsSelected(true);
-      setIsCollapsed(true); // Collapse when newly selected
+      setIsOpen(!isOpen);
     }
   };
   
   // Replace "All Data" with "Overview" in the display name
   const displayName = isOverview ? "Overview" : name;
   
-  // Create the dashboard item content based on the selection state
-  const renderContent = () => {
-    // Selected item with special styling
-    if (isSelected) {
-      return (
-        <div className="flex items-center py-2.5 px-5 cursor-pointer bg-white">
-          <div className="flex items-center gap-3 w-full">
-            {isSelected ? (
-              <>
-                {/* Blue dot for selected item */}
-                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                <span className="text-sm font-medium text-primary uppercase">{displayName}</span>
-                {isCollapsed ? (
-                  <ChevronDown size={16} className="ml-auto text-gray-400" />
-                ) : (
-                  <ChevronUp size={16} className="ml-auto text-gray-400" />
-                )}
-              </>
-            ) : (
-              <>
-                <Circle size={14} className="text-zinc-400" />
-                <span className="text-sm font-medium text-zinc-800">{displayName}</span>
-              </>
-            )}
-          </div>
-        </div>
-      );
-    }
-    
-    // Regular unselected item
-    return (
-      <div className="flex items-center py-2.5 px-5 cursor-pointer hover:bg-gray-50">
-        <div className="flex items-center gap-3 w-full">
-          <Circle size={14} className="text-zinc-400" />
-          <span className="text-sm font-medium text-zinc-800">{displayName}</span>
-        </div>
-      </div>
-    );
-  };
+  // Generate the collapsible content (will be implemented later)
+  const collapsibleContent = (
+    <div className="ml-7 pl-3 py-2 border-l border-gray-200">
+      {/* Placeholder for future dashboard details/options */}
+      <div className="text-sm text-gray-600 py-1">Dashboard Details</div>
+      <div className="text-sm text-gray-600 py-1">Settings</div>
+    </div>
+  );
   
-  // Only wrap in Link if not already selected
-  if (contextualTo && !isSelected) {
-    return <Link to={contextualTo}>{renderContent()}</Link>;
+  // Create the dashboard item content
+  const renderTrigger = () => (
+    <div 
+      className="flex items-center py-2.5 px-5 cursor-pointer hover:bg-gray-50 w-full"
+      onClick={handleToggle}
+    >
+      <div className="flex items-center gap-3 w-full">
+        {isSelected ? (
+          <>
+            {/* Blue dot for selected item */}
+            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <span className="text-sm font-medium text-primary uppercase">{displayName}</span>
+            {isOpen ? (
+              <ChevronUp size={16} className="ml-auto text-gray-400" />
+            ) : (
+              <ChevronDown size={16} className="ml-auto text-gray-400" />
+            )}
+          </>
+        ) : (
+          <>
+            <Circle size={14} className="text-zinc-400" />
+            <span className="text-sm font-medium text-zinc-800">{displayName}</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+  
+  // If not selected and has a valid URL, wrap in Link
+  if (!isSelected && contextualTo) {
+    return <Link to={contextualTo}>{renderTrigger()}</Link>;
   }
   
-  return renderContent();
+  // If selected, use Collapsible component
+  if (isSelected) {
+    return (
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CollapsibleTrigger asChild>
+          {renderTrigger()}
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          {collapsibleContent}
+        </CollapsibleContent>
+      </Collapsible>
+    );
+  }
+  
+  // Default case
+  return renderTrigger();
 }
