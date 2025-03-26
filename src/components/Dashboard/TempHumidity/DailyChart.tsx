@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { DailyOverviewPoint, MonthlyOverviewPoint } from "@/services/temp-humidity";
 import { sensorTypes } from "@/utils/sensorThresholds";
@@ -41,10 +42,23 @@ export function DailyChart({
   const totalDataPoints = processedData.length;
   const hasRealData = realDataPointsCount > 0;
   
-  console.log(`Daily chart rendering: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}, isMockData: ${isMockData}`);
+  // Make sure we display whether using simulated data
+  const isUsingSimulatedData = !hasRealData || isMockData;
   
-  // Process data
-  const enhancedData = enhanceDailyChartData(processedData);
+  console.log(`Daily chart rendering: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}, isMockData: ${isMockData}, isUsingSimulatedData: ${isUsingSimulatedData}`);
+  
+  // If there's no real data or if requested to use mock data,
+  // ensure we mark all data points as simulated for correct coloring
+  const enhancedData = enhanceDailyChartData(
+    isUsingSimulatedData ? 
+      // Mark all data as simulated for consistent RAG coloring
+      processedData.map(point => ({
+        ...point,
+        isReal: { temperature: false, humidity: false }
+      })) : 
+      processedData
+  );
+  
   const { yAxisMin, yAxisMax } = calculateChartRange(processedData);
   const temperatureConfig = sensorTypes.temperature;
   const relevantThresholds = filterRelevantThresholds(
@@ -90,11 +104,12 @@ export function DailyChart({
         totalDataPoints={totalDataPoints}
         hasRealData={hasRealData}
         selectedDate={selectedDate}
+        isUsingSimulatedData={isUsingSimulatedData}
       />
       
       <ChartLegend 
         colors={temperatureConfig.colors} 
-        showSimulated={true} // Always show simulated data label if no real data
+        showSimulated={isUsingSimulatedData} 
       />
       
       <TemperatureBarChart 

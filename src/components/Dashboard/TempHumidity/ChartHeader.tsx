@@ -11,18 +11,20 @@ interface ChartHeaderProps {
   totalDataPoints: number;
   hasRealData: boolean;
   selectedDate: Date;
+  isUsingSimulatedData?: boolean;
 }
 
 export function ChartHeader({ 
   realDataPointsCount, 
   totalDataPoints, 
   hasRealData,
-  selectedDate
+  selectedDate,
+  isUsingSimulatedData = false
 }: ChartHeaderProps) {
   return (
     <div className="flex justify-between items-center mb-4">
       <div className="flex items-center gap-2">
-        {hasRealData ? (
+        {hasRealData && !isUsingSimulatedData ? (
           <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
             {realDataPointsCount} real data points
           </Badge>

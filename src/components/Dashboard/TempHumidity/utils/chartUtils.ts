@@ -1,4 +1,3 @@
-
 import { DailyOverviewPoint } from "@/services/temp-humidity";
 import { getSensorValueColor } from "@/utils/sensorThresholds";
 
@@ -11,27 +10,25 @@ export function enhanceDailyChartData(data: DailyOverviewPoint[]) {
     // This is important for distinguishing real vs simulated data
     const isRealDataPoint = point.isReal?.temperature === true;
     
-    // For real data, use the temperature-based color
-    // For simulated data, use a light gray
+    // Get the appropriate color for temperature value
+    const colorObj = getSensorValueColor("temperature", point.temperature);
+    
+    // Extract the color from the background class
     let barColor = "#E5E7EB"; // Default gray for simulated data
     
-    if (isRealDataPoint) {
-      const colorObj = getSensorValueColor("temperature", point.temperature);
-      // Extract the color from the background class (assuming the format is consistent)
-      if (colorObj.bg.includes("red")) {
-        barColor = "#db4f6a"; // Red
-      } else if (colorObj.bg.includes("amber")) {
-        barColor = "#ebc651"; // Amber
-      } else if (colorObj.bg.includes("green")) {
-        barColor = "#3cc774"; // Green
-      } else if (colorObj.bg.includes("blue")) {
-        barColor = "#60a5fa"; // Blue
-      }
+    if (colorObj.bg.includes("red")) {
+      barColor = "#db4f6a"; // Red
+    } else if (colorObj.bg.includes("amber")) {
+      barColor = "#ebc651"; // Amber
+    } else if (colorObj.bg.includes("green")) {
+      barColor = "#3cc774"; // Green
+    } else if (colorObj.bg.includes("blue")) {
+      barColor = "#60a5fa"; // Blue
     }
     
     return {
       ...point,
-      barColor, // String type for charts
+      barColor, // Always set barColor based on temperature range for RAG effect
       // Create a label for the tooltip
       label: isRealDataPoint ? "Real data" : "Simulated data"
     };
@@ -78,4 +75,3 @@ export function getProgressiveData(data: DailyOverviewPoint[], loadPercentage: n
   // Return a slice of the data based on the percentage
   return data.slice(0, itemsToInclude);
 }
-
