@@ -1,7 +1,6 @@
 
 import React from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DewPointChart } from "./DewPointChart";
@@ -23,16 +22,6 @@ export function RiskGlanceSection({
 }: RiskGlanceSectionProps) {
   return (
     <Card className="border-0 shadow-sm mb-6 w-full">
-      <CardHeader>
-        <div className="flex space-x-4 mt-3">
-          <Tabs defaultValue={activeTab} className="w-auto" onValueChange={setActiveTab}>
-            <TabsList className="bg-gray-100 p-1">
-              <TabsTrigger value="today" className="data-[state=active]:bg-white">Today</TabsTrigger>
-              <TabsTrigger value="month" className="data-[state=active]:bg-white">Month</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </CardHeader>
       <CardContent className="w-full">
         {activeTab === "today" ? (
           <div className="w-full">
@@ -90,4 +79,3 @@ export function RiskGlanceSection({
     </Card>
   );
 }
-
