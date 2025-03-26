@@ -11,10 +11,13 @@ import { Typography } from "@/components/Settings/Typography";
 import { TypographyEditor } from "@/components/Settings/TypographyEditor";
 import { ComponentsSection } from "@/components/Settings/ComponentsSection";
 import { ColorSection } from "@/components/Settings/ColorSection";
+import { NavigationEditor } from "@/components/Settings/NavigationEditor";
+import { TableEditor } from "@/components/Settings/TableEditor";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("typography");
   const [isEditing, setIsEditing] = useState(false);
+  const [navTableEditing, setNavTableEditing] = useState(false);
 
   return (
     <SidebarWrapper>
@@ -37,6 +40,8 @@ const Settings = () => {
             <div className="flex justify-between items-center">
               <TabsList>
                 <TabsTrigger value="typography">Typography</TabsTrigger>
+                <TabsTrigger value="navigation">Navigation</TabsTrigger>
+                <TabsTrigger value="tables">Tables</TabsTrigger>
                 <TabsTrigger value="components">Components</TabsTrigger>
                 <TabsTrigger value="colors">Colors</TabsTrigger>
               </TabsList>
@@ -49,6 +54,15 @@ const Settings = () => {
                   {isEditing ? "View Typography" : "Edit Typography"}
                 </Button>
               )}
+              
+              {(activeTab === "navigation" || activeTab === "tables") && (
+                <Button 
+                  variant="outline"
+                  onClick={() => setNavTableEditing(!navTableEditing)}
+                >
+                  {navTableEditing ? "View Preview" : "Edit Settings"}
+                </Button>
+              )}
             </div>
             
             <TabsContent value="typography" className="space-y-4">
@@ -56,6 +70,110 @@ const Settings = () => {
                 <TypographyEditor />
               ) : (
                 <Typography />
+              )}
+            </TabsContent>
+            
+            <TabsContent value="navigation" className="space-y-4">
+              {navTableEditing ? (
+                <NavigationEditor />
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Navigation Preview</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Horizontal Navigation</h3>
+                      <Separator />
+                      
+                      <div className="p-4 border rounded-md">
+                        <div className="flex space-x-4 p-4 bg-background rounded-md">
+                          <a href="#" className="px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                            Home
+                          </a>
+                          <a href="#" className="px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                            Dashboard
+                          </a>
+                          <a href="#" className="px-3 py-2 rounded-md bg-accent text-accent-foreground text-sm font-medium">
+                            Settings
+                          </a>
+                          <a href="#" className="px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                            Profile
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Sidebar Navigation</h3>
+                      <Separator />
+                      
+                      <div className="p-4 border rounded-md">
+                        <div className="w-64 p-4 bg-background rounded-md border">
+                          <div className="space-y-1">
+                            <a href="#" className="block px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                              Home
+                            </a>
+                            <a href="#" className="block px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                              Dashboard
+                            </a>
+                            <a href="#" className="block px-3 py-2 rounded-md bg-accent text-accent-foreground text-sm font-medium">
+                              Settings
+                            </a>
+                            <a href="#" className="block px-3 py-2 rounded-md text-foreground text-sm font-medium hover:bg-accent/10 hover:text-accent-foreground">
+                              Profile
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="tables" className="space-y-4">
+              {navTableEditing ? (
+                <TableEditor />
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Tables Preview</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Standard Table</h3>
+                      <Separator />
+                      
+                      <div className="p-4 border rounded-md overflow-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>ID</TableHead>
+                              <TableHead>Name</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            <TableRow>
+                              <TableCell>001</TableCell>
+                              <TableCell>John Doe</TableCell>
+                              <TableCell>Active</TableCell>
+                              <TableCell className="text-right">Edit</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell>002</TableCell>
+                              <TableCell>Jane Smith</TableCell>
+                              <TableCell>Inactive</TableCell>
+                              <TableCell className="text-right">Edit</TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               )}
             </TabsContent>
             
