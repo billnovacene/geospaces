@@ -77,8 +77,8 @@ export function SitesSidebar({
             error={error}
           />
         ) : (
-          <div className="site-listing">
-            <div className="py-2 px-5 mb-2 text-sm font-medium text-zinc-500">
+          <div className="bg-[#F9F9FA] py-2.5 px-5">
+            <div className="text-sm font-medium text-zinc-800 mb-2">
               Project: Zircon ({activeSites.length} sites)
             </div>
             
