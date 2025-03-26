@@ -35,12 +35,20 @@ export function DewPointChart({ data }: DewPointChartProps) {
         />
       </CardHeader>
       <CardContent className="relative z-10">
-        <div className="h-[250px]">
-          {chartType === "line" ? (
-            <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} />
-          ) : (
-            <DewPointAreaChart chartData={chartData} xAxisKey={getXAxisKey()} />
-          )}
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full md:w-1/4">
+            <p className="text-sm text-gray-700">
+              This chart shows the current day's dew point analysis and temperature readings, 
+              helping identify potential condensation risks in real-time.
+            </p>
+          </div>
+          <div className="w-full md:w-3/4 h-[250px]">
+            {chartType === "line" ? (
+              <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} />
+            ) : (
+              <DewPointAreaChart chartData={chartData} xAxisKey={getXAxisKey()} />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
