@@ -7,9 +7,9 @@ export interface TypographySettings {
     h4: { size: string; weight: string; tracking: string; };
   };
   body: {
-    large: { size: string; };
-    normal: { size: string; };
-    small: { size: string; };
+    large: { size: string; weight: string; color: string; };
+    normal: { size: string; weight: string; color: string; };
+    small: { size: string; weight: string; color: string; };
   }
 }
 
@@ -21,8 +21,8 @@ export const defaultSettings: TypographySettings = {
     h4: { size: "text-lg", weight: "font-medium", tracking: "" },
   },
   body: {
-    large: { size: "text-base" },
-    normal: { size: "text-sm" },
-    small: { size: "text-xs" },
+    large: { size: "text-base", weight: "font-normal", color: "text-foreground" },
+    normal: { size: "text-sm", weight: "font-normal", color: "text-foreground" },
+    small: { size: "text-xs", weight: "font-normal", color: "text-muted-foreground" },
   }
 };

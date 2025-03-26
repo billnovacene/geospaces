@@ -8,7 +8,7 @@ import { TypographySettings } from "./types";
 interface TypographyEditorContentProps {
   settings: TypographySettings;
   onHeadingChange: (level: 'h1' | 'h2' | 'h3' | 'h4', property: 'size' | 'weight' | 'tracking', value: string) => void;
-  onBodyChange: (type: 'large' | 'normal' | 'small', property: 'size', value: string) => void;
+  onBodyChange: (type: 'large' | 'normal' | 'small', property: 'size' | 'weight' | 'color', value: string) => void;
 }
 
 export const TypographyEditorContent: React.FC<TypographyEditorContentProps> = ({
@@ -55,14 +55,33 @@ export const TypographyEditorContent: React.FC<TypographyEditorContentProps> = (
               <BodyTextEditor 
                 type="large"
                 size={settings.body.large.size}
+                weight={settings.body.large.weight}
+                color={settings.body.large.color}
                 onSizeChange={(value) => onBodyChange('large', 'size', value)}
+                onWeightChange={(value) => onBodyChange('large', 'weight', value)}
+                onColorChange={(value) => onBodyChange('large', 'color', value)}
               />
               
               {/* Body Normal */}
               <BodyTextEditor 
                 type="normal"
                 size={settings.body.normal.size}
+                weight={settings.body.normal.weight}
+                color={settings.body.normal.color}
                 onSizeChange={(value) => onBodyChange('normal', 'size', value)}
+                onWeightChange={(value) => onBodyChange('normal', 'weight', value)}
+                onColorChange={(value) => onBodyChange('normal', 'color', value)}
+              />
+
+              {/* Body Small */}
+              <BodyTextEditor 
+                type="small"
+                size={settings.body.small.size}
+                weight={settings.body.small.weight}
+                color={settings.body.small.color}
+                onSizeChange={(value) => onBodyChange('small', 'size', value)}
+                onWeightChange={(value) => onBodyChange('small', 'weight', value)}
+                onColorChange={(value) => onBodyChange('small', 'color', value)}
               />
             </div>
           </div>

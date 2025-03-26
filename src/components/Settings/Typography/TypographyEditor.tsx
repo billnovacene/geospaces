@@ -30,7 +30,7 @@ export const TypographyEditor = () => {
 
   const handleBodyChange = (
     type: 'large' | 'normal' | 'small',
-    property: 'size',
+    property: 'size' | 'weight' | 'color',
     value: string
   ) => {
     setSettings(prev => ({
