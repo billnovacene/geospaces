@@ -1,7 +1,6 @@
 
 import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChartConfig } from "./Chart/ChartConfig";
 import { generateMockData, getXAxisKey } from "./Chart/mockDataUtils";
 
@@ -23,14 +22,6 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
         <CardTitle className="text-xl font-medium text-gray-900">Daily Overview</CardTitle>
       </CardHeader>
       <CardContent className="w-full">
-        {/* Tabs for switching between today and month views */}
-        <Tabs defaultValue={timeRange} className="w-auto mb-4" onValueChange={setTimeRange}>
-          <TabsList className="bg-gray-100 p-1">
-            <TabsTrigger value="today" className="data-[state=active]:bg-white">Today</TabsTrigger>
-            <TabsTrigger value="month" className="data-[state=active]:bg-white">Month</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        
         <div className="mt-2 w-full">
           {/* Chart layout with description on the left */}
           <div className="flex flex-col md:flex-row gap-6 w-full">
