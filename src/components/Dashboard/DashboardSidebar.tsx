@@ -13,6 +13,7 @@ import { ZonesHierarchy } from "./ZonesHierarchy";
 import { SitesSidebar } from "./SitesSidebar";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZone } from "@/services/zones";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 // Import process.env to get the build version
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || "1.2.4"; // Fallback to hardcoded version if env var not set
@@ -20,6 +21,7 @@ const APP_VERSION = import.meta.env.VITE_APP_VERSION || "1.2.4"; // Fallback to 
 export function DashboardSidebar() {
   const { siteId, zoneId } = useParams<{ siteId: string, zoneId: string }>();
   const location = useLocation();
+  const [dashboardsCollapsed, setDashboardsCollapsed] = useState(false);
   
   // Check if we're on a dashboard route
   const isDashboardRoute = location.pathname.includes('/dashboard');
@@ -35,6 +37,14 @@ export function DashboardSidebar() {
   });
 
   const effectiveSiteId = validSiteId || (zoneData?.siteId ? zoneData.siteId : null);
+  
+  // Determine which dashboard is active
+  const isOverviewActive = !isDashboardRoute && (
+    location.pathname === "/" || 
+    location.pathname === "/index" || 
+    location.pathname === `/site/${siteId}` || 
+    location.pathname === `/zone/${zoneId}`
+  );
   
   // Log important information for debugging
   console.log(`DashboardSidebar: siteId=${validSiteId}, zoneId=${validZoneId}, effectiveSiteId=${effectiveSiteId}`);

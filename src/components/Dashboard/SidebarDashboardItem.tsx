@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { Circle } from "lucide-react";
+import { Circle, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface DashboardItemProps {
   name: string;
@@ -19,6 +20,7 @@ export function SidebarDashboardItem({
   const location = useLocation();
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string }>();
   const [isSelected, setIsSelected] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   
   // Special handling for Overview dashboard
   const isOverview = name === "All Data";
@@ -54,11 +56,22 @@ export function SidebarDashboardItem({
       const isZoneDetailPage = zoneId && currentPath === `/zone/${zoneId}`;
       const isSiteDetailPage = siteId && currentPath === `/site/${siteId}`;
       const isHomePage = currentPath === "/" || currentPath === "/index";
-      setIsSelected(isZoneDetailPage || isSiteDetailPage || isHomePage);
+      const newIsSelected = isZoneDetailPage || isSiteDetailPage || isHomePage;
+      setIsSelected(newIsSelected);
+      
+      // Collapse when selected
+      if (newIsSelected && !isCollapsed) {
+        setIsCollapsed(true);
+      }
     } else {
       // For other dashboards, check if this is the active dashboard
       const isDashboardActive = contextualTo && location.pathname === contextualTo;
       setIsSelected(isDashboardActive);
+      
+      // Collapse when selected
+      if (isDashboardActive && !isCollapsed) {
+        setIsCollapsed(true);
+      }
     }
   }, [location.pathname, contextualTo, isOverview, siteId, zoneId]);
   
@@ -69,11 +82,10 @@ export function SidebarDashboardItem({
   const handleToggle = (e: React.MouseEvent) => {
     if (isSelected) {
       e.preventDefault(); // Prevent navigation if already selected
-      setIsSelected(false);
-      // Navigate away from the current dashboard
-      window.history.back();
+      setIsCollapsed(!isCollapsed); // Toggle collapse state
     } else {
       setIsSelected(true);
+      setIsCollapsed(true); // Collapse when newly selected
     }
   };
   
@@ -88,24 +100,35 @@ export function SidebarDashboardItem({
       )}
       onClick={handleToggle}
     >
-      <div className="flex items-center gap-3">
-        <div className={cn(
-          "flex items-center justify-center w-4 h-4 rounded-full border",
-          isSelected 
-            ? "border-primary bg-white" 
-            : "border-zinc-300 bg-white"
-        )}>
-          {isSelected && (
-            <div className="w-2 h-2 rounded-full bg-primary" />
-          )}
+      <div className="flex items-center justify-between w-full">
+        <div className="flex items-center gap-3">
+          <div className={cn(
+            "flex items-center justify-center w-4 h-4 rounded-full border",
+            isSelected 
+              ? "border-primary bg-white" 
+              : "border-zinc-300 bg-white"
+          )}>
+            {isSelected && (
+              <div className="w-2 h-2 rounded-full bg-primary" />
+            )}
+          </div>
+          <span className={cn(
+            "text-sm font-medium", 
+            isSelected ? "text-primary font-semibold" : 
+            isDashboardTypeActive ? "text-zinc-900" : "text-zinc-800"
+          )}>
+            {displayName}
+          </span>
         </div>
-        <span className={cn(
-          "text-sm font-medium", 
-          isSelected ? "text-primary font-semibold" : 
-          isDashboardTypeActive ? "text-zinc-900" : "text-zinc-800"
-        )}>
-          {displayName}
-        </span>
+        {isSelected && (
+          <ChevronDown 
+            size={16} 
+            className={cn(
+              "transition-transform duration-200",
+              !isCollapsed && "transform rotate-180"
+            )} 
+          />
+        )}
       </div>
     </div>
   );
