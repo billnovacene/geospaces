@@ -12,12 +12,14 @@ interface ZonesHierarchyProps {
   siteId: number | null;
   preserveDashboardRoute?: boolean;
   currentDashboard?: string;
+  hideZonesWithoutSensors?: boolean;
 }
 
 export function ZonesHierarchy({ 
   siteId: propsSiteId, 
   preserveDashboardRoute = false,
-  currentDashboard = ""
+  currentDashboard = "",
+  hideZonesWithoutSensors = false
 }: ZonesHierarchyProps) {
   const location = useLocation();
   const { zoneId } = useParams<{ zoneId: string }>();
@@ -25,6 +27,7 @@ export function ZonesHierarchy({
   
   console.log("🌍 ZonesHierarchy: Passed siteId:", propsSiteId);
   console.log("🔍 ZonesHierarchy: Current activeZoneId:", activeZoneId);
+  console.log("🔎 ZonesHierarchy: hideZonesWithoutSensors:", hideZonesWithoutSensors);
   
   const {
     effectiveSiteId,
@@ -86,6 +89,7 @@ export function ZonesHierarchy({
               preserveDashboardRoute={preserveDashboardRoute}
               dashboardPath={dashboardPath}
               effectiveSiteId={effectiveSiteId}
+              hideZonesWithoutSensors={hideZonesWithoutSensors}
             />
           ))}
         </div>

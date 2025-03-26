@@ -1,4 +1,3 @@
-
 import { useParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Circle } from "lucide-react";
@@ -50,6 +49,11 @@ export function SitesSidebar({
     console.log(`🔀 Toggling site expansion: ${id}`);
     setExpandedSiteId(expandedSiteId === id ? null : id);
   };
+
+  // Define the dashboard path
+  const dashboardPath = preserveDashboardRoute && currentDashboard === "temp-humidity" 
+    ? '/dashboard/temp-humidity' 
+    : '';
 
   return (
     <Collapsible 
