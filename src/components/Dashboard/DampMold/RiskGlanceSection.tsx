@@ -22,11 +22,6 @@ export function RiskGlanceSection({
 }: RiskGlanceSectionProps) {
   return (
     <Card className="border-0 shadow-sm mb-6 w-full">
-      <CardHeader className="pb-2 w-full">
-        <div className="flex flex-row items-center justify-between">
-          <h3 className="text-xl font-medium text-gray-900">Risk at a Glance</h3>
-        </div>
-      </CardHeader>
       <CardContent className="w-full">
         {activeTab === "today" ? (
           <div className="w-full">
