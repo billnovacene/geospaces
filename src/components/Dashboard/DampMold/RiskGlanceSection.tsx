@@ -47,9 +47,6 @@ export function RiskGlanceSection({
         
         {activeTab === "today" ? (
           <div className="flex flex-col md:flex-row gap-6">
-            <div className="w-full md:w-1/4">
-              {/* Removed the paragraph as requested */}
-            </div>
             <div className="w-full md:w-3/4">
               <div className="h-[250px] relative z-10">
                 <DewPointChart data={null} />
