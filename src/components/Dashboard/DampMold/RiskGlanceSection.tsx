@@ -24,7 +24,7 @@ export function RiskGlanceSection({
   const chartDescription = "Building Name has been monitored since 12 June 2023";
 
   return (
-    <Card className="border-0 shadow-sm">
+    <Card className="border-0 shadow-sm mb-6">
       <CardHeader className="pb-2">
         <div>
           <h2 className="text-xl font-medium text-gray-900">Damp & Mold Risk at a glance</h2>
@@ -54,7 +54,7 @@ export function RiskGlanceSection({
               </p>
             </div>
             <div className="w-3/4">
-              <div className="h-[300px]">
+              <div className="h-[250px]">
                 <DewPointChart data={null} />
               </div>
             </div>
