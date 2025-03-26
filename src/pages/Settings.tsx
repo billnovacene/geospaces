@@ -13,6 +13,7 @@ import { ComponentsSection } from "@/components/Settings/ComponentsSection";
 import { ColorSection } from "@/components/Settings/ColorSection";
 import { NavigationEditor } from "@/components/Settings/NavigationEditor";
 import { TableEditor } from "@/components/Settings/TableEditor";
+import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("typography");
