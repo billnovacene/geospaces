@@ -1,7 +1,5 @@
-
-import { DailyOverviewPoint, MonthlyOverviewPoint } from "@/services/interfaces/temp-humidity";
-import { useState, useEffect } from "react";
-import { subDays, addDays } from "date-fns";
+import React, { useState, useEffect } from "react";
+import { DailyOverviewPoint, MonthlyOverviewPoint } from "@/services/temp-humidity";
 import { sensorTypes } from "@/utils/sensorThresholds";
 import { ChartHeader } from "./ChartHeader";
 import { ChartLegend } from "./ChartLegend";
@@ -14,7 +12,9 @@ import {
   getProgressiveData
 } from "./utils/chartUtils";
 import { calculateHourlyAveragesFromMonth } from "./utils/monthlyAverageUtils";
+import { generateMockData } from "@/services/sensors/mock-data-generator";
 import { toast } from "sonner";
+import { subDays, addDays } from "date-fns";
 
 interface DailyChartProps {
   data: DailyOverviewPoint[];
@@ -22,40 +22,40 @@ interface DailyChartProps {
   isMockData?: boolean;
 }
 
-export function DailyChart({ data, monthlyData = [], isMockData = false }: DailyChartProps) {
+export function DailyChart({ 
+  data = [], 
+  monthlyData = [], 
+  isMockData = false 
+}: DailyChartProps) {
+  // Always generate mock data if no data is available
+  const processedData = data.length === 0 
+    ? generateMockData().daily 
+    : data;
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [visibleData, setVisibleData] = useState<DailyOverviewPoint[]>([]);
   
-  // Count real data points - ensuring we check isReal.temperature properly
-  const realDataPointsCount = data.filter(point => point.isReal?.temperature === true).length;
-  const totalDataPoints = data.length;
+  // Count real data points
+  const realDataPointsCount = processedData.filter(point => point.isReal?.temperature === true).length;
+  const totalDataPoints = processedData.length;
   const hasRealData = realDataPointsCount > 0;
   
   console.log(`Daily chart rendering: ${realDataPointsCount}/${totalDataPoints} real data points, hasRealData: ${hasRealData}, isMockData: ${isMockData}`);
   
-  // If we have no real data and monthly data is available, 
-  // calculate hourly averages from the monthly data which only uses real data
-  let processedData = data;
-  
-  if (!hasRealData && monthlyData && monthlyData.length > 0) {
-    console.log("No real daily data available, calculating hourly averages from monthly data (API-based only)");
-    processedData = calculateHourlyAveragesFromMonth(monthlyData);
-    
-    // If we still don't have data, notify the user
-    if (processedData.every(point => point.temperature === null)) {
-      toast.error("No real data is available from the API for this view", {
-        description: "No temperature data could be retrieved from any API endpoint."
-      });
-    }
-  }
-  
-  // Check if we have any data to display
-  const hasAnyData = processedData.some(point => point.temperature !== null);
-  
+  // Process data
+  const enhancedData = enhanceDailyChartData(processedData);
+  const { yAxisMin, yAxisMax } = calculateChartRange(processedData);
+  const temperatureConfig = sensorTypes.temperature;
+  const relevantThresholds = filterRelevantThresholds(
+    temperatureConfig.thresholds, 
+    yAxisMin, 
+    yAxisMax
+  );
+
   // Progressive loading effect
   useEffect(() => {
-    if (!hasAnyData) return;
+    if (!processedData || processedData.length === 0) return;
     
     // Reset progress when data changes
     setLoadingProgress(0);
@@ -73,53 +73,15 @@ export function DailyChart({ data, monthlyData = [], isMockData = false }: Daily
     }, 100); // Update every 100ms
     
     return () => clearInterval(interval);
-  }, [processedData, hasAnyData]);
+  }, [processedData]);
   
   // Update visible data based on loading progress
   useEffect(() => {
-    if (!hasAnyData) return;
+    if (!processedData || processedData.length === 0) return;
     
     const progressiveData = getProgressiveData(processedData, loadingProgress);
     setVisibleData(progressiveData);
-  }, [loadingProgress, processedData, hasAnyData]);
-  
-  if (!hasAnyData) {
-    return (
-      <div className="flex items-center justify-center h-[300px] bg-gray-50 rounded-lg">
-        <div className="text-center p-6">
-          <p className="text-red-600 font-medium mb-2">No Real Temperature Data Available</p>
-          <p className="text-sm text-gray-500">
-            Could not retrieve any real temperature data from the API.
-          </p>
-        </div>
-      </div>
-    );
-  }
-  
-  // Process data for chart rendering
-  const enhancedData = enhanceDailyChartData(visibleData);
-  const { yAxisMin, yAxisMax } = calculateChartRange(processedData); // Use full dataset for ranges
-  const temperatureConfig = sensorTypes.temperature;
-  const relevantThresholds = filterRelevantThresholds(
-    temperatureConfig.thresholds, 
-    yAxisMin, 
-    yAxisMax
-  );
-
-  // Navigation handlers
-  const handlePrevDay = () => {
-    setSelectedDate(prev => subDays(prev, 1));
-  };
-  
-  const handleNextDay = () => {
-    const newDate = addDays(selectedDate, 1);
-    if (newDate <= new Date()) {
-      setSelectedDate(newDate);
-    }
-  };
-  
-  // Show loading indicator during progressive loading
-  const isProgressivelyLoading = loadingProgress < 100;
+  }, [loadingProgress, processedData]);
 
   return (
     <div className="w-full h-full">
@@ -130,23 +92,9 @@ export function DailyChart({ data, monthlyData = [], isMockData = false }: Daily
         selectedDate={selectedDate}
       />
       
-      {isProgressivelyLoading && (
-        <div className="mb-2">
-          <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-blue-500 transition-all duration-300 ease-in-out" 
-              style={{ width: `${loadingProgress}%` }}
-            />
-          </div>
-          <p className="text-xs text-gray-500 mt-1 text-right">
-            Loading data: {loadingProgress}%
-          </p>
-        </div>
-      )}
-      
       <ChartLegend 
         colors={temperatureConfig.colors} 
-        showSimulated={false} // Never show simulated data label
+        showSimulated={true} // Always show simulated data label if no real data
       />
       
       <TemperatureBarChart 
@@ -158,8 +106,13 @@ export function DailyChart({ data, monthlyData = [], isMockData = false }: Daily
       
       <ChartControls
         selectedDate={selectedDate}
-        onPrevDay={handlePrevDay}
-        onNextDay={handleNextDay}
+        onPrevDay={() => setSelectedDate(prev => subDays(prev, 1))}
+        onNextDay={() => {
+          const newDate = addDays(selectedDate, 1);
+          if (newDate <= new Date()) {
+            setSelectedDate(newDate);
+          }
+        }}
       />
     </div>
   );

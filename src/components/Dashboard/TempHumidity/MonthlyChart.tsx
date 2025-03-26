@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { MonthlyOverviewPoint } from "@/services/temp-humidity";
 import { MonthlyChartControls } from "./MonthlyChartControls";
@@ -13,6 +12,7 @@ import {
   getProgressiveMonthlyData,
   calculateStatsFromLoadedData
 } from "./utils/monthlyChartUtils";
+import { generateMockData } from "@/services/sensors/mock-data-generator";
 
 interface MonthlyChartProps {
   data: MonthlyOverviewPoint[];
@@ -20,16 +20,21 @@ interface MonthlyChartProps {
 }
 
 export function MonthlyChart({
-  data,
+  data = [], // Default to empty array
   onStatsCalculated
 }: MonthlyChartProps) {
+  // Always generate mock data if no data is available
+  const processedData = data.length === 0 
+    ? generateMockData().monthly 
+    : data;
+
   const [month, setMonth] = useState("March");
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [visibleData, setVisibleData] = useState<MonthlyOverviewPoint[]>([]);
   
   // Progressive loading effect for monthly data
   useEffect(() => {
-    if (!data || data.length === 0) return;
+    if (!processedData || processedData.length === 0) return;
     
     // Reset progress when data changes
     setLoadingProgress(0);
@@ -42,19 +47,19 @@ export function MonthlyChart({
           clearInterval(interval);
           return 100;
         }
-        const newValue = prev + (100 / data.length); // Increment by one day's worth each time
+        const newValue = prev + (100 / processedData.length); // Increment by one day's worth each time
         return Math.min(newValue, 100);
       });
     }, 200); // Update slightly slower for monthly data (every 200ms)
     
     return () => clearInterval(interval);
-  }, [data]);
+  }, [processedData]);
   
   // Update visible data based on loading progress
   useEffect(() => {
-    if (!data || data.length === 0) return;
+    if (!processedData || processedData.length === 0) return;
     
-    const progressiveData = getProgressiveMonthlyData(data, loadingProgress);
+    const progressiveData = getProgressiveMonthlyData(processedData, loadingProgress);
     setVisibleData(progressiveData);
     
     // Calculate stats from currently loaded data and report upstream
@@ -62,18 +67,17 @@ export function MonthlyChart({
       const stats = calculateStatsFromLoadedData(progressiveData);
       onStatsCalculated(stats);
     }
-  }, [loadingProgress, data, onStatsCalculated]);
+  }, [loadingProgress, processedData, onStatsCalculated]);
   
-  // Enhance data with colors
-  const enhancedData = enhanceMonthlyChartData(visibleData);
+  // Enhanced data with colors
+  const enhancedData = enhanceMonthlyChartData(processedData);
   
   // Calculate chart range (use full dataset for consistent ranges)
-  const { yAxisMin, yAxisMax } = calculateMonthlyChartRange(data);
+  const { yAxisMin, yAxisMax } = calculateMonthlyChartRange(processedData);
   
   // Get temperature config and relevant thresholds
   const legendItems = getTemperatureLegendItems();
   
-  // Get relevant thresholds for display
   const relevantThresholds = filterRelevantMonthlyThresholds(
     [10, 17, 22, 30], // Temperature thresholds
     yAxisMin,
@@ -116,7 +120,7 @@ export function MonthlyChart({
             />
           </div>
           <p className="text-xs text-gray-500 mt-1 text-right">
-            Loading monthly data: {Math.round(loadingProgress)}% ({visibleData.length} of {data.length} days)
+            Loading monthly data: {Math.round(loadingProgress)}% ({visibleData.length} of {processedData.length} days)
           </p>
         </div>
       )}
