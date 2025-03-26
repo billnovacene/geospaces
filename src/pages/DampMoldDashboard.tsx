@@ -18,11 +18,11 @@ const DampMoldDashboard = () => {
 
   // Summary stats for damp and mold conditions
   const summaryStats = [
-    { value: "5", label: "Buildings Connected", type: "normal" },
-    { value: "46", label: "Zones Monitored", type: "normal" },
-    { value: "1", label: "Zones High Risk", type: "high-risk" },
-    { value: "3", label: "Zones Caution", type: "caution" },
-    { value: "42", label: "Total Zones Normal", type: "success" },
+    { value: "5", label: "Buildings Connected", type: "normal" as const },
+    { value: "46", label: "Zones Monitored", type: "normal" as const },
+    { value: "1", label: "Zones High Risk", type: "high-risk" as const },
+    { value: "3", label: "Zones Caution", type: "caution" as const },
+    { value: "42", label: "Total Zones Normal", type: "success" as const },
   ];
 
   return (
@@ -33,8 +33,8 @@ const DampMoldDashboard = () => {
           <div className="mb-6">
             <div className="flex flex-row items-center justify-between">
               <div className="flex flex-col">
-                <h1 className="text-3xl font-bold text-gray-900 mb-1">Damp & Mold</h1>
-                <p className="text-sm text-gray-500">Damp & Mold</p>
+                <h1 className="heading-1 mb-1">Damp & Mold</h1>
+                <p className="body-normal">Damp & Mold</p>
               </div>
               
               {/* Summary stats displayed via the new component */}
