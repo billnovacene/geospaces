@@ -113,14 +113,10 @@ export function SidebarDashboardItem({
             )}
           </div>
           {isSelected && isCollapsed ? (
-            <ChevronRight 
-              size={16} 
-              className="text-primary cursor-pointer" 
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsCollapsed(false);
-              }}
-            />
+            <div className="flex items-center justify-between w-full">
+              <span className="text-sm font-medium text-primary font-semibold">{displayName}</span>
+              <ChevronRight size={16} className="text-zinc-400" />
+            </div>
           ) : (
             <span className={cn(
               "text-sm font-medium", 
