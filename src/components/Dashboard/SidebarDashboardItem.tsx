@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -76,7 +77,7 @@ export function SidebarDashboardItem({
   
   const renderTrigger = () => (
     <div 
-      className="flex items-center py-2.5 px-5 cursor-pointer hover:bg-gray-50 w-full"
+      className="flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] w-full"
       onClick={handleToggle}
     >
       <div className="flex items-center gap-3 w-full">

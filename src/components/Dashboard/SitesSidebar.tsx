@@ -85,7 +85,7 @@ export function SitesSidebar({
             {activeSites.map(site => (
               <div key={site.id} className={cn(
                 "flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
-                activeSiteId === site.id && "bg-[#F5F5F6] border-l-[3px] border-primary pl-4"
+                activeSiteId === site.id && "bg-[#F5F5F6]"
               )}>
                 <Link to={preserveDashboardRoute && dashboardPath ? `/site/${site.id}${dashboardPath}` : `/site/${site.id}`} className="flex items-center gap-3 w-full">
                   {activeSiteId === site.id ? (
