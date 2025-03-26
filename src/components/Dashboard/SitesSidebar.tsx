@@ -1,6 +1,7 @@
+
 import { useParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Circle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SiteListItem } from "@/components/Site/SiteListItem";
 import { SitesSidebarError } from "./SitesSidebarError";
@@ -10,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 interface SitesSidebarProps {
   preserveDashboardRoute?: boolean;
@@ -77,18 +79,29 @@ export function SitesSidebar({
             error={error}
           />
         ) : (
-          <div className="bg-[#F9F9FA] py-2.5 px-5">
-            <div className="text-sm font-medium text-zinc-800 mb-2">
-              Project: Zircon ({activeSites.length} sites)
+          <div className="bg-[#F9F9FA]">
+            <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center">
+              <span className="font-medium text-sm text-zinc-800">Project: Zircon</span>
             </div>
-            
             {activeSites.map(site => (
-              <SiteListItem 
-                key={site.id}
-                site={site}
-                isActive={activeSiteId === site.id}
-                linkTo={preserveDashboardRoute && dashboardPath ? `/site/${site.id}${dashboardPath}` : undefined}
-              />
+              <div key={site.id} className={cn(
+                "flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
+                activeSiteId === site.id && "bg-[#F9F9FA] border-l-4 border-primary"
+              )}>
+                <Link to={preserveDashboardRoute && dashboardPath ? `/site/${site.id}${dashboardPath}` : `/site/${site.id}`} className="flex items-center gap-3 w-full">
+                  {activeSiteId === site.id ? (
+                    <>
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                      <span className="text-sm font-light text-zinc-800 uppercase">{site.name}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Circle size={14} className="text-zinc-400" />
+                      <span className="text-sm font-medium text-zinc-800">{site.name}</span>
+                    </>
+                  )}
+                </Link>
+              </div>
             ))}
           </div>
         )}
