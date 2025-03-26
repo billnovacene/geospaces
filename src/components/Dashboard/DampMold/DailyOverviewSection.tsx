@@ -26,14 +26,12 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
       </CardHeader>
       <CardContent className="w-full">
         {/* Tabs for switching between today and month views */}
-        <div className="flex items-center justify-between mb-4 w-full">
-          <Tabs defaultValue={timeRange} className="w-auto" onValueChange={setTimeRange}>
-            <TabsList className="bg-gray-100 p-1">
-              <TabsTrigger value="today" className="data-[state=active]:bg-white">Today</TabsTrigger>
-              <TabsTrigger value="month" className="data-[state=active]:bg-white">Month</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+        <Tabs defaultValue={timeRange} className="w-auto mb-4" onValueChange={setTimeRange}>
+          <TabsList className="bg-gray-100 p-1">
+            <TabsTrigger value="today" className="data-[state=active]:bg-white">Today</TabsTrigger>
+            <TabsTrigger value="month" className="data-[state=active]:bg-white">Month</TabsTrigger>
+          </TabsList>
+        </Tabs>
         
         <div className="mt-2 w-full">
           {/* Day selector and chart */}
