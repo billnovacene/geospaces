@@ -84,7 +84,8 @@ export function ZonesHierarchy({
           className={cn(
             "flex items-center py-2 px-5 cursor-pointer hover:bg-gray-100/50",
             isActive ? "bg-gray-100" : "",
-            level > 0 ? "pl-10" : "pl-5"
+            level > 0 ? "pl-10" : "pl-5",
+            "font-light text-black" // Added light font and black color
           )}
           style={{ paddingLeft: `${level * 12 + 20}px` }}
         >
