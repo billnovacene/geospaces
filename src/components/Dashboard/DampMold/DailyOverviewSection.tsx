@@ -22,18 +22,20 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl font-bold text-gray-900">Daily Overview</CardTitle>
+        <CardTitle className="text-xl font-medium text-gray-900">Daily Overview</CardTitle>
       </CardHeader>
       <CardContent>
         {/* Tabs for switching between today and month views */}
-        <Tabs defaultValue={timeRange} className="w-auto mb-4" onValueChange={setTimeRange}>
-          <TabsList className="bg-gray-100 p-1">
-            <TabsTrigger value="today" className="data-[state=active]:bg-white">Today</TabsTrigger>
-            <TabsTrigger value="month" className="data-[state=active]:bg-white">Month</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex items-center justify-between mb-4">
+          <Tabs defaultValue={timeRange} className="w-auto" onValueChange={setTimeRange}>
+            <TabsList className="bg-gray-100 p-1">
+              <TabsTrigger value="today" className="data-[state=active]:bg-white">Today</TabsTrigger>
+              <TabsTrigger value="month" className="data-[state=active]:bg-white">Month</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
         
-        <div className="mt-6">
+        <div className="mt-2">
           {/* Day selector and chart */}
           <div className="flex items-center justify-between text-sm mb-4">
             <Button variant="outline" size="sm" className="flex items-center gap-1">
@@ -49,12 +51,20 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
             </Button>
           </div>
 
-          {/* Chart for daily overview with description */}
-          <ChartConfig 
-            chartData={chartData} 
-            xAxisKey={xAxisKey} 
-            description={chartDescription}
-          />
+          {/* Chart layout with description on the left */}
+          <div className="flex gap-6">
+            <div className="w-1/4">
+              <p className="text-sm text-gray-700">{chartDescription}</p>
+            </div>
+            <div className="w-3/4">
+              <div className="h-[300px]">
+                <ChartConfig 
+                  chartData={chartData} 
+                  xAxisKey={xAxisKey}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
