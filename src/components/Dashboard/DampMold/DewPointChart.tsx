@@ -35,13 +35,6 @@ export function DewPointChart({ data }: DewPointChartProps) {
         />
       </CardHeader>
       <CardContent className="relative z-10">
-        <div className="pb-4">
-          <p className="text-sm text-gray-500">
-            Dew point analysis shows the relationship between surface temperature and dew point temperature.
-            When these values are close, condensation risk increases significantly.
-          </p>
-        </div>
-        
         <div className="h-[250px]">
           {chartType === "line" ? (
             <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} />
