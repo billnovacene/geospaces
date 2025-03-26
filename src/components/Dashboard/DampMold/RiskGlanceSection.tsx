@@ -37,11 +37,6 @@ export function RiskGlanceSection({
         </div>
       </CardHeader>
       <CardContent className="w-full">
-        {/* Sample time indicator */}
-        <div className="text-xs text-center text-gray-500 mb-4">
-          14:10 | Fri 4 Oct <span className="text-base font-medium text-gray-700 ml-1">22 °C</span>
-        </div>
-        
         {activeTab === "today" ? (
           <div className="w-full">
             <div className="h-[250px] relative z-10 w-full">
