@@ -89,7 +89,7 @@ export function SitesSidebar({
         ) : (
           <div className="bg-[#F9F9FA]">
             <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center">
-              <span className="font-medium text-sm text-zinc-800">Project: Zircon</span>
+              <span className="font-medium nav-item">Project: Zircon</span>
             </div>
             {activeSites.map(site => (
               <div key={site.id}>
@@ -104,12 +104,12 @@ export function SitesSidebar({
                     {activeSiteId === site.id ? (
                       <>
                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                        <span className="text-sm font-light text-zinc-800 uppercase">{site.name}</span>
+                        <span className="nav-item-active uppercase">{site.name}</span>
                       </>
                     ) : (
                       <>
                         <Circle size={14} className="text-zinc-400" />
-                        <span className="text-sm font-medium text-zinc-800">{site.name}</span>
+                        <span className="nav-item">{site.name}</span>
                       </>
                     )}
                   </Link>

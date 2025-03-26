@@ -4,17 +4,20 @@ import { Separator } from "@/components/ui/separator";
 import { HeadingEditor } from "./HeadingEditor";
 import { BodyTextEditor } from "./BodyTextEditor";
 import { TypographySettings } from "./types";
+import { NavigationTextEditor } from "./NavigationTextEditor";
 
 interface TypographyEditorContentProps {
   settings: TypographySettings;
   onHeadingChange: (level: 'h1' | 'h2' | 'h3' | 'h4', property: 'size' | 'weight' | 'tracking', value: string) => void;
   onBodyChange: (type: 'large' | 'normal' | 'small', property: 'size' | 'weight' | 'color', value: string) => void;
+  onNavigationChange: (type: 'item' | 'active', property: 'size' | 'weight' | 'color', value: string) => void;
 }
 
 export const TypographyEditorContent: React.FC<TypographyEditorContentProps> = ({
   settings,
   onHeadingChange,
-  onBodyChange
+  onBodyChange,
+  onNavigationChange
 }) => {
   return (
     <div className="space-y-6">
@@ -82,6 +85,36 @@ export const TypographyEditorContent: React.FC<TypographyEditorContentProps> = (
                 onSizeChange={(value) => onBodyChange('small', 'size', value)}
                 onWeightChange={(value) => onBodyChange('small', 'weight', value)}
                 onColorChange={(value) => onBodyChange('small', 'color', value)}
+              />
+            </div>
+          </div>
+          
+          {/* Navigation Text */}
+          <div className="space-y-4 pt-4">
+            <h3 className="text-lg font-medium">Navigation Styles</h3>
+            <Separator />
+            
+            <div className="space-y-6">
+              {/* Navigation Item */}
+              <NavigationTextEditor 
+                type="item"
+                size={settings.navigation.item.size}
+                weight={settings.navigation.item.weight}
+                color={settings.navigation.item.color}
+                onSizeChange={(value) => onNavigationChange('item', 'size', value)}
+                onWeightChange={(value) => onNavigationChange('item', 'weight', value)}
+                onColorChange={(value) => onNavigationChange('item', 'color', value)}
+              />
+              
+              {/* Navigation Active Item */}
+              <NavigationTextEditor 
+                type="active"
+                size={settings.navigation.active.size}
+                weight={settings.navigation.active.weight}
+                color={settings.navigation.active.color}
+                onSizeChange={(value) => onNavigationChange('active', 'size', value)}
+                onWeightChange={(value) => onNavigationChange('active', 'weight', value)}
+                onColorChange={(value) => onNavigationChange('active', 'color', value)}
               />
             </div>
           </div>

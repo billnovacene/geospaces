@@ -23,7 +23,7 @@ export function SidebarZoneItem({
       )}>
         <div className="flex items-center gap-2">
           <span className="text-xs text-zinc-600">▶</span>
-          <span className="text-sm font-medium text-gray-900">{name}</span>
+          <span className={isActive ? "nav-item-active" : "nav-item"}>{name}</span>
         </div>
         <span className="text-sm text-[#8E9196]">{count}</span>
       </div>

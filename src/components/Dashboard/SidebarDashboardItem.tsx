@@ -84,7 +84,7 @@ export function SidebarDashboardItem({
         {isSelected ? (
           <>
             <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-            <span className="text-sm font-light text-zinc-800 uppercase">{displayName}</span>
+            <span className="nav-item-active uppercase">{displayName}</span>
             {isOpen ? (
               <ChevronUp size={16} className="ml-auto text-gray-400" />
             ) : (
@@ -94,7 +94,7 @@ export function SidebarDashboardItem({
         ) : (
           <>
             <Circle size={14} className="text-zinc-400" />
-            <span className="text-sm font-medium text-zinc-800">{displayName}</span>
+            <span className="nav-item">{displayName}</span>
           </>
         )}
       </div>

@@ -2,6 +2,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 @import url('https://rsms.me/inter/inter.css');
 
+:root {
+  --nav-item-size: text-sm;
+  --nav-item-weight: font-medium;
+  --nav-item-color: text-foreground;
+  --nav-active-size: text-sm;
+  --nav-active-weight: font-medium;
+  --nav-active-color: text-accent-foreground;
+}
+
 @layer base {
   body {
     @apply bg-background text-foreground;
@@ -82,10 +91,10 @@
   
   /* Navigation Typography */
   .nav-item {
-    @apply text-sm font-medium text-foreground;
+    @apply var(--nav-item-size) var(--nav-item-weight) var(--nav-item-color);
   }
   
   .nav-item-active {
-    @apply text-sm font-medium text-accent-foreground;
+    @apply var(--nav-active-size) var(--nav-active-weight) var(--nav-active-color);
   }
 }

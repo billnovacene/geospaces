@@ -10,6 +10,10 @@ export interface TypographySettings {
     large: { size: string; weight: string; color: string; };
     normal: { size: string; weight: string; color: string; };
     small: { size: string; weight: string; color: string; };
+  };
+  navigation: {
+    item: { size: string; weight: string; color: string; };
+    active: { size: string; weight: string; color: string; };
   }
 }
 
@@ -24,5 +28,9 @@ export const defaultSettings: TypographySettings = {
     large: { size: "text-base", weight: "font-normal", color: "text-foreground" },
     normal: { size: "text-sm", weight: "font-normal", color: "text-foreground" },
     small: { size: "text-xs", weight: "font-normal", color: "text-muted-foreground" },
+  },
+  navigation: {
+    item: { size: "text-sm", weight: "font-medium", color: "text-foreground" },
+    active: { size: "text-sm", weight: "font-medium", color: "text-accent-foreground" }
   }
 };

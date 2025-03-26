@@ -45,6 +45,23 @@ export const TypographyEditor = () => {
     }));
   };
 
+  const handleNavigationChange = (
+    type: 'item' | 'active',
+    property: 'size' | 'weight' | 'color',
+    value: string
+  ) => {
+    setSettings(prev => ({
+      ...prev,
+      navigation: {
+        ...prev.navigation,
+        [type]: {
+          ...prev.navigation[type],
+          [property]: value
+        }
+      }
+    }));
+  };
+
   const applyChanges = () => {
     setIsUpdating(true);
     
@@ -55,6 +72,17 @@ export const TypographyEditor = () => {
         title: "Typography Updated",
         description: "Your typography changes have been applied",
       });
+      
+      // Update CSS variables in the document root
+      const root = document.documentElement;
+      
+      // Update navigation styles
+      document.documentElement.style.setProperty('--nav-item-size', settings.navigation.item.size);
+      document.documentElement.style.setProperty('--nav-item-weight', settings.navigation.item.weight);
+      document.documentElement.style.setProperty('--nav-item-color', settings.navigation.item.color);
+      document.documentElement.style.setProperty('--nav-active-size', settings.navigation.active.size);
+      document.documentElement.style.setProperty('--nav-active-weight', settings.navigation.active.weight);
+      document.documentElement.style.setProperty('--nav-active-color', settings.navigation.active.color);
       
       setIsUpdating(false);
     }, 800);
@@ -78,6 +106,7 @@ export const TypographyEditor = () => {
           settings={settings}
           onHeadingChange={handleHeadingChange}
           onBodyChange={handleBodyChange}
+          onNavigationChange={handleNavigationChange}
         />
         
         <div className="flex justify-end space-x-2 pt-4">
