@@ -25,7 +25,7 @@ export function ChartConfig({
   xAxisKey 
 }: ChartConfigProps) {
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%" minHeight={200}>
       <ComposedChart
         data={chartData}
         margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -68,6 +68,7 @@ export function ChartConfig({
             if (name === "dewPoint") return [`${value}°C`, "Dew Point"];
             return [value, name];
           }}
+          wrapperStyle={{ zIndex: 1000 }}
         />
         <Legend 
           verticalAlign="top" 

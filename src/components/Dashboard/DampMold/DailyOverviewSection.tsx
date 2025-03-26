@@ -52,11 +52,11 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
           </div>
 
           {/* Chart layout with description on the left */}
-          <div className="flex gap-6">
-            <div className="w-1/4">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-1/4">
               <p className="text-sm text-gray-700">{chartDescription}</p>
             </div>
-            <div className="w-3/4">
+            <div className="w-full md:w-3/4">
               <div className="h-[250px]">
                 <ChartConfig 
                   chartData={chartData} 
