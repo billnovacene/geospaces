@@ -1,5 +1,4 @@
-
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Utility to check if data is using mock data
 export function checkIfMockData(data: any, addLog: (message: string, type: string) => void) {
