@@ -67,7 +67,7 @@ const DampMoldDashboard = () => {
           </div>
           
           {/* Mobile view for stats - only show on small screens */}
-          <div className="grid grid-cols-5 gap-4 mb-8 md:hidden">
+          <div className="grid grid-cols-5 gap-4 mb-8 md:hidden mx-auto w-3/4">
             {summaryStats.map((stat, index) => (
               <div key={index} className="flex flex-col space-y-1">
                 <div className="text-4xl font-bold text-gray-900">
