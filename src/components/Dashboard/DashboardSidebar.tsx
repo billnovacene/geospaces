@@ -90,9 +90,8 @@ export function DashboardSidebar() {
         </div>
 
         <div className="overflow-y-auto flex-1">
-          <SidebarSection title="Sites">
-            <SitesSidebar preserveDashboardRoute={isDashboardRoute} currentDashboard={isTempHumidityRoute ? "temp-humidity" : ""} />
-          </SidebarSection>
+          {/* Direct SitesSidebar without SidebarSection wrapper */}
+          <SitesSidebar preserveDashboardRoute={isDashboardRoute} currentDashboard={isTempHumidityRoute ? "temp-humidity" : ""} />
 
           <SidebarSection title="Zones">
             {effectiveSiteId ? (
