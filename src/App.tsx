@@ -34,12 +34,19 @@ const App = () => (
             <Route path="/site" element={<Navigate to="/" replace />} />
             <Route path="/site/:siteId" element={<SiteDetail />} />
             <Route path="/zone/:zoneId" element={<ZoneDetail />} />
+            
+            {/* Global dashboards */}
             <Route path="/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
             <Route path="/dashboard/damp-mold" element={<DampMoldDashboard />} />
+            
+            {/* Site-specific dashboards */}
             <Route path="/site/:siteId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
             <Route path="/site/:siteId/dashboard/damp-mold" element={<DampMoldDashboard />} />
+            
+            {/* Zone-specific dashboards */}
             <Route path="/zone/:zoneId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
             <Route path="/zone/:zoneId/dashboard/damp-mold" element={<DampMoldDashboard />} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

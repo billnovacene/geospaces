@@ -18,10 +18,11 @@ import { LogPanel } from "../TempHumidity/LogPanel";
 import { LoadingState } from "../TempHumidity/LoadingState";
 import { ErrorState } from "../TempHumidity/ErrorState";
 import { TempHumidityResponse } from "@/services/interfaces/temp-humidity";
+import { useParams } from "react-router-dom";
 
 interface DampMoldViewProps {
-  contextType: "zone" | "site" | "all";
-  contextId: string | null;
+  contextType?: "zone" | "site" | "all";
+  contextId?: string | null;
   siteId?: string;
   zoneId?: string;
 }
@@ -31,15 +32,31 @@ interface ExtendedTempHumidityResponse extends TempHumidityResponse {
   currentDewPoint?: number;
   dewPointRisk?: "default" | "destructive" | "outline" | "secondary" | "success";
   dewPointDifference?: number;
+  stats: TempHumidityResponse["stats"];
+  daily: TempHumidityResponse["daily"];
+  monthly: TempHumidityResponse["monthly"];
+  sourceData: TempHumidityResponse["sourceData"];
 }
 
 export function DampMoldView({ 
-  contextType, 
-  contextId,
-  siteId,
-  zoneId 
+  contextType: propsContextType, 
+  contextId: propsContextId,
+  siteId: propsSiteId,
+  zoneId: propsZoneId 
 }: DampMoldViewProps) {
   const [activeTab, setActiveTab] = useState("overview");
+  const params = useParams<{ siteId: string; zoneId: string }>();
+  
+  // Use params if props are not provided
+  const siteId = propsSiteId || params.siteId;
+  const zoneId = propsZoneId || params.zoneId;
+  
+  // Determine context type based on available IDs
+  const contextType = propsContextType || (zoneId ? "zone" : siteId ? "site" : "all");
+  const contextId = propsContextId || zoneId || siteId || null;
+  
+  console.log("DampMoldView props:", { contextType, contextId, siteId, zoneId });
+  console.log("Route params:", params);
   
   // Fetch context name (site or zone name)
   const { data: zoneName } = useQuery({
@@ -76,6 +93,9 @@ export function DampMoldView({
   });
   
   const contextName = zoneId ? zoneName : siteId ? siteName : "All Locations";
+  
+  console.log("Raw data:", rawData);
+  console.log("Loading state:", { isLoading, loadingStage, apiConnectionFailed });
   
   // Process the data to add dew point properties
   const data: ExtendedTempHumidityResponse = rawData || {
