@@ -5,9 +5,11 @@ import { DewPointChartControls } from "./components/DewPointChartControls";
 import { DewPointLineChart } from "./components/DewPointLineChart";
 import { DewPointAreaChart } from "./components/DewPointAreaChart";
 import { generateDewPointData } from "./utils/dewPointDataGenerator";
+
 interface DewPointChartProps {
   data: any;
 }
+
 export function DewPointChart({
   data
 }: DewPointChartProps) {
@@ -22,23 +24,35 @@ export function DewPointChart({
     if (selectedRange === "day") return "hour";
     return "day";
   };
-  return <Card className="w-full">
-      <CardHeader className="">
+
+  return (
+    <Card className="w-full">
+      <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium">Dew Point Analysis</CardTitle>
-        <DewPointChartControls selectedRange={selectedRange} setSelectedRange={setSelectedRange} chartType={chartType} setChartType={setChartType} />
+        <DewPointChartControls 
+          selectedRange={selectedRange} 
+          setSelectedRange={setSelectedRange} 
+          chartType={chartType} 
+          setChartType={setChartType} 
+        />
       </CardHeader>
       <CardContent className="w-full">
         <div className="flex flex-col md:flex-row gap-6 w-full">
-          <div className="w-full md:w-1/4">
+          <div className="w-full md:w-1/4 pr-4">
             <p className="text-sm text-gray-700">
               This chart shows the current day's dew point analysis and temperature readings, 
               helping identify potential condensation risks in real-time.
             </p>
           </div>
           <div className="w-full md:w-3/4 h-[250px]">
-            {chartType === "line" ? <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} /> : <DewPointAreaChart chartData={chartData} xAxisKey={getXAxisKey()} />}
+            {chartType === "line" ? (
+              <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} />
+            ) : (
+              <DewPointAreaChart chartData={chartData} xAxisKey={getXAxisKey()} />
+            )}
           </div>
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 }
