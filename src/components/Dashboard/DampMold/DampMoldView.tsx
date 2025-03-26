@@ -31,11 +31,6 @@ interface ExtendedTempHumidityResponse extends TempHumidityResponse {
   currentDewPoint?: number;
   dewPointRisk?: "default" | "destructive" | "outline" | "secondary" | "success";
   dewPointDifference?: number;
-  // Add basic required properties with optional modifiers to prevent type errors
-  stats?: any;
-  daily?: any[];
-  monthly?: any[];
-  sourceData?: any;
 }
 
 export function DampMoldView({ 
@@ -84,10 +79,24 @@ export function DampMoldView({
   
   // Process the data to add dew point properties
   const data: ExtendedTempHumidityResponse = rawData || {
-    stats: {},
+    stats: {
+      avgTemp: 0,
+      minTemp: 0,
+      maxTemp: 0,
+      avgHumidity: 0,
+      status: {
+        avgTemp: 'good',
+        minTemp: 'good',
+        maxTemp: 'good',
+        avgHumidity: 'good'
+      }
+    },
     daily: [],
     monthly: [],
-    sourceData: {}
+    sourceData: {
+      temperatureSensors: [],
+      humiditySensors: []
+    }
   };
   
   // Add mock dew point data if not available
