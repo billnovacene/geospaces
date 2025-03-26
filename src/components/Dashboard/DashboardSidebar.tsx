@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { Settings, Search, MoreVertical, Home, Building, Package } from "lucide-react";
@@ -142,7 +141,7 @@ export function DashboardSidebar() {
               <div className="font-semibold text-sm">Novacene</div>
               <div className="flex flex-col">
                 <span className="text-xs font-medium text-primary">GeoSpaces</span>
-                <span className="text-xs text-[#8E9196] font-mono">v{APP_VERSION}</span>
+                <span className="text-xs text-black font-mono">v{APP_VERSION}</span>
               </div>
             </div>
           </div>
