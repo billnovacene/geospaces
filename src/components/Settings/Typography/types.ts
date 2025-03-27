@@ -1,4 +1,3 @@
-
 export interface TypographySettings {
   headings: {
     h1: { size: string; weight: string; tracking: string; };
