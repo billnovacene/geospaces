@@ -17,7 +17,7 @@ export function SummaryStats({
         {stats.map((stat, index) => (
           <div 
             key={index} 
-            className="flex flex-col w-[150px] bg-white rounded-b-lg overflow-hidden shadow-sm"
+            className="flex flex-col w-[135px] bg-white rounded-b-lg overflow-hidden shadow-sm"
           >
             <div className="flex-grow flex flex-col p-3">
               <div className="text-2xl font-medium text-gray-900 mb-1">
@@ -56,3 +56,4 @@ export function SummaryStats({
       </div>
     </>;
 }
+
