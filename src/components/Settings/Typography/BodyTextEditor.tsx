@@ -21,53 +21,18 @@ export const BodyTextEditor: React.FC<BodyTextEditorProps> = ({
   onWeightChange,
   onColorChange
 }) => {
-  const getBodyText = () => {
+  const getTypeLabel = () => {
     switch (type) {
-      case 'large':
-        return "This is body large text style";
-      case 'normal':
-        return "This is body normal text style";
-      case 'small':
-        return "This is body small text style";
-      default:
-        return "Body text";
-    }
-  };
-
-  const getSizeOptions = () => {
-    switch (type) {
-      case 'large':
-        return (
-          <>
-            <option value="text-sm">Small (text-sm)</option>
-            <option value="text-base">Medium (text-base)</option>
-            <option value="text-lg">Large (text-lg)</option>
-          </>
-        );
-      case 'normal':
-        return (
-          <>
-            <option value="text-xs">Small (text-xs)</option>
-            <option value="text-sm">Medium (text-sm)</option>
-            <option value="text-base">Large (text-base)</option>
-          </>
-        );
-      case 'small':
-        return (
-          <>
-            <option value="text-xs">Small (text-xs)</option>
-            <option value="text-sm">Medium (text-sm)</option>
-            <option value="text-base">Large (text-base)</option>
-          </>
-        );
-      default:
-        return null;
+      case 'large': return 'Body Large';
+      case 'normal': return 'Body Normal';
+      case 'small': return 'Body Small';
+      default: return 'Body Text';
     }
   };
 
   return (
     <div className="space-y-2">
-      <p className={`${size} ${weight} ${color}`}>{getBodyText()}</p>
+      <p className={`${size} ${weight} ${color}`}>{getTypeLabel()} - The quick brown fox jumps over the lazy dog</p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <Label htmlFor={`body-${type}-size`}>Size</Label>
@@ -77,7 +42,10 @@ export const BodyTextEditor: React.FC<BodyTextEditorProps> = ({
             value={size}
             onChange={(e) => onSizeChange(e.target.value)}
           >
-            {getSizeOptions()}
+            <option value="text-xs">Small (text-xs)</option>
+            <option value="text-sm">Medium (text-sm)</option>
+            <option value="text-base">Large (text-base)</option>
+            <option value="text-lg">Extra Large (text-lg)</option>
           </select>
         </div>
         
@@ -90,9 +58,10 @@ export const BodyTextEditor: React.FC<BodyTextEditorProps> = ({
             onChange={(e) => onWeightChange(e.target.value)}
           >
             <option value="font-light">Light (300)</option>
-            <option value="font-normal">Normal (400)</option>
+            <option value="font-normal">Regular (400)</option>
             <option value="font-medium">Medium (500)</option>
             <option value="font-semibold">Semibold (600)</option>
+            <option value="font-bold">Bold (700)</option>
           </select>
         </div>
         
@@ -109,6 +78,8 @@ export const BodyTextEditor: React.FC<BodyTextEditorProps> = ({
             <option value="text-primary">Primary</option>
             <option value="text-secondary">Secondary</option>
             <option value="text-accent">Accent</option>
+            <option value="text-gray-500">Gray Medium</option>
+            <option value="text-gray-700">Gray Dark</option>
           </select>
         </div>
       </div>

@@ -5,9 +5,11 @@ import { HeadingEditor } from "./HeadingEditor";
 import { BodyTextEditor } from "./BodyTextEditor";
 import { TypographySettings } from "./types";
 import { NavigationTextEditor } from "./NavigationTextEditor";
+import { FontSelector } from "./FontSelector";
 
 interface TypographyEditorContentProps {
   settings: TypographySettings;
+  onFontFamilyChange: (font: string) => void;
   onHeadingChange: (level: 'h1' | 'h2' | 'h3' | 'h4', property: 'size' | 'weight' | 'tracking', value: string) => void;
   onBodyChange: (type: 'large' | 'normal' | 'small', property: 'size' | 'weight' | 'color', value: string) => void;
   onNavigationChange: (type: 'item' | 'active', property: 'size' | 'weight' | 'color', value: string) => void;
@@ -15,12 +17,24 @@ interface TypographyEditorContentProps {
 
 export const TypographyEditorContent: React.FC<TypographyEditorContentProps> = ({
   settings,
+  onFontFamilyChange,
   onHeadingChange,
   onBodyChange,
   onNavigationChange
 }) => {
   return (
     <div className="space-y-6">
+      {/* Font Family Selector */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Font Family</h3>
+        <Separator />
+        <FontSelector 
+          selectedFont={settings.fontFamily} 
+          onFontChange={onFontFamilyChange} 
+        />
+      </div>
+
+      {/* Heading Styles */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Heading Styles</h3>
         <Separator />

@@ -9,6 +9,7 @@ export const TypographyEditor = () => {
   const {
     settings,
     isUpdating,
+    handleFontFamilyChange,
     handleHeadingChange,
     handleBodyChange,
     handleNavigationChange,
@@ -24,6 +25,7 @@ export const TypographyEditor = () => {
       <CardContent className="space-y-6">
         <TypographyEditorContent 
           settings={settings}
+          onFontFamilyChange={handleFontFamilyChange}
           onHeadingChange={handleHeadingChange}
           onBodyChange={handleBodyChange}
           onNavigationChange={handleNavigationChange}

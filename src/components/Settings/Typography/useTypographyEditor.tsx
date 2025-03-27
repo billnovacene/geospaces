@@ -8,6 +8,13 @@ export const useTypographyEditor = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
 
+  const handleFontFamilyChange = (fontFamily: string) => {
+    setSettings(prev => ({
+      ...prev,
+      fontFamily
+    }));
+  };
+
   const handleHeadingChange = (
     level: 'h1' | 'h2' | 'h3' | 'h4',
     property: 'size' | 'weight' | 'tracking',
@@ -64,6 +71,9 @@ export const useTypographyEditor = () => {
     
     // Simulate updating CSS variables or classes
     setTimeout(() => {
+      // Update document root styles with font family
+      document.documentElement.style.fontFamily = settings.fontFamily;
+      
       // Update CSS variables in the document root
       const root = document.documentElement;
       
@@ -86,6 +96,7 @@ export const useTypographyEditor = () => {
 
   const resetToDefaults = () => {
     setSettings(defaultSettings);
+    document.documentElement.style.fontFamily = defaultSettings.fontFamily;
     toast({
       title: "Typography Reset",
       description: "Typography settings have been reset to defaults",
@@ -95,6 +106,7 @@ export const useTypographyEditor = () => {
   return {
     settings,
     isUpdating,
+    handleFontFamilyChange,
     handleHeadingChange,
     handleBodyChange,
     handleNavigationChange,

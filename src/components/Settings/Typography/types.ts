@@ -1,4 +1,6 @@
+
 export interface TypographySettings {
+  fontFamily: string;
   headings: {
     h1: { size: string; weight: string; tracking: string; };
     h2: { size: string; weight: string; tracking: string; };
@@ -17,6 +19,7 @@ export interface TypographySettings {
 }
 
 export const defaultSettings: TypographySettings = {
+  fontFamily: "'Inter', sans-serif",
   headings: {
     h1: { size: "text-3xl", weight: "font-medium", tracking: "tracking-tight" },
     h2: { size: "text-2xl", weight: "font-medium", tracking: "tracking-tight" },

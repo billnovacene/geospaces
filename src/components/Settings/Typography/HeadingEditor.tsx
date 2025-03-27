@@ -21,27 +21,14 @@ export const HeadingEditor: React.FC<HeadingEditorProps> = ({
   onWeightChange,
   onTrackingChange
 }) => {
-  const headingText = `Heading ${level.charAt(1)}`;
-  
-  const renderHeading = () => {
-    switch (level) {
-      case 'h1':
-        return <h1 className={`${size} ${weight} ${tracking}`}>{headingText}</h1>;
-      case 'h2':
-        return <h2 className={`${size} ${weight} ${tracking}`}>{headingText}</h2>;
-      case 'h3':
-        return <h3 className={`${size} ${weight} ${tracking}`}>{headingText}</h3>;
-      case 'h4':
-        return <h4 className={`${size} ${weight} ${tracking}`}>{headingText}</h4>;
-      default:
-        return <h1 className={`${size} ${weight} ${tracking}`}>{headingText}</h1>;
-    }
-  };
+  const LevelTag = level as keyof JSX.IntrinsicElements;
   
   return (
-    <div className="space-y-4 pt-2">
+    <div className="space-y-4">
       <div className="flex items-baseline justify-between">
-        {renderHeading()}
+        <LevelTag className={`${size} ${weight} ${tracking}`}>
+          Heading {level.charAt(1)}
+        </LevelTag>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -55,9 +42,9 @@ export const HeadingEditor: React.FC<HeadingEditorProps> = ({
           >
             {level === 'h1' && (
               <>
-                <option value="text-2xl">Small (text-2xl)</option>
                 <option value="text-3xl">Medium (text-3xl)</option>
                 <option value="text-4xl">Large (text-4xl)</option>
+                <option value="text-5xl">Extra Large (text-5xl)</option>
               </>
             )}
             {level === 'h2' && (
@@ -92,9 +79,11 @@ export const HeadingEditor: React.FC<HeadingEditorProps> = ({
             value={weight}
             onChange={(e) => onWeightChange(e.target.value)}
           >
-            <option value="font-normal">Normal (400)</option>
+            <option value="font-light">Light (300)</option>
+            <option value="font-normal">Regular (400)</option>
             <option value="font-medium">Medium (500)</option>
             <option value="font-semibold">Semibold (600)</option>
+            <option value="font-bold">Bold (700)</option>
           </select>
         </div>
         
