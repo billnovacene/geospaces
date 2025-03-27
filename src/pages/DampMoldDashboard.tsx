@@ -52,7 +52,7 @@ const DampMoldDashboard = () => {
             <div className="flex flex-row items-center justify-between">
               <div className="flex flex-col">
                 <h1 className="heading-1 mb-1 text-2xl font-light text-left">Damp & Mold</h1>
-                <p className="body-normal">Damp & Mold</p>
+                <p className="body-normal text-sm font-extralight">Damp & Mold</p>
               </div>
               
               {/* Summary stats displayed via the new component */}
