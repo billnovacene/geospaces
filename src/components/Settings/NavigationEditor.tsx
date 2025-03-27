@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
@@ -32,6 +32,17 @@ export const NavigationEditor = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
 
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('navigation-settings');
+    if (savedSettings) {
+      try {
+        setSettings(JSON.parse(savedSettings));
+      } catch (e) {
+        console.error("Error parsing saved navigation settings", e);
+      }
+    }
+  }, []);
+
   const handleChange = (
     property: keyof NavigationSettings,
     value: string
@@ -45,10 +56,29 @@ export const NavigationEditor = () => {
   const applyChanges = () => {
     setIsUpdating(true);
     
-    // Simulate updating CSS variables or classes
     setTimeout(() => {
-      // This is a simplified example - in a real app you'd update CSS variables
-      // or dynamically generate and inject a style sheet
+      const styleElement = document.getElementById('navigation-styles') || document.createElement('style');
+      styleElement.id = 'navigation-styles';
+      
+      const bgClass = settings.background.replace('bg-', '');
+      const textClass = settings.textColor.replace('text-', '');
+      const hoverBgClass = settings.hoverBackground.replace('hover:bg-', '');
+      const hoverTextClass = settings.hoverTextColor.replace('hover:text-', '');
+      const activeBgClass = settings.activeBackground.replace('bg-', '');
+      const activeTextClass = settings.activeTextColor.replace('text-', '');
+      const fontSizeClass = settings.fontSize.replace('text-', '');
+      const fontWeightClass = settings.fontWeight.replace('font-', '');
+      
+      document.documentElement.style.setProperty('--nav-bg-class', settings.background);
+      document.documentElement.style.setProperty('--nav-text-class', settings.textColor);
+      document.documentElement.style.setProperty('--nav-hover-bg-class', settings.hoverBackground);
+      document.documentElement.style.setProperty('--nav-hover-text-class', settings.hoverTextColor);
+      document.documentElement.style.setProperty('--nav-active-bg-class', settings.activeBackground);
+      document.documentElement.style.setProperty('--nav-active-text-class', settings.activeTextColor);
+      document.documentElement.style.setProperty('--nav-font-size-class', settings.fontSize);
+      document.documentElement.style.setProperty('--nav-font-weight-class', settings.fontWeight);
+      
+      localStorage.setItem('navigation-settings', JSON.stringify(settings));
       
       toast({
         title: "Navigation Styles Updated",
@@ -61,6 +91,19 @@ export const NavigationEditor = () => {
 
   const resetToDefaults = () => {
     setSettings(defaultSettings);
+    
+    const customProps = [
+      '--nav-bg-class', '--nav-text-class', '--nav-hover-bg-class', 
+      '--nav-hover-text-class', '--nav-active-bg-class', '--nav-active-text-class',
+      '--nav-font-size-class', '--nav-font-weight-class'
+    ];
+    
+    customProps.forEach(prop => {
+      document.documentElement.style.removeProperty(prop);
+    });
+    
+    localStorage.removeItem('navigation-settings');
+    
     toast({
       title: "Navigation Styles Reset",
       description: "Navigation styles have been reset to defaults",
@@ -73,7 +116,6 @@ export const NavigationEditor = () => {
         <CardTitle>Navigation Editor</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Navigation Preview */}
         <div className="p-4 border rounded-md">
           <h3 className="heading-3 mb-3">Navigation Preview</h3>
           <div className={`flex space-x-4 p-4 rounded-md ${settings.background}`}>
@@ -92,7 +134,6 @@ export const NavigationEditor = () => {
           </div>
         </div>
         
-        {/* Colors */}
         <div className="space-y-4">
           <h3 className="heading-3">Colors</h3>
           <Separator />
@@ -163,7 +204,6 @@ export const NavigationEditor = () => {
           </div>
         </div>
         
-        {/* Typography */}
         <div className="space-y-4">
           <h3 className="heading-3">Typography</h3>
           <Separator />

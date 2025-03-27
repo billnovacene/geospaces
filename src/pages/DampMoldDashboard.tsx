@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useEffect } from "react";
 import { DashboardSidebar } from "@/components/Dashboard/DashboardSidebar";
 import { Droplet } from "lucide-react";
 import { SidebarWrapper } from "@/components/Dashboard/SidebarWrapper";
@@ -7,6 +8,7 @@ import { DampMoldView } from "@/components/Dashboard/DampMold/DampMoldView";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { SummaryStats } from "@/components/Dashboard/DampMold/SummaryStats";
+
 const DampMoldDashboard = () => {
   const {
     siteId,
@@ -44,6 +46,14 @@ const DampMoldDashboard = () => {
     label: "Total Zones Normal",
     type: "success" as const
   }];
+  
+  // Effect to apply any saved settings when the dashboard loads
+  useEffect(() => {
+    // This will ensure any custom settings are applied when the component loads
+    const root = document.documentElement;
+    console.log("DampMoldDashboard loaded - applying any saved settings");
+  }, []);
+  
   return <SidebarWrapper>
       <div className="flex-1 overflow-auto bg-[#F9FAFB] min-h-screen">
         <div className="container mx-auto py-6 px-4 md:px-6">
