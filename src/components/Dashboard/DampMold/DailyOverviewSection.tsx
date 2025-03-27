@@ -1,23 +1,20 @@
-
 import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { ChartConfig } from "./Chart/ChartConfig";
 import { generateMockData, getXAxisKey } from "./Chart/mockDataUtils";
-
 interface DailyOverviewSectionProps {
   timeRange: string;
   setTimeRange: (value: string) => void;
 }
-
-export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewSectionProps) {
+export function DailyOverviewSection({
+  timeRange,
+  setTimeRange
+}: DailyOverviewSectionProps) {
   // Generate appropriate mock data based on the timeRange
   const chartData = generateMockData(timeRange);
   const xAxisKey = getXAxisKey(timeRange);
-
   const chartDescription = "Lowest temps rarely dip below 8°C, highest near 22°C. Humidity remains about 47%, showing steady indoor conditions with minor fluctuations linked to weather or occupancy.";
-
-  return (
-    <Card className="border-0 shadow-sm w-full">
+  return <Card className="border-0 shadow-sm w-full bg-white">
       <CardHeader className="pb-2 w-full">
         <div className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl font-medium text-gray-900">Daily Overview</CardTitle>
@@ -32,15 +29,11 @@ export function DailyOverviewSection({ timeRange, setTimeRange }: DailyOverviewS
             </div>
             <div className="w-full md:w-3/4">
               <div className="h-[250px] relative z-0 w-full">
-                <ChartConfig 
-                  chartData={chartData} 
-                  xAxisKey={xAxisKey}
-                />
+                <ChartConfig chartData={chartData} xAxisKey={xAxisKey} />
               </div>
             </div>
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 }
