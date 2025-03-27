@@ -49,7 +49,7 @@ const DampMoldDashboard = () => {
         <div className="container mx-auto py-6 px-4 md:px-6">
           {/* Header section with title and stats */}
           <div className="mb-6">
-            <div className="flex flex-row items-center justify-between px-[20px]">
+            <div className="flex flex-row items-center justify-between px-[20px] bg-white">
               <div className="flex flex-col px-[30px]">
                 <h1 className="heading-1 mb-1 font-light text-left text-3xl">Damp & Mold</h1>
                 <p className="body-normal text-sm font-extralight">Damp & Mold</p>
