@@ -1,10 +1,8 @@
-
 import React from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DewPointChart } from "./DewPointChart";
-
 interface RiskGlanceSectionProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
@@ -12,25 +10,20 @@ interface RiskGlanceSectionProps {
   setTimeRange: (value: string) => void;
   monthlyRiskData: any[];
 }
-
-export function RiskGlanceSection({ 
-  activeTab, 
+export function RiskGlanceSection({
+  activeTab,
   setActiveTab,
-  timeRange, 
-  setTimeRange, 
-  monthlyRiskData 
+  timeRange,
+  setTimeRange,
+  monthlyRiskData
 }: RiskGlanceSectionProps) {
-  return (
-    <Card className="border-0 shadow-sm mb-10 w-full">
-      <CardContent className="w-full py-8">
-        {activeTab === "today" ? (
-          <div className="w-full space-y-8">
+  return <Card className="border-0 shadow-sm mb-10 w-full">
+      <CardContent className="w-full py-8 bg-white">
+        {activeTab === "today" ? <div className="w-full space-y-8">
             <div className="relative w-full">
               <DewPointChart data={null} />
             </div>
-          </div>
-        ) : (
-          <div className="flex flex-col md:flex-row gap-8">
+          </div> : <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/4">
               <p className="text-sm text-gray-700">
                 Monthly data shows historical patterns of humidity and temperature, 
@@ -53,8 +46,7 @@ export function RiskGlanceSection({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {monthlyRiskData.map((row) => (
-                      <TableRow key={row.id}>
+                    {monthlyRiskData.map(row => <TableRow key={row.id}>
                         <TableCell className="font-medium">{row.building}</TableCell>
                         <TableCell>{row.zone}</TableCell>
                         <TableCell className="text-right">{row.temp}</TableCell>
@@ -67,15 +59,12 @@ export function RiskGlanceSection({
                         </TableCell>
                         <TableCell>{row.timeInHighRh}</TableCell>
                         <TableCell>{row.comments}</TableCell>
-                      </TableRow>
-                    ))}
+                      </TableRow>)}
                   </TableBody>
                 </Table>
               </div>
             </div>
-          </div>
-        )}
+          </div>}
       </CardContent>
-    </Card>
-  );
+    </Card>;
 }
