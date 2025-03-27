@@ -1,3 +1,4 @@
+
 import React from "react";
 export interface StatItem {
   value: string;
@@ -12,8 +13,8 @@ export function SummaryStats({
 }: SummaryStatsProps) {
   return <>
       {/* Desktop view for stats - only show on larger screens */}
-      <div className="hidden md:flex space-x-4 items-stretch">
-        {stats.map((stat, index) => <div key={index} className="flex flex-col w-[135px] bg-white rounded-b-lg overflow-hidden shadow-sm">
+      <div className="hidden md:flex space-x-4 items-stretch w-3/4 mx-auto">
+        {stats.map((stat, index) => <div key={index} className="flex flex-col flex-1 bg-white rounded-b-lg overflow-hidden shadow-sm">
             <div className="flex-grow flex flex-col p-3 px-[2px] py-[2px]">
               <div className="text-2xl font-medium text-gray-900 mb-1">
                 {stat.value}
