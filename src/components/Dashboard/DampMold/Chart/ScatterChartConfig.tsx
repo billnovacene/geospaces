@@ -20,27 +20,24 @@ interface ScatterChartConfigProps {
 }
 
 // Calculate a risk score based on temperature and humidity
-const calculateRiskScore = (temperature: number, humidity: number): number => {
-  // Basic algorithm: higher risk when temp is low and humidity is high
-  // Risk increases exponentially as humidity exceeds 65% and temperature falls below 15°C
+// Following the mould risk standards document
+const calculateMouldRiskScore = (temperature: number, humidity: number): number => {
   let score = 0;
   
-  // Humidity factor (higher humidity = higher risk)
-  if (humidity > 75) {
-    score += 3; // High risk
-  } else if (humidity > 65) {
-    score += 2; // Medium risk
-  } else if (humidity > 55) {
-    score += 1; // Low risk
+  // Apply humidity thresholds for risk scoring
+  if (humidity < 60) {
+    score = 0; // Low risk
+  } else if (humidity < 70) {
+    score = 1; // Caution
+  } else if (humidity < 80) {
+    score = 2; // High risk
+  } else {
+    score = 3; // Very high risk
   }
   
-  // Temperature factor (lower temp with high humidity = higher risk)
-  if (temperature < 12) {
-    score += 3; // High risk
-  } else if (temperature < 15) {
-    score += 2; // Medium risk
-  } else if (temperature < 18) {
-    score += 1; // Low risk  
+  // Additional risk if temperature is below 16°C (risk of condensation)
+  if (temperature < 16) {
+    score += 1;
   }
   
   return score;
@@ -48,15 +45,15 @@ const calculateRiskScore = (temperature: number, humidity: number): number => {
 
 // Get the color based on risk score
 const getRiskColor = (score: number): string => {
-  if (score >= 4) return "#ef4444"; // Red - high risk
-  if (score >= 2) return "#f97316"; // Amber - medium risk
+  if (score >= 3) return "#ef4444"; // Red - high risk
+  if (score >= 1) return "#f97316"; // Amber - medium risk
   return "#10b981"; // Green - low risk
 };
 
 // Convert the chartData into scatter data format
 const prepareScatterData = (data: any[], xAxisKey: string) => {
   return data.map(item => {
-    const riskScore = calculateRiskScore(item.temperature, item.humidity);
+    const riskScore = calculateMouldRiskScore(item.temperature, item.humidity);
     return {
       x: item[xAxisKey], // Time point (hour or day)
       y: item.humidity,  // Y-axis: humidity
@@ -116,14 +113,19 @@ export function ScatterChartConfig({
           content={({ active, payload }) => {
             if (active && payload && payload.length) {
               const data = payload[0].payload;
-              const riskLabels = ["Low Risk", "Moderate Risk", "High Risk"];
-              const riskIndex = data.riskScore >= 4 ? 2 : data.riskScore >= 2 ? 1 : 0;
+              const riskLabels = ["Low Risk", "Moderate Risk", "High Risk", "Very High Risk"];
+              let riskIndex = 0;
+              
+              if (data.riskScore >= 3) riskIndex = 3;
+              else if (data.riskScore >= 2) riskIndex = 2;
+              else if (data.riskScore >= 1) riskIndex = 1;
               
               return (
                 <div className="bg-white p-2 border border-gray-200 shadow-sm rounded-md">
                   <p className="text-sm font-medium">{data.x}</p>
                   <p className="text-xs">Temperature: {data.temp}°C</p>
                   <p className="text-xs">Humidity: {data.hum}%</p>
+                  <p className="text-xs">Risk Score: {data.riskScore}</p>
                   <p className="text-xs font-semibold mt-1" style={{ color: data.color }}>
                     {riskLabels[riskIndex]}
                   </p>
@@ -137,19 +139,32 @@ export function ScatterChartConfig({
           verticalAlign="top" 
           height={36}
           payload={[
-            { value: 'Low Risk', type: 'circle', color: '#10b981' },
-            { value: 'Moderate Risk', type: 'circle', color: '#f97316' },
-            { value: 'High Risk', type: 'circle', color: '#ef4444' }
+            { value: 'Low Risk (<60% RH)', type: 'circle', color: '#10b981' },
+            { value: 'Moderate Risk (60-69% RH)', type: 'circle', color: '#f97316' },
+            { value: 'High Risk (≥70% RH)', type: 'circle', color: '#ef4444' }
           ]}
         />
+        {/* High humidity threshold line at 70% */}
         <ReferenceLine 
-          y={75} 
+          y={70} 
           stroke="#ef4444" 
           strokeDasharray="3 3" 
           label={{ 
-            value: "Humidity Risk Threshold", 
+            value: "High Risk Threshold (70%)", 
             position: "insideBottomRight", 
             fill: "#ef4444", 
+            fontSize: 12 
+          }} 
+        />
+        {/* Caution humidity threshold line at 60% */}
+        <ReferenceLine 
+          y={60} 
+          stroke="#f97316" 
+          strokeDasharray="3 3" 
+          label={{ 
+            value: "Caution Threshold (60%)", 
+            position: "insideTopRight", 
+            fill: "#f97316", 
             fontSize: 12 
           }} 
         />
