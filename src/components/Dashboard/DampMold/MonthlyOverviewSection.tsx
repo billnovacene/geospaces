@@ -16,7 +16,7 @@ export function MonthlyOverviewSection({
   setTimeRange,
   monthlyRiskData 
 }: MonthlyOverviewSectionProps) {
-  const tableDescription = "Lowest temps rarely dip below 8°C, highest near 22°C. Humidity remains about 47%, showing steady indoor conditions with minor fluctuations linked to weather or occupancy.";
+  const tableDescription = "Monthly overview displays risk assessment based on temperature and humidity readings. The Overall Risk status is calculated from aggregated 10-minute sensor readings, with alarm counts and time at risk shown in hours.";
 
   return (
     <Card className="border-0 shadow-sm">
@@ -35,6 +35,16 @@ export function MonthlyOverviewSection({
         <div className="flex gap-6">
           <div className="w-1/4">
             <p className="text-sm text-gray-700">{tableDescription}</p>
+            <div className="mt-4 p-3 border border-blue-100 bg-blue-50 rounded-md">
+              <p className="text-xs text-blue-700 font-medium">Risk Calculation Method</p>
+              <ul className="text-xs text-blue-700 mt-1 list-disc pl-4 space-y-1">
+                <li>Scores from 10-min readings: RH &lt;60%: 0pts, 60-70%: 1pt, &gt;70%: 2pts</li>
+                <li>Temp &lt;16°C: +1pt (condensation risk)</li>
+                <li>Good: &lt;20% of max possible score</li>
+                <li>Caution: 20-40% of max possible score</li>
+                <li>Alarm: &gt;40% of max possible score</li>
+              </ul>
+            </div>
           </div>
           <div className="w-3/4">
             <div className="overflow-x-auto">
@@ -47,7 +57,9 @@ export function MonthlyOverviewSection({
                     <TableHead className="text-right">RH (%)</TableHead>
                     <TableHead className="text-right">Dew Point (°C)</TableHead>
                     <TableHead>Risk Level</TableHead>
-                    <TableHead>Time in High RH</TableHead>
+                    <TableHead>Overall Risk</TableHead>
+                    <TableHead className="text-right">No. of Alarms</TableHead>
+                    <TableHead className="text-right">Time at Risk (h)</TableHead>
                     <TableHead>Comments</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -64,7 +76,13 @@ export function MonthlyOverviewSection({
                           {row.risk}
                         </Badge>
                       </TableCell>
-                      <TableCell>{row.timeInHighRh}</TableCell>
+                      <TableCell>
+                        <Badge variant={row.overallRisk === 'Alarm' ? 'destructive' : row.overallRisk === 'Caution' ? 'secondary' : 'success'}>
+                          {row.overallRisk}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">{row.alarmCount}</TableCell>
+                      <TableCell className="text-right">{row.timeAtRisk}</TableCell>
                       <TableCell>{row.comments}</TableCell>
                     </TableRow>
                   ))}
