@@ -1,11 +1,15 @@
+
 import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { ChartConfig } from "./Chart/ChartConfig";
 import { generateMockData, getXAxisKey } from "./Chart/mockDataUtils";
+import { ScatterChartConfig } from "./Chart/ScatterChartConfig";
+
 interface DailyOverviewSectionProps {
   timeRange: string;
   setTimeRange: (value: string) => void;
 }
+
 export function DailyOverviewSection({
   timeRange,
   setTimeRange
@@ -13,7 +17,8 @@ export function DailyOverviewSection({
   // Generate appropriate mock data based on the timeRange
   const chartData = generateMockData(timeRange);
   const xAxisKey = getXAxisKey(timeRange);
-  const chartDescription = "Lowest temps rarely dip below 8°C, highest near 22°C. Humidity remains about 47%, showing steady indoor conditions with minor fluctuations linked to weather or occupancy.";
+  const chartDescription = "Risk assessment based on temperature and humidity conditions. Points show real-time measurements with color indicating risk level: green (low), amber (moderate), red (high risk).";
+  
   return <Card className="border-0 shadow-sm w-full bg-white">
       <CardHeader className="pb-2 w-full">
         <div className="flex flex-row items-center justify-between">
@@ -29,7 +34,7 @@ export function DailyOverviewSection({
             </div>
             <div className="w-full md:w-3/4">
               <div className="h-[250px] relative z-0 w-full">
-                <ChartConfig chartData={chartData} xAxisKey={xAxisKey} />
+                <ScatterChartConfig chartData={chartData} xAxisKey={xAxisKey} />
               </div>
             </div>
           </div>
