@@ -1,8 +1,11 @@
+
 import React from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DewPointChart } from "./DewPointChart";
+import { cn } from "@/lib/utils";
+
 interface RiskGlanceSectionProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
@@ -10,6 +13,7 @@ interface RiskGlanceSectionProps {
   setTimeRange: (value: string) => void;
   monthlyRiskData: any[];
 }
+
 export function RiskGlanceSection({
   activeTab,
   setActiveTab,
@@ -17,6 +21,19 @@ export function RiskGlanceSection({
   setTimeRange,
   monthlyRiskData
 }: RiskGlanceSectionProps) {
+  const getRiskStyles = (risk: string) => {
+    switch(risk) {
+      case 'Good':
+        return "bg-emerald-100 text-white";
+      case 'Caution':
+        return "bg-orange-300 text-black";
+      case 'Alarm':
+        return "bg-red-500 text-white";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
   return <Card className="border-0 shadow-sm mb-10 w-full">
       <CardContent className="w-full py-8 bg-white">
         {activeTab === "today" ? <div className="w-full space-y-8">
@@ -40,7 +57,7 @@ export function RiskGlanceSection({
                       <TableHead className="text-right">Temp (°C)</TableHead>
                       <TableHead className="text-right">RH (%)</TableHead>
                       <TableHead className="text-right">Dew Point (°C)</TableHead>
-                      <TableHead>Risk Level</TableHead>
+                      <TableHead>Overall Risk</TableHead>
                       <TableHead>Time in High RH</TableHead>
                       <TableHead>Comments</TableHead>
                     </TableRow>
@@ -53,8 +70,8 @@ export function RiskGlanceSection({
                         <TableCell className="text-right">{row.rh}</TableCell>
                         <TableCell className="text-right">{row.dewPoint}</TableCell>
                         <TableCell>
-                          <Badge variant={row.risk === 'High' ? 'destructive' : row.risk === 'Medium' ? 'secondary' : 'success'}>
-                            {row.risk}
+                          <Badge className={getRiskStyles(row.overallRisk)}>
+                            {row.overallRisk}
                           </Badge>
                         </TableCell>
                         <TableCell>{row.timeInHighRh}</TableCell>

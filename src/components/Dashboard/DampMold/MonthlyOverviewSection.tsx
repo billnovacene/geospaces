@@ -4,6 +4,7 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface MonthlyOverviewSectionProps {
   timeRange: string;
@@ -17,6 +18,19 @@ export function MonthlyOverviewSection({
   monthlyRiskData 
 }: MonthlyOverviewSectionProps) {
   const tableDescription = "Monthly overview displays risk assessment based on temperature and humidity readings. The Overall Risk status is calculated from aggregated 10-minute sensor readings, with alarm counts and time at risk shown in hours.";
+
+  const getRiskStyles = (risk: string) => {
+    switch(risk) {
+      case 'Good':
+        return "bg-emerald-100 text-white";
+      case 'Caution':
+        return "bg-orange-300 text-black";
+      case 'Alarm':
+        return "bg-red-500 text-white";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
 
   return (
     <Card className="border-0 shadow-sm">
@@ -56,7 +70,6 @@ export function MonthlyOverviewSection({
                     <TableHead className="text-right">Temp (°C)</TableHead>
                     <TableHead className="text-right">RH (%)</TableHead>
                     <TableHead className="text-right">Dew Point (°C)</TableHead>
-                    <TableHead>Risk Level</TableHead>
                     <TableHead>Overall Risk</TableHead>
                     <TableHead className="text-right">No. of Alarms</TableHead>
                     <TableHead className="text-right">Time at Risk (h)</TableHead>
@@ -72,17 +85,16 @@ export function MonthlyOverviewSection({
                       <TableCell className="text-right">{row.rh}</TableCell>
                       <TableCell className="text-right">{row.dewPoint}</TableCell>
                       <TableCell>
-                        <Badge variant={row.risk === 'High' ? 'destructive' : row.risk === 'Medium' ? 'secondary' : 'success'}>
-                          {row.risk}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={row.overallRisk === 'Alarm' ? 'destructive' : row.overallRisk === 'Caution' ? 'secondary' : 'success'}>
+                        <Badge className={getRiskStyles(row.overallRisk)}>
                           {row.overallRisk}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right">{row.alarmCount}</TableCell>
-                      <TableCell className="text-right">{row.timeAtRisk}</TableCell>
+                      <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 font-medium")}>
+                        {row.alarmCount}
+                      </TableCell>
+                      <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 font-medium")}>
+                        {row.timeAtRisk}
+                      </TableCell>
                       <TableCell>{row.comments}</TableCell>
                     </TableRow>
                   ))}
