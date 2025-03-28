@@ -17,10 +17,10 @@ export function DailyOverviewSection({
   const riskData = generateStackedRiskData(timeRange);
   const chartDescription = "Stacked column chart showing the daily risk distribution by percentage. Each column represents the proportion of measurements falling into Good (green), Caution (amber), or Alarm (red) risk categories based on temperature and humidity levels.";
   
-  return <Card className="border-0 shadow-sm w-full bg-white">
+  return <Card className="border-0 shadow-sm w-full bg-card text-card-foreground">
       <CardHeader className="pb-2 w-full">
         <div className="flex flex-row items-center justify-between">
-          <CardTitle className="text-xl font-medium text-gray-900">Daily Overview</CardTitle>
+          <CardTitle className="text-xl font-medium text-card-foreground">Daily Overview</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="w-full">
@@ -28,10 +28,10 @@ export function DailyOverviewSection({
           {/* Chart layout with description on the left - using same alignment pattern as header */}
           <div className="flex flex-col md:flex-row gap-6 w-full">
             <div className="w-full md:w-1/4">
-              <p className="text-sm text-gray-700">{chartDescription}</p>
-              <div className="mt-4 p-3 border border-blue-100 bg-blue-50 rounded-md">
-                <p className="text-xs text-blue-700 font-medium">Mould Risk Scoring</p>
-                <ul className="text-xs text-blue-700 mt-1 list-disc pl-4 space-y-1">
+              <p className="text-sm text-card-foreground/80">{chartDescription}</p>
+              <div className="mt-4 p-3 border border-blue-100 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-900 rounded-md">
+                <p className="text-xs text-blue-700 dark:text-blue-400 font-medium">Mould Risk Scoring</p>
+                <ul className="text-xs text-blue-700 dark:text-blue-400 mt-1 list-disc pl-4 space-y-1">
                   <li>RH &lt;60%: Low risk (Good - green)</li>
                   <li>RH 60-69%: Moderate risk (Caution - amber)</li>
                   <li>RH ≥70%: High risk (Alarm - red)</li>
