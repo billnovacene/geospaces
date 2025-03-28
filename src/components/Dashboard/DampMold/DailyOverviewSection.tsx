@@ -1,9 +1,8 @@
 
 import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { ChartConfig } from "./Chart/ChartConfig";
-import { generateMockData, getXAxisKey } from "./Chart/mockDataUtils";
-import { ScatterChartConfig } from "./Chart/ScatterChartConfig";
+import { generateStackedRiskData } from "./Chart/mockRiskDataUtils";
+import { StackedRiskColumnChart } from "./Chart/StackedRiskColumnChart";
 
 interface DailyOverviewSectionProps {
   timeRange: string;
@@ -15,9 +14,8 @@ export function DailyOverviewSection({
   setTimeRange
 }: DailyOverviewSectionProps) {
   // Generate appropriate mock data based on the timeRange
-  const chartData = generateMockData(timeRange);
-  const xAxisKey = getXAxisKey(timeRange);
-  const chartDescription = "Risk assessment based on temperature and humidity using industry standards. Points show measurements with color indicating risk level: green (<60% RH), amber (60-69% RH), red (≥70% RH). Temperature below 16°C increases risk.";
+  const riskData = generateStackedRiskData(timeRange);
+  const chartDescription = "Stacked column chart showing the daily risk distribution by percentage. Each column represents the proportion of measurements falling into Good (green), Caution (amber), or Alarm (red) risk categories based on temperature and humidity levels.";
   
   return <Card className="border-0 shadow-sm w-full bg-white">
       <CardHeader className="pb-2 w-full">
@@ -34,16 +32,16 @@ export function DailyOverviewSection({
               <div className="mt-4 p-3 border border-blue-100 bg-blue-50 rounded-md">
                 <p className="text-xs text-blue-700 font-medium">Mould Risk Scoring</p>
                 <ul className="text-xs text-blue-700 mt-1 list-disc pl-4 space-y-1">
-                  <li>RH &lt;60%: Low risk (green)</li>
-                  <li>RH 60-69%: Moderate risk (amber)</li>
-                  <li>RH ≥70%: High risk (red)</li>
+                  <li>RH &lt;60%: Low risk (Good - green)</li>
+                  <li>RH 60-69%: Moderate risk (Caution - amber)</li>
+                  <li>RH ≥70%: High risk (Alarm - red)</li>
                   <li>Temperature &lt;16°C adds additional risk</li>
                 </ul>
               </div>
             </div>
             <div className="w-full md:w-3/4">
               <div className="h-[250px] relative z-0 w-full">
-                <ScatterChartConfig chartData={chartData} xAxisKey={xAxisKey} />
+                <StackedRiskColumnChart data={riskData} />
               </div>
             </div>
           </div>

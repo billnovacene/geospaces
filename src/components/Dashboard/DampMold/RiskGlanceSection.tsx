@@ -58,7 +58,8 @@ export function RiskGlanceSection({
                       <TableHead className="text-right">RH (%)</TableHead>
                       <TableHead className="text-right">Dew Point (°C)</TableHead>
                       <TableHead>Overall Risk</TableHead>
-                      <TableHead>Time in High RH</TableHead>
+                      <TableHead className="text-right">No. of Alarms</TableHead>
+                      <TableHead className="text-right">Time at Risk (h)</TableHead>
                       <TableHead>Comments</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -74,7 +75,12 @@ export function RiskGlanceSection({
                             {row.overallRisk}
                           </Badge>
                         </TableCell>
-                        <TableCell>{row.timeInHighRh}</TableCell>
+                        <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 font-medium")}>
+                          {row.alarmCount}
+                        </TableCell>
+                        <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 font-medium")}>
+                          {row.timeAtRisk}
+                        </TableCell>
                         <TableCell>{row.comments}</TableCell>
                       </TableRow>)}
                   </TableBody>
