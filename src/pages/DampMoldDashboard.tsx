@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { DashboardSidebar } from "@/components/Dashboard/DashboardSidebar";
 import { Droplet } from "lucide-react";
 import { SidebarWrapper } from "@/components/Dashboard/SidebarWrapper";
@@ -7,7 +7,7 @@ import { useParams, useLocation } from "react-router-dom";
 import { DampMoldView } from "@/components/Dashboard/DampMold/DampMoldView";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { SummaryStats } from "@/components/Dashboard/DampMold/SummaryStats";
+import { SummaryStats, StatItem } from "@/components/Dashboard/DampMold/SummaryStats";
 
 const DampMoldDashboard = () => {
   const {
@@ -18,33 +18,40 @@ const DampMoldDashboard = () => {
     zoneId: string;
   }>();
   const location = useLocation();
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  
   console.log("DampMoldDashboard params:", {
     siteId,
     zoneId
   });
   console.log("Current route:", location.pathname);
 
-  // Summary stats for damp and mold conditions
+  // Summary stats for damp and mold conditions with keys for filtering
   const summaryStats = [{
     value: "5",
     label: "Buildings Connected",
-    type: "normal" as const
+    type: "normal" as const,
+    key: "buildings"
   }, {
     value: "46",
     label: "Zones Monitored",
-    type: "normal" as const
+    type: "normal" as const,
+    key: "zones"
   }, {
     value: "1",
     label: "Zones High Risk",
-    type: "high-risk" as const
+    type: "high-risk" as const,
+    key: "high-risk"
   }, {
     value: "3",
     label: "Zones Caution",
-    type: "caution" as const
+    type: "caution" as const,
+    key: "caution"
   }, {
     value: "42",
     label: "Total Zones Normal",
-    type: "success" as const
+    type: "success" as const,
+    key: "normal"
   }];
   
   // Effect to apply any saved settings when the dashboard loads
@@ -54,23 +61,39 @@ const DampMoldDashboard = () => {
     console.log("DampMoldDashboard loaded - applying any saved settings");
   }, []);
   
+  const handleStatClick = (stat: StatItem) => {
+    console.log("Stat clicked:", stat);
+    // Toggle the filter if the same stat is clicked again
+    if (activeFilter === stat.key) {
+      setActiveFilter(null);
+    } else {
+      setActiveFilter(stat.key);
+    }
+  };
+  
   return <SidebarWrapper>
       <div className="flex-1 overflow-auto bg-[#F9FAFB] min-h-screen">
         <div className="container mx-auto py-6 px-4 md:px-6">
           {/* Header section with title and stats */}
           <div className="mb-6">
-            <div className="flex flex-row items-center justify-between px-[20px] bg-white">
-              <div className="flex flex-col px-[30px]">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-[20px] py-[20px] bg-white rounded-lg shadow-sm">
+              <div className="flex flex-col mb-6 md:mb-0 md:w-1/4 pr-4">
                 <h1 className="heading-1 mb-1 font-light text-left text-3xl">Damp & Mold</h1>
-                <p className="body-normal text-sm font-extralight">Damp & Mold</p>
+                <p className="body-normal text-sm font-extralight">Active Insights & Alert Status</p>
               </div>
               
               {/* Summary stats displayed via the new component */}
-              <SummaryStats stats={summaryStats} />
+              <div className="md:w-3/4">
+                <SummaryStats 
+                  stats={summaryStats} 
+                  onStatClick={handleStatClick}
+                  activeFilter={activeFilter}
+                />
+              </div>
             </div>
           </div>
 
-          <DampMoldView />
+          <DampMoldView activeFilter={activeFilter} />
         </div>
       </div>
     </SidebarWrapper>;

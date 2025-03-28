@@ -12,6 +12,7 @@ interface RiskGlanceSectionProps {
   timeRange: string;
   setTimeRange: (value: string) => void;
   monthlyRiskData: any[];
+  activeFilter?: string | null;
 }
 
 export function RiskGlanceSection({
@@ -19,14 +20,15 @@ export function RiskGlanceSection({
   setActiveTab,
   timeRange,
   setTimeRange,
-  monthlyRiskData
+  monthlyRiskData,
+  activeFilter = null
 }: RiskGlanceSectionProps) {
   const getRiskStyles = (risk: string) => {
     switch(risk) {
       case 'Good':
-        return "bg-emerald-100 text-white";
+        return "bg-emerald-100 text-emerald-800";
       case 'Caution':
-        return "bg-orange-300 text-black";
+        return "bg-orange-300 text-orange-800";
       case 'Alarm':
         return "bg-red-500 text-white";
       default:
@@ -35,6 +37,16 @@ export function RiskGlanceSection({
   };
 
   return <Card className="border-0 shadow-sm mb-10 w-full">
+      {activeFilter && (
+        <div className="bg-blue-50 p-3 border-b border-blue-100">
+          <p className="text-sm text-blue-700">
+            Filtering by: <span className="font-medium capitalize">{activeFilter}</span>
+            {activeFilter === 'high-risk' && " - showing only high risk zones"}
+            {activeFilter === 'caution' && " - showing only caution zones"}
+            {activeFilter === 'normal' && " - showing only normal zones"}
+          </p>
+        </div>
+      )}
       <CardContent className="w-full py-8 bg-white">
         {activeTab === "today" ? <div className="w-full space-y-8">
             <div className="relative w-full">
@@ -45,6 +57,11 @@ export function RiskGlanceSection({
               <p className="text-sm text-gray-700">
                 Monthly data shows historical patterns of humidity and temperature, 
                 highlighting zones that have experienced sustained high-risk conditions.
+                {activeFilter && (
+                  <span className="block mt-2 text-blue-700 font-medium">
+                    Currently filtering data by {activeFilter}.
+                  </span>
+                )}
               </p>
             </div>
             <div className="w-full md:w-3/4">
@@ -64,25 +81,35 @@ export function RiskGlanceSection({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {monthlyRiskData.map(row => <TableRow key={row.id}>
-                        <TableCell className="font-medium">{row.building}</TableCell>
-                        <TableCell>{row.zone}</TableCell>
-                        <TableCell className="text-right">{row.temp}</TableCell>
-                        <TableCell className="text-right">{row.rh}</TableCell>
-                        <TableCell className="text-right">{row.dewPoint}</TableCell>
-                        <TableCell>
-                          <Badge className={getRiskStyles(row.overallRisk)}>
-                            {row.overallRisk}
-                          </Badge>
+                    {monthlyRiskData.length > 0 ? (
+                      monthlyRiskData.map(row => (
+                        <TableRow key={row.id}>
+                          <TableCell className="font-medium">{row.building}</TableCell>
+                          <TableCell>{row.zone}</TableCell>
+                          <TableCell className="text-right">{row.temp}</TableCell>
+                          <TableCell className="text-right">{row.rh}</TableCell>
+                          <TableCell className="text-right">{row.dewPoint}</TableCell>
+                          <TableCell>
+                            <Badge className={getRiskStyles(row.overallRisk)}>
+                              {row.overallRisk}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 font-medium")}>
+                            {row.alarmCount}
+                          </TableCell>
+                          <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 font-medium")}>
+                            {row.timeAtRisk}
+                          </TableCell>
+                          <TableCell>{row.comments}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={9} className="text-center py-6 text-gray-500">
+                          No data available for the current filter.
                         </TableCell>
-                        <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 font-medium")}>
-                          {row.alarmCount}
-                        </TableCell>
-                        <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 font-medium")}>
-                          {row.timeAtRisk}
-                        </TableCell>
-                        <TableCell>{row.comments}</TableCell>
-                      </TableRow>)}
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </div>
