@@ -1,8 +1,8 @@
 
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { SidebarSection } from "../SidebarSection";
-import { SidebarDashboardItem } from "../SidebarDashboardItem";
+import { SidebarSection } from "./SidebarSection";
+import { SidebarDashboardItem } from "./SidebarDashboardItem";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface SidebarDashboardsSectionProps {
