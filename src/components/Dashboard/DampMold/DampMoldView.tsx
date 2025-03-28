@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -12,6 +13,7 @@ import { DailyOverviewSection } from "./DailyOverviewSection";
 import { MonthlyOverviewSection } from "./MonthlyOverviewSection";
 import { generateMonthlyRiskData } from "./utils/mockRiskData";
 import { generateMockData } from "@/services/sensors/mock-data-generator";
+import { LogItem } from "@/hooks/temperature/types";
 
 interface DampMoldViewProps {
   contextType?: "zone" | "site" | "all";
@@ -133,10 +135,10 @@ export function DampMoldView({
       {process.env.NODE_ENV === 'development' && (
         <div className="mt-8">
           <LogPanel logs={[
-            { message: 'Using simulated data only', type: 'info', timestamp: new Date().toISOString() },
+            { message: 'Using simulated data only', type: 'info' as const, timestamp: new Date().toISOString() },
             ...(activeFilter ? [{ 
               message: `Filtering data by: ${activeFilter}`, 
-              type: 'info', 
+              type: 'info' as const, 
               timestamp: new Date().toISOString() 
             }] : [])
           ]} onClearLogs={() => {}} title="Damp & Mold Monitoring Logs" />

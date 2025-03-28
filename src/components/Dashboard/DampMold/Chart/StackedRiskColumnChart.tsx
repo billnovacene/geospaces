@@ -62,17 +62,25 @@ export function StackedRiskColumnChart({ data }: StackedRiskColumnChartProps) {
           }}
         />
         <Tooltip 
-          formatter={(value, name) => [`${value.toFixed(1)}%`, name]}
+          formatter={(value: number | string, name) => {
+            // Ensure value is treated as a number for toFixed
+            const numValue = typeof value === 'string' ? parseFloat(value) : value;
+            return [`${numValue.toFixed(1)}%`, name];
+          }}
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
               return (
                 <div className="bg-white p-3 border border-gray-200 shadow-md rounded-md">
                   <p className="text-sm font-medium">{label}</p>
-                  {payload.map((entry, index) => (
-                    <p key={index} className="text-xs" style={{ color: entry.color }}>
-                      {entry.name}: {entry.value.toFixed(1)}%
-                    </p>
-                  ))}
+                  {payload.map((entry, index) => {
+                    // Ensure value is treated as a number for toFixed
+                    const numValue = typeof entry.value === 'string' ? parseFloat(entry.value) : entry.value;
+                    return (
+                      <p key={index} className="text-xs" style={{ color: entry.color }}>
+                        {entry.name}: {numValue.toFixed(1)}%
+                      </p>
+                    );
+                  })}
                 </div>
               );
             }
