@@ -70,8 +70,8 @@ export function SidebarDashboardItem({
   
   const collapsibleContent = (
     <div className="ml-7 pl-3 py-2 border-l border-gray-200">
-      <div className="text-sm text-gray-600 py-1 text-right">Dashboard Details</div>
-      <div className="text-sm text-gray-600 py-1 text-right">Settings</div>
+      <div className="text-sm text-gray-600 py-1">Dashboard Details</div>
+      <div className="text-sm text-gray-600 py-1">Settings</div>
     </div>
   );
   
@@ -83,22 +83,20 @@ export function SidebarDashboardItem({
       <div className="flex items-center gap-3 w-full">
         {isSelected ? (
           <>
-            <div className="ml-auto">
-              <span className="nav-item-active uppercase">{displayName}</span>
-            </div>
             <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-            {isOpen ? (
-              <ChevronUp size={16} className="text-gray-400" />
-            ) : (
-              <ChevronDown size={16} className="text-gray-400" />
-            )}
+            <span className="nav-item-active font-light uppercase">{displayName}</span>
+            <div className="ml-auto">
+              {isOpen ? (
+                <ChevronUp size={16} className="text-gray-400" />
+              ) : (
+                <ChevronDown size={16} className="text-gray-400" />
+              )}
+            </div>
           </>
         ) : (
           <>
-            <div className="ml-auto">
-              <span className="nav-item">{displayName}</span>
-            </div>
             <Circle size={14} className="text-zinc-400" />
+            <span className="nav-item font-light">{displayName}</span>
           </>
         )}
       </div>
