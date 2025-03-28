@@ -79,14 +79,15 @@ export function SidebarDashboardItem({
     <div 
       className={cn(
         "flex items-center py-2.5 px-5 cursor-pointer sidebar-hover-item w-full",
-        isSelected ? "nav-item-active" : "nav-item"
+        isSelected ? "nav-item-active" : "nav-item",
+        isSelected && "dark:bg-gray-700"
       )}
     >
       <div className="flex items-center gap-3 w-full">
         {isSelected ? (
           <>
             <div className="w-1.5 h-1.5 rounded-full bg-current" />
-            <span>{displayName}</span>
+            <span className="dark:text-white">{displayName}</span>
             <div className="ml-auto">
               {isOpen ? (
                 <ChevronUp size={16} className="text-current" />
@@ -98,7 +99,7 @@ export function SidebarDashboardItem({
         ) : (
           <>
             <Circle size={14} className="text-current opacity-60" />
-            <span>{displayName}</span>
+            <span className="dark:text-gray-300">{displayName}</span>
           </>
         )}
       </div>

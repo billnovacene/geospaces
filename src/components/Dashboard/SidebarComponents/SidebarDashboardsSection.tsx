@@ -22,10 +22,10 @@ export function SidebarDashboardsSection({
   const isOverviewActive = !location.pathname.includes('/dashboard');
 
   return (
-    <div className="sticky top-0 z-10 bg-sidebar">
+    <div className="sticky top-0 z-10 bg-sidebar dark:bg-gray-800">
       <SidebarSection title="Dashboards" defaultOpen={true}>
-        <div className="py-2.5 px-5 cursor-pointer sidebar-hover-item flex items-center">
-          <span className="nav-item">Dashboards</span>
+        <div className="py-2.5 px-5 cursor-pointer sidebar-hover-item flex items-center dark:hover:bg-gray-700">
+          <span className="nav-item dark:text-gray-300">Dashboards</span>
         </div>
         <SidebarDashboardItem 
           name="All Data" 

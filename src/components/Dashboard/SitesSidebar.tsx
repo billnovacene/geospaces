@@ -139,7 +139,7 @@ export function SitesSidebar({
           </div>
         )}
       </CollapsibleContent>
-      <Separator className="mx-0 w-full opacity-30" />
+      <Separator className="mx-0 w-full opacity-30 dark:bg-gray-700" />
     </Collapsible>
   );
 }

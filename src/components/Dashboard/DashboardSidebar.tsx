@@ -56,8 +56,8 @@ export function DashboardSidebar() {
   }, []);
   
   return (
-    <Sidebar className="border-r border-transparent">
-      <UISidebarContent className="p-0 flex flex-col h-full bg-sidebar">
+    <Sidebar className="border-r border-transparent dark:bg-gray-800">
+      <UISidebarContent className="p-0 flex flex-col h-full bg-sidebar dark:bg-gray-800">
         <SidebarHeader />
 
         {/* Sticky Dashboards Section at the top */}
