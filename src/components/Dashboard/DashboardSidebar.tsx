@@ -20,7 +20,7 @@ export function DashboardSidebar() {
   } = useSidebarData();
   
   return (
-    <Sidebar className="border-r border-sidebar-border w-[280px]">
+    <Sidebar className="w-[280px]">
       <UISidebarContent className="p-0 flex flex-col h-full">
         <SidebarHeader />
 

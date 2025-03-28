@@ -63,7 +63,7 @@ export function SitesSidebar({
       className="w-full"
     >
       <CollapsibleTrigger className="w-full">
-        <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-white border-b border-gray-100 cursor-pointer">
+        <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-white cursor-pointer">
           <span>Sites</span>
           <span>
             {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -126,7 +126,7 @@ export function SitesSidebar({
                 
                 {/* Zones hierarchy for the expanded site */}
                 {expandedSiteId === site.id && (
-                  <div className="ml-5 pl-4 border-l border-gray-200">
+                  <div className="ml-5 pl-4">
                     <ZonesHierarchy 
                       siteId={site.id} 
                       preserveDashboardRoute={preserveDashboardRoute}

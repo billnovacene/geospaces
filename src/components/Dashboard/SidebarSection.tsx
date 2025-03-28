@@ -24,7 +24,7 @@ export function SidebarSection({
       className="w-full"
     >
       <CollapsibleTrigger className="w-full">
-        <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-white border-b border-gray-100 cursor-pointer">
+        <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-white cursor-pointer">
           <span>{title}</span>
           <span>
             {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -34,7 +34,7 @@ export function SidebarSection({
       <CollapsibleContent>
         {children}
       </CollapsibleContent>
-      <Separator className="mx-0 w-full opacity-30" />
+      <Separator className="mx-0 w-full opacity-20" />
     </Collapsible>
   );
 }
