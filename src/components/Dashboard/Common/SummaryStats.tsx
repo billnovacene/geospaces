@@ -36,13 +36,13 @@ export function SummaryStats({
   // Helper function to get color based on type
   const getTypeColor = (type: string): string => {
     switch(type) {
-      case "high-risk": return "text-red-500 dark:text-red-400";
-      case "caution": return "text-amber-400 dark:text-amber-300";
-      case "success": return "text-green-500 dark:text-green-400";
-      case "normal": return "text-blue-500 dark:text-blue-400";
-      case "warning": return "text-orange-500 dark:text-orange-400";
-      case "neutral": return "text-gray-500 dark:text-gray-400";
-      default: return "text-gray-500 dark:text-gray-400";
+      case "high-risk": return "text-white dark:text-white";
+      case "caution": return "text-white dark:text-white";
+      case "success": return "text-white dark:text-white";
+      case "normal": return "text-white dark:text-white";
+      case "warning": return "text-white dark:text-white";
+      case "neutral": return "text-white dark:text-white";
+      default: return "text-white dark:text-white";
     }
   };
   
@@ -151,3 +151,4 @@ export function SummaryStats({
     </>
   );
 }
+
