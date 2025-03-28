@@ -1,10 +1,8 @@
 
 import React, { useState } from "react";
-import { DashboardSidebar } from "@/components/Dashboard/DashboardSidebar";
 import { SidebarWrapper } from "@/components/Dashboard/SidebarWrapper";
 import { useParams, useLocation } from "react-router-dom";
 import { DampMoldView } from "@/components/Dashboard/DampMold/DampMoldView";
-import { Card } from "@/components/ui/card";
 import { SummaryStats, StatItem } from "@/components/Dashboard/DampMold/SummaryStats";
 import { GlobalNavigationHeader } from "@/components/Dashboard/Common/GlobalNavigationHeader";
 
@@ -75,33 +73,32 @@ const DampMoldDashboard = () => {
           customDashboardType="damp-mold"
         />
         
-        <div className="dashboard-container">
-          {/* Header section with title and stats */}
-          <div className="mb-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-[20px] py-[20px] bg-card rounded-lg shadow-sm">
-              <div className="flex flex-col mb-6 md:mb-0 md:w-1/4 pr-4">
-                <h1 className="heading-1 mb-1 font-light text-left text-3xl">Damp & Mold</h1>
-                <p className="body-normal text-sm font-extralight text-muted-foreground">Active Insights & Alert Status</p>
-              </div>
-              
-              {/* Summary stats displayed via the new component */}
-              <div className="md:w-3/4">
-                <SummaryStats 
-                  stats={summaryStats} 
-                  onStatClick={handleStatClick}
-                  activeFilter={activeFilter}
-                />
-              </div>
+        {/* Header section with title and stats */}
+        <div className="mb-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-[20px] py-[20px] bg-card rounded-lg shadow-sm">
+            <div className="flex flex-col mb-6 md:mb-0 md:w-1/4 pr-4">
+              <h1 className="heading-1 mb-1 font-light text-left text-3xl">Damp & Mold</h1>
+              <p className="body-normal text-sm font-extralight text-muted-foreground">Active Insights & Alert Status</p>
+            </div>
+            
+            {/* Summary stats displayed via the new component */}
+            <div className="md:w-3/4">
+              <SummaryStats 
+                stats={summaryStats} 
+                onStatClick={handleStatClick}
+                activeFilter={activeFilter}
+              />
             </div>
           </div>
-
-          <DampMoldView 
-            activeFilter={activeFilter} 
-            currentDate={currentDate}
-          />
         </div>
+
+        <DampMoldView 
+          activeFilter={activeFilter} 
+          currentDate={currentDate}
+        />
       </div>
     </SidebarWrapper>
   );
 };
+
 export default DampMoldDashboard;

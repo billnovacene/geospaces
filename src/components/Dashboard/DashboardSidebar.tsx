@@ -20,8 +20,8 @@ export function DashboardSidebar() {
   } = useSidebarData();
   
   return (
-    <Sidebar className="w-[280px]">
-      <UISidebarContent className="p-0 flex flex-col h-full">
+    <Sidebar className="border-r border-border">
+      <UISidebarContent className="p-0 flex flex-col h-full bg-sidebar">
         <SidebarHeader />
 
         {/* Sticky Dashboards Section at the top */}
