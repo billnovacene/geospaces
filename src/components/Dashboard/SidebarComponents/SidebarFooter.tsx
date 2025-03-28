@@ -1,28 +1,42 @@
+
 import React from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { SidebarFooter as UISidebarFooter } from "@/components/ui/sidebar";
+
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || "1.2.4";
+
 export function SidebarFooterContent() {
-  const {
-    theme,
-    toggleTheme
-  } = useTheme();
-  return <UISidebarFooter className="border-t border-sidebar-border p-4 bg-white dark:bg-gray-800">
+  const { theme, toggleTheme } = useTheme();
+
+  return (
+    <UISidebarFooter className="border-t border-sidebar-border p-4 bg-white dark:bg-gray-800">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8 bg-transparent cursor-pointer transition-all duration-300 hover:scale-110 overflow-hidden relative" onClick={toggleTheme}>
-            <img src="/lovable-uploads/89e548e5-9c07-4eac-b530-ba4a612f8dac.png" alt="Light mode logo" className="absolute inset-0 h-full w-full transition-all duration-500" style={{
-            opacity: theme === 'light' ? 1 : 0,
-            transform: `scale(${theme === 'light' ? 1 : 0.8})`
-          }} />
-            <img alt="Dark mode logo" className="absolute inset-0 h-full w-full transition-all duration-500" style={{
-            opacity: theme === 'dark' ? 1 : 0,
-            transform: `scale(${theme === 'dark' ? 1 : 0.8})`
-          }} src="/lovable-uploads/ecd25c96-c081-4b99-aaa6-52c3fb015599.png" />
-            <AvatarFallback>{theme === "light" ? "L" : "D"}</AvatarFallback>
+            <img 
+              src="/lovable-uploads/89e548e5-9c07-4eac-b530-ba4a612f8dac.png" 
+              alt="Light mode logo" 
+              className="absolute inset-0 h-full w-full logo-transition" 
+              style={{
+                opacity: theme === 'light' ? 1 : 0,
+                transform: `scale(${theme === 'light' ? 1 : 0.8})`
+              }} 
+            />
+            <img 
+              src="/lovable-uploads/ecd25c96-c081-4b99-aaa6-52c3fb015599.png" 
+              alt="Dark mode logo" 
+              className="absolute inset-0 h-full w-full logo-transition" 
+              style={{
+                opacity: theme === 'dark' ? 1 : 0,
+                transform: `scale(${theme === 'dark' ? 1 : 0.8})`
+              }} 
+            />
+            <AvatarFallback>
+              {theme === "light" ? "L" : "D"}
+            </AvatarFallback>
           </Avatar>
           <div>
             <div className="font-semibold text-sm dark:text-white">Novacene</div>
@@ -36,5 +50,6 @@ export function SidebarFooterContent() {
           <MoreVertical className="h-5 w-5" />
         </Button>
       </div>
-    </UISidebarFooter>;
+    </UISidebarFooter>
+  );
 }
