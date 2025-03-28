@@ -1,0 +1,78 @@
+
+@layer base {
+  :root {
+    /* Base colors */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --border: 0 0% 100%; /* Transparent borders */
+    --input: 220 13% 91%;
+    --radius: 0.5rem;
+
+    /* Green theme (default) */
+    --primary: 142 76% 36%;
+    --primary-foreground: 355 100% 100%;
+    --secondary: 142 33% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 142 76% 36%;
+
+    /* Sidebar colors - green theme */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 142 76% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 142 50% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 0 0% 100%; /* Transparent borders */
+    --sidebar-ring: 142 76% 36%;
+  }
+
+  /* Blue theme */
+  [data-color-scheme="blue"] {
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --accent: 210 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --ring: 210 100% 50%;
+
+    /* Sidebar colors - blue theme */
+    --sidebar-primary: 210 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 64% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-ring: 210 100% 50%;
+  }
+
+  /* Purple theme */
+  [data-color-scheme="purple"] {
+    --primary: 250 95% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --accent: 250 95% 65%;
+    --accent-foreground: 0 0% 100%;
+    --ring: 250 95% 65%;
+
+    /* Sidebar colors - purple theme */
+    --sidebar-primary: 250 95% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 250 64% 20%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-ring: 250 95% 65%;
+  }
+}

@@ -4,7 +4,9 @@
 @tailwind utilities;
 
 /* Import theme variables */
-@import './styles/theme.css';
+@import './styles/color-scheme.css';
+@import './styles/dark-mode.css';
+@import './styles/base-styles.css';
 
 /* Import typography styles */
 @import './styles/typography.css';

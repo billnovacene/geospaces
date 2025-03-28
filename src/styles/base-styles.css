@@ -1,0 +1,47 @@
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+}
+
+/* Theme toggle animation */
+.theme-toggle {
+  @apply transition-transform duration-300;
+}
+
+.theme-toggle[data-state="checked"] {
+  @apply transform rotate-180;
+}
+
+/* Card theme transitions */
+.card,
+.card-header,
+.card-footer,
+.card-title,
+.card-description,
+.card-content {
+  @apply transition-colors duration-300;
+}
+
+/* Additional theme transitions for specific elements */
+button, a, input, select, textarea {
+  @apply transition-colors duration-300;
+}
+
+/* Chart elements transitions */
+.recharts-cartesian-grid-bg,
+.recharts-cartesian-grid line,
+.recharts-xAxis line,
+.recharts-yAxis line,
+.recharts-brush rect {
+  @apply transition-colors duration-300;
+}
+
+.recharts-text {
+  @apply transition-colors duration-300;
+}
