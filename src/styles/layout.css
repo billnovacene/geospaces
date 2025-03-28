@@ -18,7 +18,7 @@
 
   /* Dashboard container that works with the sidebar */
   .dashboard-container {
-    @apply w-full px-4 md:px-6 transition-all duration-300;
+    @apply w-full px-4 md:px-6 transition-all duration-300 relative;
   }
 
   /* When sidebar is expanded */
