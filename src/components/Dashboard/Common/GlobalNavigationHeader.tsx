@@ -19,7 +19,7 @@ export function GlobalNavigationHeader({
   
   return (
     <div className="w-full bg-white border-b border-gray-200 mb-6">
-      <div className="container mx-auto py-4 px-4 md:px-6">
+      <div className="container mx-auto px-4 md:px-6 py-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <GlobalBreadcrumbNav customDashboardType={customDashboardType} />
           
