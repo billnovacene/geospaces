@@ -20,8 +20,8 @@ export function SidebarFooterContent() {
             onClick={toggleTheme}
           >
             <img 
-              src="/lovable-uploads/9cf0558e-66cb-4e51-9e6c-01d8da0188b1.png" 
-              alt="Logo" 
+              src="/lovable-uploads/89e548e5-9c07-4eac-b530-ba4a612f8dac.png" 
+              alt="Light mode logo" 
               className="absolute inset-0 h-full w-full transition-all duration-500"
               style={{ 
                 opacity: theme === 'light' ? 1 : 0,
@@ -29,8 +29,8 @@ export function SidebarFooterContent() {
               }}
             />
             <img 
-              src="/lovable-uploads/9cf0558e-66cb-4e51-9e6c-01d8da0188b1.png" 
-              alt="Logo" 
+              src="/lovable-uploads/e8e7b15c-412f-425f-a64f-04297a69d2ca.png" 
+              alt="Dark mode logo" 
               className="absolute inset-0 h-full w-full transition-all duration-500"
               style={{ 
                 opacity: theme === 'dark' ? 1 : 0,
