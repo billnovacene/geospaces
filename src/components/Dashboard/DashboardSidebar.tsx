@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
-import { Settings, Search, MoreVertical, Home, Building, Package, Droplet } from "lucide-react";
+import { Settings, Search, MoreVertical, Home, Building, Package, Droplet, Thermometer } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -54,10 +54,10 @@ export function DashboardSidebar() {
   return (
     <Sidebar className="border-r border-[#E5E7EB] bg-white w-[280px]">
       <SidebarContent className="p-0 flex flex-col h-full">
-        <div className="p-5 flex items-center justify-between border-b border-[#E5E7EB] bg-white">
-          <div className="space-y-1.5">
-            <div className="text-sm text-[#8E9196]">Projects</div>
-            <h2 className="text-xl font-bold text-zinc-950">Zircon</h2>
+        <div className="h-16 flex items-center justify-between border-b border-[#E5E7EB] bg-white px-5">
+          <div className="flex flex-col justify-center">
+            <div className="text-xs text-[#8E9196]">Projects</div>
+            <h2 className="text-base font-bold text-zinc-950">Zircon</h2>
           </div>
           <Button variant="ghost" size="icon" className="text-[#8E9196]">
             <Settings className="h-5 w-5" />
