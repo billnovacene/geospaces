@@ -6,8 +6,7 @@ import { MoreVertical } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { SidebarFooter as UISidebarFooter } from "@/components/ui/sidebar";
 
-// Import process.env to get the build version
-const APP_VERSION = import.meta.env.VITE_APP_VERSION || "1.2.4"; // Fallback to hardcoded version if env var not set
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || "1.2.4";
 
 export function SidebarFooterContent() {
   const { theme, toggleTheme } = useTheme();
@@ -21,8 +20,8 @@ export function SidebarFooterContent() {
             onClick={toggleTheme}
           >
             <img 
-              src="/lovable-uploads/e04538fb-8a3f-43c4-ba17-b41d6191317c.png" 
-              alt="Light logo" 
+              src="/lovable-uploads/9cf0558e-66cb-4e51-9e6c-01d8da0188b1.png" 
+              alt="Logo" 
               className="absolute inset-0 h-full w-full transition-all duration-500"
               style={{ 
                 opacity: theme === 'light' ? 1 : 0,
@@ -30,8 +29,8 @@ export function SidebarFooterContent() {
               }}
             />
             <img 
-              src="/lovable-uploads/c7617745-f793-43e6-b68e-1739f76d0a94.png" 
-              alt="Dark logo" 
+              src="/lovable-uploads/9cf0558e-66cb-4e51-9e6c-01d8da0188b1.png" 
+              alt="Logo" 
               className="absolute inset-0 h-full w-full transition-all duration-500"
               style={{ 
                 opacity: theme === 'dark' ? 1 : 0,
