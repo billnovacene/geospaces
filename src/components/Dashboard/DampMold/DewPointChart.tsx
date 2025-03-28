@@ -29,7 +29,7 @@ export function DewPointChart({
   };
 
   return (
-    <Card className="dark:shadow-lg dark:shadow-black/20">
+    <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium dark:text-white">Dew Point Analysis</CardTitle>
         <DewPointChartControls 
