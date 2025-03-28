@@ -77,25 +77,28 @@ export function SidebarDashboardItem({
   
   const renderTrigger = () => (
     <div 
-      className="flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] dark:hover:bg-gray-800 w-full"
+      className={cn(
+        "flex items-center py-2.5 px-5 cursor-pointer sidebar-hover-item w-full",
+        isSelected ? "nav-item-active" : "nav-item"
+      )}
     >
       <div className="flex items-center gap-3 w-full">
         {isSelected ? (
           <>
-            <div className="w-1.5 h-1.5 rounded-full bg-accent dark:bg-blue-500" />
-            <span className="nav-item-active font-light dark:text-white">{displayName}</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-current" />
+            <span>{displayName}</span>
             <div className="ml-auto">
               {isOpen ? (
-                <ChevronUp size={16} className="text-gray-400 dark:text-gray-500" />
+                <ChevronUp size={16} className="text-current" />
               ) : (
-                <ChevronDown size={16} className="text-gray-400 dark:text-gray-500" />
+                <ChevronDown size={16} className="text-current" />
               )}
             </div>
           </>
         ) : (
           <>
-            <Circle size={14} className="text-zinc-400 dark:text-gray-500" />
-            <span className="nav-item font-light dark:text-gray-300">{displayName}</span>
+            <Circle size={14} className="text-current opacity-60" />
+            <span>{displayName}</span>
           </>
         )}
       </div>
