@@ -11,7 +11,7 @@ import { Typography } from "@/components/Settings/Typography";
 import { TypographyEditor } from "@/components/Settings/Typography/TypographyEditor";
 import { ComponentsSection } from "@/components/Settings/ComponentsSection";
 import { ColorSection } from "@/components/Settings/ColorSection";
-import { NavigationEditor } from "@/components/Settings/NavigationEditor";
+import { NavigationEditor } from "@/components/Settings/Navigation";
 import { TableEditor } from "@/components/Settings/Tables";
 import { ThemeSection } from "@/components/Settings/ThemeSection";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
