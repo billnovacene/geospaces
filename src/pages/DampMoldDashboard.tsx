@@ -65,7 +65,8 @@ const DampMoldDashboard = () => {
     setCurrentDate(date);
   };
   
-  return <SidebarWrapper>
+  return (
+    <SidebarWrapper>
       <div className="flex-1 overflow-auto bg-background min-h-screen">
         {/* Global Navigation Header added at the top */}
         <GlobalNavigationHeader 
@@ -74,7 +75,7 @@ const DampMoldDashboard = () => {
           customDashboardType="damp-mold"
         />
         
-        <div className="dashboard-container px-4 md:px-6">
+        <div className="dashboard-container">
           {/* Header section with title and stats */}
           <div className="mb-6">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-[20px] py-[20px] bg-card rounded-lg shadow-sm">
@@ -100,6 +101,7 @@ const DampMoldDashboard = () => {
           />
         </div>
       </div>
-    </SidebarWrapper>;
+    </SidebarWrapper>
+  );
 };
 export default DampMoldDashboard;

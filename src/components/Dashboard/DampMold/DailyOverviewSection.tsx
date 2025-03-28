@@ -17,7 +17,8 @@ export function DailyOverviewSection({
   const riskData = generateStackedRiskData(timeRange);
   const chartDescription = "Stacked column chart showing the daily risk distribution by percentage. Each column represents the proportion of measurements falling into Good (green), Caution (amber), or Alarm (red) risk categories based on temperature and humidity levels.";
   
-  return <Card className="shadow-sm w-full">
+  return (
+    <Card className="shadow-sm w-full">
       <CardHeader className="pb-2 w-full">
         <div className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl font-medium">Daily Overview</CardTitle>
@@ -47,5 +48,6 @@ export function DailyOverviewSection({
           </div>
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 }

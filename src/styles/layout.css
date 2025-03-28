@@ -16,9 +16,19 @@
     @apply p-6;
   }
 
-  /* New dashboard container class that accounts for sidebar width */
+  /* Dashboard container that works with the sidebar */
   .dashboard-container {
-    @apply w-[calc(100%-280px)] ml-[280px];
+    @apply w-full px-4 md:px-6 transition-all duration-300;
+  }
+
+  /* When sidebar is expanded */
+  .sidebar-expanded .dashboard-container {
+    @apply md:ml-[280px] md:w-[calc(100%-280px)];
+  }
+
+  /* When sidebar is collapsed */
+  .sidebar-collapsed .dashboard-container {
+    @apply md:ml-[48px] md:w-[calc(100%-48px)];
   }
 
   /* Responsive adjustments for mobile */
