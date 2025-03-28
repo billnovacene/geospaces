@@ -54,9 +54,9 @@ export function DashboardSidebar() {
   console.log(`DashboardSidebar: isDashboardRoute=${isDashboardRoute}, isTempHumidityRoute=${isTempHumidityRoute}, isDampMoldRoute=${isDampMoldRoute}`);
   
   return (
-    <Sidebar className="border-r border-[#E5E7EB] bg-white dark:bg-gray-900 dark:border-gray-800 w-[280px]">
+    <Sidebar className="border-r border-[#E5E7EB] bg-sidebar-background text-sidebar-foreground dark:bg-sidebar-background dark:border-sidebar-border w-[280px]">
       <SidebarContent className="p-0 flex flex-col h-full">
-        <div className="h-16 flex items-center justify-between border-b border-[#E5E7EB] dark:border-gray-800 bg-white dark:bg-gray-900 px-5">
+        <div className="h-16 flex items-center justify-between border-b border-[#E5E7EB] dark:border-sidebar-border bg-sidebar-background px-5">
           <div className="flex flex-col justify-center">
             <div className="text-xs text-[#8E9196] dark:text-gray-400">Projects</div>
             <h2 className="text-base font-bold text-zinc-950 dark:text-white">Zircon</h2>
@@ -67,9 +67,9 @@ export function DashboardSidebar() {
         </div>
 
         {/* Sticky Dashboards Section at the top */}
-        <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-[#E5E7EB] dark:border-gray-800">
+        <div className="sticky top-0 z-10 bg-sidebar-background dark:bg-sidebar-background border-b border-[#E5E7EB] dark:border-sidebar-border">
           <SidebarSection title="Dashboards" defaultOpen={true}>
-            <div className="bg-[#F9F9FA] dark:bg-gray-800 py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] dark:hover:bg-gray-700 flex items-center">
+            <div className="bg-[#F9F9FA] dark:bg-sidebar-accent py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] dark:hover:bg-gray-700 flex items-center">
               <span className="font-medium text-sm text-zinc-800 dark:text-gray-200">Dashboards</span>
             </div>
             <SidebarDashboardItem 
@@ -125,7 +125,7 @@ export function DashboardSidebar() {
                 hideZonesWithoutSensors={isTempHumidityRoute || isDampMoldRoute}
               />
             ) : validZoneId && zoneData ? (
-              <div className="py-2.5 px-5 text-sm bg-white dark:bg-gray-900">
+              <div className="py-2.5 px-5 text-sm bg-sidebar-background dark:bg-sidebar-background">
                 <div className="flex items-center gap-1.5 text-primary dark:text-blue-400">
                   <Package className="h-4 w-4" />
                   <span className="font-medium">{zoneData.name}</span>
@@ -135,28 +135,28 @@ export function DashboardSidebar() {
                 </div>
               </div>
             ) : (
-              <div className="py-2.5 px-5 text-sm text-[#8E9196] dark:text-gray-400 bg-white dark:bg-gray-900">
+              <div className="py-2.5 px-5 text-sm text-[#8E9196] dark:text-gray-400 bg-sidebar-background dark:bg-sidebar-background">
                 Select a site to view zones
               </div>
             )}
           </SidebarSection>
 
           <SidebarSection title="Analytics">
-            <div className="py-2.5 px-5 text-sm text-[#8E9196] dark:text-gray-400 bg-white dark:bg-gray-900">
+            <div className="py-2.5 px-5 text-sm text-[#8E9196] dark:text-gray-400 bg-sidebar-background dark:bg-sidebar-background">
               No analytics available
             </div>
           </SidebarSection>
 
           <SidebarSection title="Settings">
-            <div className="py-2.5 px-5 text-sm text-[#8E9196] dark:text-gray-400 bg-white dark:bg-gray-900">
+            <div className="py-2.5 px-5 text-sm text-[#8E9196] dark:text-gray-400 bg-sidebar-background dark:bg-sidebar-background">
               System settings
             </div>
           </SidebarSection>
         </div>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-[#E5E7EB] dark:border-gray-800 p-4 bg-white dark:bg-gray-900">
-        <div className="flex items-center justify-between bg-white dark:bg-gray-900">
+      <SidebarFooter className="border-t border-[#E5E7EB] dark:border-sidebar-border p-4 bg-sidebar-background dark:bg-sidebar-background">
+        <div className="flex items-center justify-between bg-sidebar-background dark:bg-sidebar-background">
           <div className="flex items-center gap-3">
             <Avatar 
               className="h-8 w-8 bg-transparent cursor-pointer transition-transform hover:scale-110 duration-300"
