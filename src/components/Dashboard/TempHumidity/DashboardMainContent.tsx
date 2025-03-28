@@ -19,6 +19,7 @@ interface DashboardMainContentProps {
   contextName: string;
   apiConnectionFailed?: boolean;
   onRetry?: () => void;
+  activeFilter?: string | null; // Add this prop
 }
 
 export function DashboardMainContent({ 
@@ -29,7 +30,8 @@ export function DashboardMainContent({
   isUsingMockData,
   contextName,
   apiConnectionFailed = false,
-  onRetry
+  onRetry,
+  activeFilter // Add this to destructuring
 }: DashboardMainContentProps) {
   // State to track progressive stats calculations
   const [progressiveStats, setProgressiveStats] = useState<Partial<StatsData> | null>(null);

@@ -23,6 +23,7 @@ export interface StatsData {
   maxTemp: number;
   avgHumidity: number;
   lastSeen?: string;
+  activeSensors: number; // Add this property
   status: {
     avgTemp: 'good' | 'caution' | 'warning';
     minTemp: 'good' | 'caution' | 'warning';

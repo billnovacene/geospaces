@@ -55,6 +55,7 @@ export function calculateStats(
     minTemp,
     maxTemp,
     avgHumidity,
+    activeSensors: 2, // Default value for active sensors
     lastSeen: new Date().toISOString(),
     status: {
       avgTemp: determineStatus(avgTemp, 'temp'),
