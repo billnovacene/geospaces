@@ -1,26 +1,22 @@
-
 import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
 interface MonthlyOverviewSectionProps {
   timeRange: string;
   setTimeRange: (value: string) => void;
   monthlyRiskData: any[];
 }
-
-export function MonthlyOverviewSection({ 
-  timeRange, 
+export function MonthlyOverviewSection({
+  timeRange,
   setTimeRange,
-  monthlyRiskData 
+  monthlyRiskData
 }: MonthlyOverviewSectionProps) {
   const tableDescription = "Monthly overview displays risk assessment based on temperature and humidity readings. The Overall Risk status is calculated from aggregated 10-minute sensor readings, with alarm counts and time at risk shown in hours.";
-
   const getRiskStyles = (risk: string) => {
-    switch(risk) {
+    switch (risk) {
       case 'Good':
         return "bg-emerald-100 text-white";
       case 'Caution':
@@ -31,9 +27,7 @@ export function MonthlyOverviewSection({
         return "bg-gray-100 text-gray-700";
     }
   };
-
-  return (
-    <Card className="border-0 shadow-sm">
+  return <Card className="border-0 shadow-sm bg-white">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl font-medium text-gray-900">Monthly Overview</CardTitle>
         <div className="flex space-x-4 mt-3">
@@ -77,8 +71,7 @@ export function MonthlyOverviewSection({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {monthlyRiskData.map((row) => (
-                    <TableRow key={row.id}>
+                  {monthlyRiskData.map(row => <TableRow key={row.id}>
                       <TableCell className="font-medium">{row.building}</TableCell>
                       <TableCell>{row.zone}</TableCell>
                       <TableCell className="text-right">{row.temp}</TableCell>
@@ -96,14 +89,12 @@ export function MonthlyOverviewSection({
                         {row.timeAtRisk}
                       </TableCell>
                       <TableCell>{row.comments}</TableCell>
-                    </TableRow>
-                  ))}
+                    </TableRow>)}
                 </TableBody>
               </Table>
             </div>
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 }
