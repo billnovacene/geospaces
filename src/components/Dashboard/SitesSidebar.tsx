@@ -63,7 +63,7 @@ export function SitesSidebar({
       className="w-full"
     >
       <CollapsibleTrigger className="w-full">
-        <div className="py-3 px-4 text-xs text-[#8E9196] uppercase tracking-wide flex items-center justify-between bg-white cursor-pointer">
+        <div className="py-3 px-4 text-xs text-[#8E9196] dark:text-gray-300 uppercase tracking-wide flex items-center justify-between bg-white dark:bg-gray-800 cursor-pointer">
           <span>Sites</span>
           <span>
             {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -72,7 +72,7 @@ export function SitesSidebar({
       </CollapsibleTrigger>
       <CollapsibleContent>
         {isLoading ? (
-          <div className="py-2 px-5">
+          <div className="py-2 px-5 dark:bg-gray-800">
             <Skeleton className="h-8 w-full mb-2" />
             <Skeleton className="h-8 w-full mb-2" />
             <Skeleton className="h-8 w-full" />
@@ -87,15 +87,15 @@ export function SitesSidebar({
             error={error}
           />
         ) : (
-          <div className="bg-[#F9F9FA]">
-            <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] flex items-center">
-              <span className="font-medium nav-item">Project: Zircon</span>
+          <div className="bg-[#F9F9FA] dark:bg-gray-800">
+            <div className="bg-[#F9F9FA] dark:bg-gray-800 py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] dark:hover:bg-gray-700 flex items-center">
+              <span className="font-medium nav-item dark:text-white">Project: Zircon</span>
             </div>
             {activeSites.map(site => (
               <div key={site.id}>
                 <div className={cn(
-                  "flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]",
-                  activeSiteId === site.id && "bg-[#F5F5F6]"
+                  "flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] dark:hover:bg-gray-700",
+                  activeSiteId === site.id && "bg-[#F5F5F6] dark:bg-gray-700"
                 )}>
                   <Link 
                     to={preserveDashboardRoute && dashboardPath ? `/site/${site.id}${dashboardPath}` : `/site/${site.id}`} 
@@ -104,18 +104,18 @@ export function SitesSidebar({
                     {activeSiteId === site.id ? (
                       <>
                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                        <span className="nav-item-active uppercase">{site.name}</span>
+                        <span className="nav-item-active uppercase dark:text-white">{site.name}</span>
                       </>
                     ) : (
                       <>
-                        <Circle size={14} className="text-zinc-400" />
-                        <span className="nav-item">{site.name}</span>
+                        <Circle size={14} className="text-zinc-400 dark:text-zinc-300" />
+                        <span className="nav-item dark:text-gray-200">{site.name}</span>
                       </>
                     )}
                   </Link>
                   <button 
                     onClick={(e) => toggleSiteExpanded(site.id, e)} 
-                    className="ml-auto text-zinc-400"
+                    className="ml-auto text-zinc-400 dark:text-zinc-300"
                   >
                     {expandedSiteId === site.id ? 
                       <ChevronUp size={16} /> : 
@@ -126,7 +126,7 @@ export function SitesSidebar({
                 
                 {/* Zones hierarchy for the expanded site */}
                 {expandedSiteId === site.id && (
-                  <div className="ml-5 pl-4">
+                  <div className="ml-5 pl-4 dark:bg-gray-800">
                     <ZonesHierarchy 
                       siteId={site.id} 
                       preserveDashboardRoute={preserveDashboardRoute}

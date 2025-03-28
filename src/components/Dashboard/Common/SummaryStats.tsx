@@ -50,8 +50,8 @@ export function SummaryStats({
     <>
       {title && (
         <div className="mb-4">
-          <h2 className="text-xl font-medium">{title}</h2>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          <h2 className="text-xl font-medium dark:text-white">{title}</h2>
+          {description && <p className="text-sm text-muted-foreground dark:text-gray-300">{description}</p>}
         </div>
       )}
       
@@ -66,19 +66,19 @@ export function SummaryStats({
           return (
             <div 
               key={index} 
-              className={`flex flex-col flex-1 bg-card dark:bg-card overflow-hidden transition-all duration-150 ${onStatClick || stat.onClick ? 'cursor-pointer hover:shadow-md' : ''} ${activeFilter === stat.key ? 'ring-2 ring-primary dark:ring-primary' : ''}`}
+              className={`flex flex-col flex-1 bg-card dark:bg-gray-800 overflow-hidden transition-all duration-150 ${onStatClick || stat.onClick ? 'cursor-pointer hover:shadow-md' : ''} ${activeFilter === stat.key ? 'ring-2 ring-primary dark:ring-primary' : ''}`}
               onClick={() => handleClick(stat)}
             >
               <div className="flex-grow flex flex-col p-4">
                 {/* Text content right-aligned */}
                 <div className="flex flex-col items-end">
                   {/* Metric value at the top with larger font */}
-                  <div className="text-3xl font-medium text-card-foreground mb-1">
+                  <div className="text-3xl font-medium text-card-foreground dark:text-white mb-1">
                     {stat.value}
                   </div>
                   
                   {/* Primary label (e.g., "Buildings" or "Zones") */}
-                  <div className="text-sm font-medium text-card-foreground/80">
+                  <div className="text-sm font-medium text-card-foreground dark:text-white/80">
                     {primaryLabel}
                   </div>
                   
@@ -114,18 +114,18 @@ export function SummaryStats({
           return (
             <div 
               key={index} 
-              className={`flex flex-col p-3 bg-card dark:bg-card shadow-sm ${onStatClick || stat.onClick ? 'cursor-pointer hover:shadow-md' : ''} ${activeFilter === stat.key ? 'ring-2 ring-primary dark:ring-primary' : ''}`}
+              className={`flex flex-col p-3 bg-card dark:bg-gray-800 shadow-sm ${onStatClick || stat.onClick ? 'cursor-pointer hover:shadow-md' : ''} ${activeFilter === stat.key ? 'ring-2 ring-primary dark:ring-primary' : ''}`}
               onClick={() => handleClick(stat)}
             >
               {/* Text content right-aligned */}
               <div className="flex flex-col items-end">
                 {/* Metric value at the top with larger font */}
-                <div className="text-2xl font-medium text-card-foreground mb-1">
+                <div className="text-2xl font-medium text-card-foreground dark:text-white mb-1">
                   {stat.value}
                 </div>
                 
                 {/* Primary label (e.g., "Buildings" or "Zones") */}
-                <div className="text-sm font-medium text-card-foreground/80">
+                <div className="text-sm font-medium text-card-foreground dark:text-white/80">
                   {primaryLabel}
                 </div>
                 
@@ -151,4 +151,3 @@ export function SummaryStats({
     </>
   );
 }
-
