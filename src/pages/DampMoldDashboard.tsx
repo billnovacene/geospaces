@@ -1,31 +1,20 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { DashboardSidebar } from "@/components/Dashboard/DashboardSidebar";
-import { Droplet } from "lucide-react";
 import { SidebarWrapper } from "@/components/Dashboard/SidebarWrapper";
 import { useParams, useLocation } from "react-router-dom";
 import { DampMoldView } from "@/components/Dashboard/DampMold/DampMoldView";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { SummaryStats, StatItem } from "@/components/Dashboard/DampMold/SummaryStats";
 import { GlobalNavigationHeader } from "@/components/Dashboard/Common/GlobalNavigationHeader";
 
 const DampMoldDashboard = () => {
-  const {
-    siteId,
-    zoneId
-  } = useParams<{
-    siteId: string;
-    zoneId: string;
-  }>();
+  const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string; }>();
   const location = useLocation();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   
-  console.log("DampMoldDashboard params:", {
-    siteId,
-    zoneId
-  });
+  console.log("DampMoldDashboard params:", { siteId, zoneId });
   console.log("Current route:", location.pathname);
 
   // Summary stats for damp and mold conditions with keys for filtering and secondary labels
@@ -61,13 +50,6 @@ const DampMoldDashboard = () => {
     key: "normal"
   }];
   
-  // Effect to apply any saved settings when the dashboard loads
-  useEffect(() => {
-    // This will ensure any custom settings are applied when the component loads
-    const root = document.documentElement;
-    console.log("DampMoldDashboard loaded - applying any saved settings");
-  }, []);
-  
   const handleStatClick = (stat: StatItem) => {
     console.log("Stat clicked:", stat);
     // Toggle the filter if the same stat is clicked again
@@ -81,11 +63,10 @@ const DampMoldDashboard = () => {
   const handleDateChange = (date: Date) => {
     console.log("Date changed to:", date);
     setCurrentDate(date);
-    // Additional logic to refresh data based on the new date could be added here
   };
   
   return <SidebarWrapper>
-      <div className="flex-1 overflow-auto bg-[#F9FAFB] min-h-screen">
+      <div className="flex-1 overflow-auto bg-background min-h-screen">
         {/* Global Navigation Header added at the top */}
         <GlobalNavigationHeader 
           onDateChange={handleDateChange}
@@ -96,10 +77,10 @@ const DampMoldDashboard = () => {
         <div className="container mx-auto px-4 md:px-6">
           {/* Header section with title and stats */}
           <div className="mb-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-[20px] py-[20px] bg-white rounded-lg shadow-sm">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-[20px] py-[20px] bg-card rounded-lg shadow-sm">
               <div className="flex flex-col mb-6 md:mb-0 md:w-1/4 pr-4">
                 <h1 className="heading-1 mb-1 font-light text-left text-3xl">Damp & Mold</h1>
-                <p className="body-normal text-sm font-extralight">Active Insights & Alert Status</p>
+                <p className="body-normal text-sm font-extralight text-muted-foreground">Active Insights & Alert Status</p>
               </div>
               
               {/* Summary stats displayed via the new component */}

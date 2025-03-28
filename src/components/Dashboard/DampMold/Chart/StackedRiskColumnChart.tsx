@@ -8,9 +8,9 @@ import {
   CartesianGrid, 
   Tooltip, 
   Legend,
-  ResponsiveContainer,
-  Cell
+  ResponsiveContainer
 } from "recharts";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface DailyRiskData {
   day: string;
@@ -25,6 +25,9 @@ interface StackedRiskColumnChartProps {
 }
 
 export function StackedRiskColumnChart({ data }: StackedRiskColumnChartProps) {
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
+  
   // Convert data to percentage for stacked 100% view
   const percentageData = data.map(item => {
     const total = item.Good + item.Caution + item.Alarm;
@@ -44,21 +47,25 @@ export function StackedRiskColumnChart({ data }: StackedRiskColumnChartProps) {
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         stackOffset="expand"
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f1" />
+        <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#333" : "#f1f1f1"} />
         <XAxis 
           dataKey="day" 
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }}
           tickMargin={10}
         />
         <YAxis 
           tickFormatter={(value) => `${value}%`}
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }}
           tickMargin={10}
           label={{ 
             value: "Risk Distribution (%)", 
             angle: -90, 
             position: "insideLeft",
-            style: { textAnchor: "middle", fontSize: 12, fill: "#6b7280" }
+            style: { 
+              textAnchor: "middle", 
+              fontSize: 12, 
+              fill: isDarkMode ? "#ccc" : "#6b7280" 
+            }
           }}
         />
         <Tooltip 
@@ -70,8 +77,8 @@ export function StackedRiskColumnChart({ data }: StackedRiskColumnChartProps) {
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
               return (
-                <div className="bg-white p-3 border border-gray-200 shadow-md rounded-md">
-                  <p className="text-sm font-medium">{label}</p>
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} p-3 border shadow-md rounded-md`}>
+                  <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{label}</p>
                   {payload.map((entry, index) => {
                     // Ensure value is treated as a number for toFixed
                     const numValue = typeof entry.value === 'string' ? parseFloat(entry.value) : entry.value;
@@ -90,6 +97,7 @@ export function StackedRiskColumnChart({ data }: StackedRiskColumnChartProps) {
         <Legend 
           verticalAlign="top" 
           height={36}
+          wrapperStyle={{ color: isDarkMode ? "#ccc" : "#333" }}
         />
         <Bar 
           dataKey="Good" 

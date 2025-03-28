@@ -26,20 +26,20 @@ export function RiskGlanceSection({
   const getRiskStyles = (risk: string) => {
     switch(risk) {
       case 'Good':
-        return "bg-emerald-100 text-emerald-800";
+        return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100";
       case 'Caution':
-        return "bg-orange-300 text-orange-800";
+        return "bg-orange-300 text-orange-800 dark:bg-orange-800 dark:text-orange-100";
       case 'Alarm':
-        return "bg-red-500 text-white";
+        return "bg-red-500 text-white dark:bg-red-700 dark:text-white";
       default:
-        return "bg-gray-100 text-gray-700";
+        return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200";
     }
   };
 
-  return <Card className="border-0 shadow-sm mb-10 w-full">
+  return <Card className="shadow-sm mb-10 w-full">
       {activeFilter && (
-        <div className="bg-blue-50 p-3 border-b border-blue-100">
-          <p className="text-sm text-blue-700">
+        <div className="bg-blue-50/50 dark:bg-blue-900/20 p-3 border-b border-blue-100 dark:border-blue-900/50">
+          <p className="text-sm text-blue-700 dark:text-blue-400">
             Filtering by: <span className="font-medium capitalize">{activeFilter}</span>
             {activeFilter === 'high-risk' && " - showing only high risk zones"}
             {activeFilter === 'caution' && " - showing only caution zones"}
@@ -47,18 +47,18 @@ export function RiskGlanceSection({
           </p>
         </div>
       )}
-      <CardContent className="w-full py-8 bg-white">
+      <CardContent className="w-full py-8">
         {activeTab === "today" ? <div className="w-full space-y-8">
             <div className="relative w-full">
               <DewPointChart data={null} />
             </div>
           </div> : <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/4">
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-card-foreground/80">
                 Monthly data shows historical patterns of humidity and temperature, 
                 highlighting zones that have experienced sustained high-risk conditions.
                 {activeFilter && (
-                  <span className="block mt-2 text-blue-700 font-medium">
+                  <span className="block mt-2 text-blue-700 dark:text-blue-400 font-medium">
                     Currently filtering data by {activeFilter}.
                   </span>
                 )}
@@ -94,10 +94,10 @@ export function RiskGlanceSection({
                               {row.overallRisk}
                             </Badge>
                           </TableCell>
-                          <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 font-medium")}>
+                          <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 dark:text-red-400 font-medium")}>
                             {row.alarmCount}
                           </TableCell>
-                          <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 font-medium")}>
+                          <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 dark:text-red-400 font-medium")}>
                             {row.timeAtRisk}
                           </TableCell>
                           <TableCell>{row.comments}</TableCell>
@@ -105,7 +105,7 @@ export function RiskGlanceSection({
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={9} className="text-center py-6 text-gray-500">
+                        <TableCell colSpan={9} className="text-center py-6 text-muted-foreground">
                           No data available for the current filter.
                         </TableCell>
                       </TableRow>

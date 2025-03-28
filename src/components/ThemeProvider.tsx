@@ -44,28 +44,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // Automatically switch theme based on time of day
-  useEffect(() => {
-    const checkTimeBasedTheme = () => {
-      const currentHour = new Date().getHours();
-      const isNightTime = currentHour >= 18 || currentHour < 6;
-      
-      // Only update if theme doesn't match time of day
-      if (isNightTime && theme === "light") {
-        setTheme("dark");
-      } else if (!isNightTime && theme === "dark") {
-        setTheme("light");
-      }
-    };
-    
-    // Check every hour
-    const interval = setInterval(checkTimeBasedTheme, 60 * 60 * 1000);
-    
-    return () => clearInterval(interval);
-  }, [theme]);
-
   const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === "light" ? "dark" : "light");
+    setTheme(prevTheme => {
+      const newTheme = prevTheme === "light" ? "dark" : "light";
+      console.log(`Theme toggled from ${prevTheme} to ${newTheme}`);
+      return newTheme;
+    });
   };
 
   return (

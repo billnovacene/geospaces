@@ -1,19 +1,16 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
-import { Settings, Search, MoreVertical, Home, Building, Package, Droplet, Thermometer } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Settings, MoreVertical } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { SidebarSection } from "./SidebarSection";
-import { SidebarZoneItem } from "./SidebarZoneItem";
 import { SidebarDashboardItem } from "./SidebarDashboardItem";
 import { ZonesHierarchy } from "./ZonesHierarchy";
 import { SitesSidebar } from "./SitesSidebar";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZone } from "@/services/zones";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useTheme } from "@/components/ThemeProvider";
 
 // Import process.env to get the build version
@@ -49,28 +46,24 @@ export function DashboardSidebar() {
     location.pathname === `/zone/${zoneId}`
   );
   
-  // Log important information for debugging
-  console.log(`DashboardSidebar: siteId=${validSiteId}, zoneId=${validZoneId}, effectiveSiteId=${effectiveSiteId}`);
-  console.log(`DashboardSidebar: isDashboardRoute=${isDashboardRoute}, isTempHumidityRoute=${isTempHumidityRoute}, isDampMoldRoute=${isDampMoldRoute}`);
-  
   return (
-    <Sidebar className="border-r border-[#E5E7EB] bg-sidebar-background text-sidebar-foreground dark:bg-sidebar-background dark:border-sidebar-border w-[280px]">
+    <Sidebar className="border-r border-sidebar-border w-[280px]">
       <SidebarContent className="p-0 flex flex-col h-full">
-        <div className="h-16 flex items-center justify-between border-b border-[#E5E7EB] dark:border-sidebar-border bg-sidebar-background px-5">
+        <div className="h-16 flex items-center justify-between border-b border-sidebar-border px-5">
           <div className="flex flex-col justify-center">
-            <div className="text-xs text-[#8E9196] dark:text-gray-400">Projects</div>
-            <h2 className="text-base font-bold text-zinc-950 dark:text-white">Zircon</h2>
+            <div className="text-xs text-muted-foreground">Projects</div>
+            <h2 className="text-base font-bold">Zircon</h2>
           </div>
-          <Button variant="ghost" size="icon" className="text-[#8E9196] dark:text-gray-400">
+          <Button variant="ghost" size="icon" className="text-muted-foreground">
             <Settings className="h-5 w-5" />
           </Button>
         </div>
 
         {/* Sticky Dashboards Section at the top */}
-        <div className="sticky top-0 z-10 bg-sidebar-background dark:bg-sidebar-background border-b border-[#E5E7EB] dark:border-sidebar-border">
+        <div className="sticky top-0 z-10 bg-sidebar-background border-b border-sidebar-border">
           <SidebarSection title="Dashboards" defaultOpen={true}>
-            <div className="bg-[#F9F9FA] dark:bg-sidebar-accent py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] dark:hover:bg-gray-700 flex items-center">
-              <span className="font-medium text-sm text-zinc-800 dark:text-gray-200">Dashboards</span>
+            <div className="bg-sidebar-accent/10 py-2.5 px-5 cursor-pointer hover:bg-sidebar-accent/20 flex items-center">
+              <span className="font-medium text-sm text-sidebar-foreground">Dashboards</span>
             </div>
             <SidebarDashboardItem 
               name="All Data" 
@@ -125,59 +118,65 @@ export function DashboardSidebar() {
                 hideZonesWithoutSensors={isTempHumidityRoute || isDampMoldRoute}
               />
             ) : validZoneId && zoneData ? (
-              <div className="py-2.5 px-5 text-sm bg-sidebar-background dark:bg-sidebar-background">
-                <div className="flex items-center gap-1.5 text-primary dark:text-blue-400">
-                  <Package className="h-4 w-4" />
+              <div className="py-2.5 px-5 text-sm">
+                <div className="flex items-center gap-1.5 text-sidebar-primary">
                   <span className="font-medium">{zoneData.name}</span>
                 </div>
-                <div className="text-[#8E9196] dark:text-gray-400 text-xs mt-1">
+                <div className="text-muted-foreground text-xs mt-1">
                   Module zone (ID: {validZoneId})
                 </div>
               </div>
             ) : (
-              <div className="py-2.5 px-5 text-sm text-[#8E9196] dark:text-gray-400 bg-sidebar-background dark:bg-sidebar-background">
+              <div className="py-2.5 px-5 text-sm text-muted-foreground">
                 Select a site to view zones
               </div>
             )}
           </SidebarSection>
 
           <SidebarSection title="Analytics">
-            <div className="py-2.5 px-5 text-sm text-[#8E9196] dark:text-gray-400 bg-sidebar-background dark:bg-sidebar-background">
+            <div className="py-2.5 px-5 text-sm text-muted-foreground">
               No analytics available
             </div>
           </SidebarSection>
 
           <SidebarSection title="Settings">
-            <div className="py-2.5 px-5 text-sm text-[#8E9196] dark:text-gray-400 bg-sidebar-background dark:bg-sidebar-background">
+            <div className="py-2.5 px-5 text-sm text-muted-foreground">
               System settings
             </div>
           </SidebarSection>
         </div>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-[#E5E7EB] dark:border-sidebar-border p-4 bg-sidebar-background dark:bg-sidebar-background">
-        <div className="flex items-center justify-between bg-sidebar-background dark:bg-sidebar-background">
+      <SidebarFooter className="border-t border-sidebar-border p-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar 
-              className="h-8 w-8 bg-transparent cursor-pointer transition-transform hover:scale-110 duration-300"
+              className="h-8 w-8 bg-transparent cursor-pointer transition-transform hover:scale-110 duration-300 overflow-hidden"
               onClick={toggleTheme}
             >
-              {theme === "light" ? (
-                <AvatarImage src="/lovable-uploads/e04538fb-8a3f-43c4-ba17-b41d6191317c.png" alt="Zircon Logo (Light)" />
-              ) : (
-                <AvatarImage src="/lovable-uploads/c7617745-f793-43e6-b68e-1739f76d0a94.png" alt="Zircon Logo (Dark)" />
-              )}
+              <div className="h-16 relative transition-all duration-300" style={{ transform: theme === 'dark' ? 'translateY(-50%)' : 'none' }}>
+                <img 
+                  src="/lovable-uploads/e04538fb-8a3f-43c4-ba17-b41d6191317c.png" 
+                  alt="Light logo" 
+                  className="h-8 w-8 absolute top-0"
+                />
+                <img 
+                  src="/lovable-uploads/c7617745-f793-43e6-b68e-1739f76d0a94.png" 
+                  alt="Dark logo" 
+                  className="h-8 w-8 absolute top-8"
+                />
+              </div>
               <AvatarFallback>{theme === "light" ? "L" : "D"}</AvatarFallback>
             </Avatar>
             <div>
-              <div className="font-semibold text-sm dark:text-white">Novacene</div>
+              <div className="font-semibold text-sm">Novacene</div>
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-primary dark:text-blue-400 font-['Signal'] tracking-tighter">GEOSPACES</span>
-                <span className="text-xs text-black dark:text-gray-300 font-mono">v{APP_VERSION}</span>
+                <span className="text-xs font-medium text-sidebar-primary font-['Signal'] tracking-tighter">GEOSPACES</span>
+                <span className="text-xs font-mono">{APP_VERSION}</span>
               </div>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="text-[#8E9196] dark:text-gray-400">
+          <Button variant="ghost" size="icon" className="text-muted-foreground">
             <MoreVertical className="h-5 w-5" />
           </Button>
         </div>

@@ -29,11 +29,11 @@ export function SummaryStats({
   // Helper function to get color based on type
   const getTypeColor = (type: string): string => {
     switch(type) {
-      case "high-risk": return "text-red-500";
-      case "caution": return "text-amber-400";
-      case "success": return "text-green-500";
-      case "normal": return "text-blue-500";
-      default: return "text-gray-500";
+      case "high-risk": return "text-red-500 dark:text-red-400";
+      case "caution": return "text-amber-400 dark:text-amber-300";
+      case "success": return "text-green-500 dark:text-green-400";
+      case "normal": return "text-blue-500 dark:text-blue-400";
+      default: return "text-gray-500 dark:text-gray-400";
     }
   };
   
@@ -49,19 +49,19 @@ export function SummaryStats({
           return (
             <div 
               key={index} 
-              className={`flex flex-col flex-1 bg-white rounded-lg overflow-hidden shadow-sm transition-all duration-150 ${onStatClick ? 'cursor-pointer hover:shadow-md' : ''} ${activeFilter === stat.key ? 'ring-2 ring-blue-400' : ''}`}
+              className={`flex flex-col flex-1 bg-card dark:bg-card rounded-lg overflow-hidden shadow-sm transition-all duration-150 ${onStatClick ? 'cursor-pointer hover:shadow-md' : ''} ${activeFilter === stat.key ? 'ring-2 ring-primary dark:ring-primary' : ''}`}
               onClick={() => handleClick(stat)}
             >
               <div className="flex-grow flex flex-col p-4">
                 {/* Text content right-aligned */}
                 <div className="flex flex-col items-end">
                   {/* Metric value at the top with larger font */}
-                  <div className="text-3xl font-medium text-gray-900 mb-1">
+                  <div className="text-3xl font-medium text-card-foreground mb-1">
                     {stat.value}
                   </div>
                   
                   {/* Primary label (e.g., "Buildings" or "Zones") */}
-                  <div className="text-sm font-medium text-gray-700">
+                  <div className="text-sm font-medium text-card-foreground/80">
                     {primaryLabel}
                   </div>
                   
@@ -74,10 +74,10 @@ export function SummaryStats({
               
               {/* Colored line at the bottom - half width, right-aligned */}
               <div className="flex justify-end">
-                {stat.type === "high-risk" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-red-600' : 'bg-red-500'} ${onStatClick ? 'group-hover:bg-red-600' : ''}`}></div>}
-                {stat.type === "caution" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-amber-500' : 'bg-amber-400'} ${onStatClick ? 'group-hover:bg-amber-500' : ''}`}></div>}
-                {stat.type === "success" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-green-600' : 'bg-green-500'} ${onStatClick ? 'group-hover:bg-green-600' : ''}`}></div>}
-                {stat.type === "normal" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-blue-600' : 'bg-blue-500'} ${onStatClick ? 'group-hover:bg-blue-600' : ''}`}></div>}
+                {stat.type === "high-risk" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-red-600 dark:bg-red-500' : 'bg-red-500 dark:bg-red-400'} ${onStatClick ? 'group-hover:bg-red-600 dark:group-hover:bg-red-500' : ''}`}></div>}
+                {stat.type === "caution" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-amber-500 dark:bg-amber-400' : 'bg-amber-400 dark:bg-amber-300'} ${onStatClick ? 'group-hover:bg-amber-500 dark:group-hover:bg-amber-400' : ''}`}></div>}
+                {stat.type === "success" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-green-600 dark:bg-green-500' : 'bg-green-500 dark:bg-green-400'} ${onStatClick ? 'group-hover:bg-green-600 dark:group-hover:bg-green-500' : ''}`}></div>}
+                {stat.type === "normal" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-blue-600 dark:bg-blue-500' : 'bg-blue-500 dark:bg-blue-400'} ${onStatClick ? 'group-hover:bg-blue-600 dark:group-hover:bg-blue-500' : ''}`}></div>}
               </div>
             </div>
           );
@@ -95,18 +95,18 @@ export function SummaryStats({
           return (
             <div 
               key={index} 
-              className={`flex flex-col p-3 bg-white rounded-lg shadow-sm ${onStatClick ? 'cursor-pointer hover:shadow-md' : ''} ${activeFilter === stat.key ? 'ring-2 ring-blue-400' : ''}`}
+              className={`flex flex-col p-3 bg-card dark:bg-card rounded-lg shadow-sm ${onStatClick ? 'cursor-pointer hover:shadow-md' : ''} ${activeFilter === stat.key ? 'ring-2 ring-primary dark:ring-primary' : ''}`}
               onClick={() => handleClick(stat)}
             >
               {/* Text content right-aligned */}
               <div className="flex flex-col items-end">
                 {/* Metric value at the top with larger font */}
-                <div className="text-2xl font-medium text-gray-900 mb-1">
+                <div className="text-2xl font-medium text-card-foreground mb-1">
                   {stat.value}
                 </div>
                 
                 {/* Primary label (e.g., "Buildings" or "Zones") */}
-                <div className="text-sm font-medium text-gray-700">
+                <div className="text-sm font-medium text-card-foreground/80">
                   {primaryLabel}
                 </div>
                 
@@ -118,10 +118,10 @@ export function SummaryStats({
               
               {/* Colored line at the bottom - half width, right-aligned */}
               <div className="flex justify-end">
-                {stat.type === "high-risk" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-red-600' : 'bg-red-500'}`}></div>}
-                {stat.type === "caution" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-amber-500' : 'bg-amber-400'}`}></div>}
-                {stat.type === "success" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-green-600' : 'bg-green-500'}`}></div>}
-                {stat.type === "normal" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-blue-600' : 'bg-blue-500'}`}></div>}
+                {stat.type === "high-risk" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-red-600 dark:bg-red-500' : 'bg-red-500 dark:bg-red-400'}`}></div>}
+                {stat.type === "caution" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-amber-500 dark:bg-amber-400' : 'bg-amber-400 dark:bg-amber-300'}`}></div>}
+                {stat.type === "success" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-green-600 dark:bg-green-500' : 'bg-green-500 dark:bg-green-400'}`}></div>}
+                {stat.type === "normal" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-blue-600 dark:bg-blue-500' : 'bg-blue-500 dark:bg-blue-400'}`}></div>}
               </div>
             </div>
           );

@@ -32,9 +32,9 @@ export function MonthlyOverviewSection({
     }
   };
   
-  return <Card className="border-0 shadow-sm bg-card text-card-foreground">
+  return <Card className="shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl font-medium text-card-foreground">Monthly Overview</CardTitle>
+        <CardTitle className="text-xl font-medium">Monthly Overview</CardTitle>
         <div className="flex space-x-4 mt-3">
           <Tabs defaultValue={timeRange} className="w-auto" onValueChange={setTimeRange}>
             <TabsList className="bg-muted">
@@ -45,10 +45,10 @@ export function MonthlyOverviewSection({
       </CardHeader>
       <CardContent>
         {/* Table layout with description on the left */}
-        <div className="flex gap-6">
-          <div className="w-1/4">
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full md:w-1/4">
             <p className="text-sm text-card-foreground/80">{tableDescription}</p>
-            <div className="mt-4 p-3 border border-blue-100 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-900 rounded-md">
+            <div className="mt-4 p-3 border border-blue-100 bg-blue-50/30 dark:bg-blue-950/30 dark:border-blue-900/50 rounded-md">
               <p className="text-xs text-blue-700 dark:text-blue-400 font-medium">Risk Calculation Method</p>
               <ul className="text-xs text-blue-700 dark:text-blue-400 mt-1 list-disc pl-4 space-y-1">
                 <li>Scores from 10-min readings: RH &lt;60%: 0pts, 60-70%: 1pt, &gt;70%: 2pts</li>
@@ -59,7 +59,7 @@ export function MonthlyOverviewSection({
               </ul>
             </div>
           </div>
-          <div className="w-3/4">
+          <div className="w-full md:w-3/4">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
