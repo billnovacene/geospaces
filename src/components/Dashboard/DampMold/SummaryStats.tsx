@@ -53,24 +53,27 @@ export function SummaryStats({
               onClick={() => handleClick(stat)}
             >
               <div className="flex-grow flex flex-col p-4">
-                {/* Metric value at the top with larger font */}
-                <div className="text-3xl font-medium text-gray-900 mb-1">
-                  {stat.value}
-                </div>
-                
-                {/* Primary label (e.g., "Buildings" or "Zones") */}
-                <div className="text-sm font-medium text-gray-700">
-                  {primaryLabel}
-                </div>
-                
-                {/* Secondary label with status color */}
-                <div className={`text-xs font-medium mb-2 ${typeColor}`}>
-                  {secondaryLabel}
+                {/* Text content right-aligned */}
+                <div className="flex flex-col items-end">
+                  {/* Metric value at the top with larger font */}
+                  <div className="text-3xl font-medium text-gray-900 mb-1">
+                    {stat.value}
+                  </div>
+                  
+                  {/* Primary label (e.g., "Buildings" or "Zones") */}
+                  <div className="text-sm font-medium text-gray-700">
+                    {primaryLabel}
+                  </div>
+                  
+                  {/* Secondary label with status color */}
+                  <div className={`text-xs font-medium mb-2 ${typeColor}`}>
+                    {secondaryLabel}
+                  </div>
                 </div>
               </div>
               
-              {/* Colored line at the bottom - half width */}
-              <div className="flex justify-center">
+              {/* Colored line at the bottom - half width, right-aligned */}
+              <div className="flex justify-end">
                 {stat.type === "high-risk" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-red-600' : 'bg-red-500'} ${onStatClick ? 'group-hover:bg-red-600' : ''}`}></div>}
                 {stat.type === "caution" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-amber-500' : 'bg-amber-400'} ${onStatClick ? 'group-hover:bg-amber-500' : ''}`}></div>}
                 {stat.type === "success" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-green-600' : 'bg-green-500'} ${onStatClick ? 'group-hover:bg-green-600' : ''}`}></div>}
@@ -95,23 +98,26 @@ export function SummaryStats({
               className={`flex flex-col p-3 bg-white rounded-lg shadow-sm ${onStatClick ? 'cursor-pointer hover:shadow-md' : ''} ${activeFilter === stat.key ? 'ring-2 ring-blue-400' : ''}`}
               onClick={() => handleClick(stat)}
             >
-              {/* Metric value at the top with larger font */}
-              <div className="text-2xl font-medium text-gray-900 mb-1">
-                {stat.value}
+              {/* Text content right-aligned */}
+              <div className="flex flex-col items-end">
+                {/* Metric value at the top with larger font */}
+                <div className="text-2xl font-medium text-gray-900 mb-1">
+                  {stat.value}
+                </div>
+                
+                {/* Primary label (e.g., "Buildings" or "Zones") */}
+                <div className="text-sm font-medium text-gray-700">
+                  {primaryLabel}
+                </div>
+                
+                {/* Secondary label with status color */}
+                <div className={`text-xs font-medium mb-2 ${typeColor}`}>
+                  {secondaryLabel}
+                </div>
               </div>
               
-              {/* Primary label (e.g., "Buildings" or "Zones") */}
-              <div className="text-sm font-medium text-gray-700">
-                {primaryLabel}
-              </div>
-              
-              {/* Secondary label with status color */}
-              <div className={`text-xs font-medium mb-2 ${typeColor}`}>
-                {secondaryLabel}
-              </div>
-              
-              {/* Colored line at the bottom - half width */}
-              <div className="flex justify-center">
+              {/* Colored line at the bottom - half width, right-aligned */}
+              <div className="flex justify-end">
                 {stat.type === "high-risk" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-red-600' : 'bg-red-500'}`}></div>}
                 {stat.type === "caution" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-amber-500' : 'bg-amber-400'}`}></div>}
                 {stat.type === "success" && <div className={`w-1/2 h-1 ${activeFilter === stat.key ? 'bg-green-600' : 'bg-green-500'}`}></div>}
