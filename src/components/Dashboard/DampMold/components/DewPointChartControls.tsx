@@ -20,21 +20,21 @@ export function DewPointChartControls({
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-2">
       <div className="flex space-x-2">
         <Badge 
-          variant={selectedRange === "day" ? "default" : "outline"} 
+          variant={selectedRange === "day" ? "default" : "secondary"} 
           className="cursor-pointer"
           onClick={() => setSelectedRange("day")}
         >
           Day
         </Badge>
         <Badge 
-          variant={selectedRange === "week" ? "default" : "outline"} 
+          variant={selectedRange === "week" ? "default" : "secondary"} 
           className="cursor-pointer"
           onClick={() => setSelectedRange("week")}
         >
           Week
         </Badge>
         <Badge 
-          variant={selectedRange === "month" ? "default" : "outline"} 
+          variant={selectedRange === "month" ? "default" : "secondary"} 
           className="cursor-pointer"
           onClick={() => setSelectedRange("month")}
         >
