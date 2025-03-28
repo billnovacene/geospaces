@@ -66,7 +66,7 @@ export function DashboardHeader({ isUsingMockData, isLoading, operatingHours }: 
       <div className="flex items-center justify-between mb-6">
         <div></div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs px-3 py-1">
+          <Badge variant="outline" className="text-xs px-3 py-1 dark:border-gray-700 dark:text-gray-300">
             Data from Geospaces
           </Badge>
           

@@ -25,8 +25,8 @@ interface StackedRiskColumnChartProps {
 }
 
 export function StackedRiskColumnChart({ data }: StackedRiskColumnChartProps) {
-  const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
+  const { activeTheme } = useTheme();
+  const isDarkMode = activeTheme === "dark";
   
   // Convert data to percentage for stacked 100% view
   const percentageData = data.map(item => {

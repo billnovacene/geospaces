@@ -19,7 +19,7 @@ interface DashboardMainContentProps {
   contextName: string;
   apiConnectionFailed?: boolean;
   onRetry?: () => void;
-  activeFilter?: string | null; // Add this prop
+  activeFilter?: string | null;
 }
 
 export function DashboardMainContent({ 
@@ -31,7 +31,7 @@ export function DashboardMainContent({
   contextName,
   apiConnectionFailed = false,
   onRetry,
-  activeFilter // Add this to destructuring
+  activeFilter
 }: DashboardMainContentProps) {
   // State to track progressive stats calculations
   const [progressiveStats, setProgressiveStats] = useState<Partial<StatsData> | null>(null);
@@ -63,8 +63,8 @@ export function DashboardMainContent({
         <div className="p-8 rounded-lg info-panel info-panel-amber mb-8">
           <div className="flex flex-col items-center gap-2">
             <AlertTriangle className="h-8 w-8 text-amber-600 dark:text-amber-400" />
-            <h3 className="text-lg font-medium">No Real Temperature Data Available</h3>
-            <p className="max-w-md">
+            <h3 className="text-lg font-medium dark:text-white">No Real Temperature Data Available</h3>
+            <p className="max-w-md dark:text-gray-300">
               No temperature data could be retrieved from the API for this {contextName}.
               Showing simulated data below instead.
             </p>
@@ -100,7 +100,7 @@ export function DashboardMainContent({
         />
         
         <div className="mb-8 info-panel info-panel-blue mt-8">
-          <p className="text-sm">
+          <p className="text-sm dark:text-blue-400">
             <span className="font-medium">Simulated data:</span> No temperature sensors found for {contextName}.
             All data shown is simulated.
           </p>
@@ -152,7 +152,7 @@ export function DashboardMainContent({
       {/* Info badge about data quality */}
       {hasRealData && (
         <div className="mb-8 info-panel info-panel-green">
-          <p className="text-sm">
+          <p className="text-sm dark:text-green-400">
             <span className="font-medium">Real-time data:</span> {realDataPoints} of {totalDataPoints} data points ({Math.round(realDataPoints/totalDataPoints*100)}%) 
             are from real temperature sensor readings for {contextName}.
           </p>
@@ -161,7 +161,7 @@ export function DashboardMainContent({
       
       {!hasRealData && !isUsingMockData && (
         <div className="mb-8 info-panel info-panel-amber">
-          <p className="text-sm">
+          <p className="text-sm dark:text-amber-400">
             <span className="font-medium">Historical data only:</span> No real-time temperature readings available for {contextName}.
             Showing historical API data instead.
           </p>
@@ -170,7 +170,7 @@ export function DashboardMainContent({
       
       {isUsingMockData && (
         <div className="mb-8 info-panel info-panel-blue">
-          <p className="text-sm">
+          <p className="text-sm dark:text-blue-400">
             <span className="font-medium">Simulated data:</span> No temperature sensors found for {contextName}.
             All data shown is simulated.
           </p>

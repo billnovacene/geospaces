@@ -14,6 +14,7 @@ import { MonthlyOverviewSection } from "./MonthlyOverviewSection";
 import { generateMonthlyRiskData } from "./utils/mockRiskData";
 import { generateMockData } from "@/services/sensors/mock-data-generator";
 import { LogItem } from "@/hooks/temperature/types";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface DampMoldViewProps {
   contextType?: "zone" | "site" | "all";
@@ -47,6 +48,7 @@ export function DampMoldView({
   const [dailyTimeRange, setDailyTimeRange] = useState("today");
   const [monthlyTimeRange, setMonthlyTimeRange] = useState("month");
   const params = useParams<{ siteId: string; zoneId: string }>();
+  const { activeTheme } = useTheme();
   
   // Use params if props are not provided
   const siteId = propsSiteId || params.siteId;
@@ -58,6 +60,7 @@ export function DampMoldView({
   
   console.log("DampMoldView props:", { contextType, contextId, siteId, zoneId, activeFilter, currentDate });
   console.log("Route params:", params);
+  console.log("Current theme:", activeTheme);
   
   // Fetch context name (site or zone name)
   const { data: zoneName } = useQuery({
@@ -142,7 +145,8 @@ export function DampMoldView({
               message: `Filtering data by: ${activeFilter}`, 
               type: 'info' as const, 
               timestamp: new Date().toISOString() 
-            }] : [])
+            }] : []),
+            { message: `Theme mode: ${activeTheme}`, type: 'info' as const, timestamp: new Date().toISOString() }
           ]} onClearLogs={() => {}} title="Damp & Mold Monitoring Logs" />
         </div>
       )}

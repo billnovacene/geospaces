@@ -32,9 +32,10 @@ export function MonthlyOverviewSection({
     }
   };
   
-  return <Card className="shadow-sm">
+  return (
+    <Card className="shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl font-medium">Monthly Overview</CardTitle>
+        <CardTitle className="text-xl font-medium dark:text-white">Monthly Overview</CardTitle>
         <div className="flex space-x-4 mt-3">
           <Tabs defaultValue={timeRange} className="w-auto" onValueChange={setTimeRange}>
             <TabsList className="bg-muted">
@@ -47,7 +48,7 @@ export function MonthlyOverviewSection({
         {/* Table layout with description on the left */}
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-1/4">
-            <p className="text-sm text-card-foreground/80">{tableDescription}</p>
+            <p className="text-sm text-card-foreground/80 dark:text-gray-300">{tableDescription}</p>
             <div className="mt-4 p-3 border border-blue-100 bg-blue-50/30 dark:bg-blue-950/30 dark:border-blue-900/50 rounded-md">
               <p className="text-xs text-blue-700 dark:text-blue-400 font-medium">Risk Calculation Method</p>
               <ul className="text-xs text-blue-700 dark:text-blue-400 mt-1 list-disc pl-4 space-y-1">
@@ -64,42 +65,45 @@ export function MonthlyOverviewSection({
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-muted/50">
-                    <TableHead className="w-[100px]">Building</TableHead>
-                    <TableHead>Zone</TableHead>
-                    <TableHead className="text-right">Temp (°C)</TableHead>
-                    <TableHead className="text-right">RH (%)</TableHead>
-                    <TableHead className="text-right">Dew Point (°C)</TableHead>
-                    <TableHead>Overall Risk</TableHead>
-                    <TableHead className="text-right">No. of Alarms</TableHead>
-                    <TableHead className="text-right">Time at Risk (h)</TableHead>
-                    <TableHead>Comments</TableHead>
+                    <TableHead className="w-[100px] dark:text-gray-300">Building</TableHead>
+                    <TableHead className="dark:text-gray-300">Zone</TableHead>
+                    <TableHead className="text-right dark:text-gray-300">Temp (°C)</TableHead>
+                    <TableHead className="text-right dark:text-gray-300">RH (%)</TableHead>
+                    <TableHead className="text-right dark:text-gray-300">Dew Point (°C)</TableHead>
+                    <TableHead className="dark:text-gray-300">Overall Risk</TableHead>
+                    <TableHead className="text-right dark:text-gray-300">No. of Alarms</TableHead>
+                    <TableHead className="text-right dark:text-gray-300">Time at Risk (h)</TableHead>
+                    <TableHead className="dark:text-gray-300">Comments</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {monthlyRiskData.map(row => <TableRow key={row.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium">{row.building}</TableCell>
-                      <TableCell>{row.zone}</TableCell>
-                      <TableCell className="text-right">{row.temp}</TableCell>
-                      <TableCell className="text-right">{row.rh}</TableCell>
-                      <TableCell className="text-right">{row.dewPoint}</TableCell>
+                  {monthlyRiskData.map(row => (
+                    <TableRow key={row.id} className="hover:bg-muted/50">
+                      <TableCell className="font-medium dark:text-gray-200">{row.building}</TableCell>
+                      <TableCell className="dark:text-gray-200">{row.zone}</TableCell>
+                      <TableCell className="text-right dark:text-gray-200">{row.temp}</TableCell>
+                      <TableCell className="text-right dark:text-gray-200">{row.rh}</TableCell>
+                      <TableCell className="text-right dark:text-gray-200">{row.dewPoint}</TableCell>
                       <TableCell>
                         <Badge className={getRiskStyles(row.overallRisk)}>
                           {row.overallRisk}
                         </Badge>
                       </TableCell>
-                      <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 dark:text-red-400 font-medium")}>
+                      <TableCell className={cn("text-right", row.overallRisk === 'Alarm' ? "text-red-600 dark:text-red-400 font-medium" : "dark:text-gray-200")}>
                         {row.alarmCount}
                       </TableCell>
-                      <TableCell className={cn("text-right", row.overallRisk === 'Alarm' && "text-red-600 dark:text-red-400 font-medium")}>
+                      <TableCell className={cn("text-right", row.overallRisk === 'Alarm' ? "text-red-600 dark:text-red-400 font-medium" : "dark:text-gray-200")}>
                         {row.timeAtRisk}
                       </TableCell>
-                      <TableCell>{row.comments}</TableCell>
-                    </TableRow>)}
+                      <TableCell className="dark:text-gray-200">{row.comments}</TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </div>
           </div>
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 }

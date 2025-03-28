@@ -19,7 +19,7 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   return (
     <div className="mb-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-[20px] py-[20px] bg-card">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-[20px] py-[20px] bg-card dark:bg-gray-800/50">
         <div className="flex flex-col mb-6 md:mb-0 md:w-1/4 pr-4">
           <h1 className="heading-1 mb-1 font-light text-left text-3xl text-gray-800 dark:text-gray-200">{title}</h1>
           {subtitle && (

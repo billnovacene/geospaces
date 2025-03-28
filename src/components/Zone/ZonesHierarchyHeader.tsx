@@ -24,18 +24,18 @@ export function ZonesHierarchyHeader({
         <CardDescription className="flex items-center gap-2 dark:text-gray-300">
           View the hierarchical structure of zones for this site
           {!isLoading && totalZones !== undefined && (
-            <Badge variant="secondary" className="ml-1">
+            <Badge variant="secondary" className="ml-1 dark:bg-gray-700 dark:text-gray-200">
               {totalZones} {totalZones === 1 ? 'zone' : 'zones'}
             </Badge>
           )}
         </CardDescription>
       </div>
       <div className="relative">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground dark:text-gray-400" />
         <Input
           type="search"
           placeholder="Search zones..."
-          className="pl-8 max-w-xs"
+          className="pl-8 max-w-xs dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:placeholder:text-gray-500"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
