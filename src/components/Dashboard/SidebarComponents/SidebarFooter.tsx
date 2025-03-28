@@ -2,11 +2,15 @@
 import React, { useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, MoonStar, SunMoon } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { SidebarFooter as UISidebarFooter } from "@/components/ui/sidebar";
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || "1.2.4";
+
+// Image paths for theme toggle
+const LIGHT_MODE_ICON = "/lovable-uploads/0209629a-5277-4431-afc9-8dbfbe6a414e.png";
+const DARK_MODE_ICON = "/lovable-uploads/74f0f7ce-a0ee-4ac8-b105-28031f319b00.png";
 
 export function SidebarFooterContent() {
   const { theme, activeTheme, toggleTheme } = useTheme();
@@ -23,15 +27,15 @@ export function SidebarFooterContent() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div 
-            className="theme-toggle h-8 w-8 rounded-full cursor-pointer flex items-center justify-center"
+            className="theme-toggle h-8 w-8 rounded-full cursor-pointer flex items-center justify-center overflow-hidden"
             onClick={toggleTheme}
             title={`Switch to ${activeTheme === 'dark' ? 'light' : 'dark'} mode`}
           >
-            {activeTheme === 'dark' ? (
-              <SunMoon className="h-5 w-5 text-white transition-all" />
-            ) : (
-              <MoonStar className="h-5 w-5 text-yellow-500 transition-all" />
-            )}
+            <img 
+              src={activeTheme === 'dark' ? LIGHT_MODE_ICON : DARK_MODE_ICON} 
+              alt={`Switch to ${activeTheme === 'dark' ? 'light' : 'dark'} mode`}
+              className="h-full w-full object-cover transition-transform hover:scale-110"
+            />
           </div>
           <div>
             <div className="font-semibold text-sm dark:text-white">Novacene</div>
