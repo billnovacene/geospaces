@@ -37,4 +37,17 @@
       @apply w-full ml-0;
     }
   }
+  
+  /* Dashboard components styling */
+  .dashboard-header {
+    @apply bg-card py-5 px-5 mb-6;
+  }
+  
+  .dashboard-metric-card {
+    @apply bg-card py-4 px-4;
+  }
+  
+  .dashboard-content-section {
+    @apply mb-6;
+  }
 }
