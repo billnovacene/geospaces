@@ -20,26 +20,26 @@ interface DewPointAreaChartProps {
 
 export function DewPointAreaChart({ chartData, xAxisKey, isDarkMode = false }: DewPointAreaChartProps) {
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height={350}>
       <AreaChart
         data={chartData}
         margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#333" : "#f1f1f1"} />
+        <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#374151" : "#f1f1f1"} />
         <XAxis 
           dataKey={xAxisKey} 
-          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }} 
+          tick={{ fontSize: 12, fill: isDarkMode ? "#e5e7eb" : "#6b7280" }} 
           tickMargin={10}
         />
         <YAxis 
           domain={[0, 30]} 
-          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }}
+          tick={{ fontSize: 12, fill: isDarkMode ? "#e5e7eb" : "#6b7280" }}
           tickMargin={10}
           label={{ 
             value: "Temperature (°C)", 
             angle: -90, 
             position: "insideLeft",
-            style: { textAnchor: "middle", fontSize: 12, fill: isDarkMode ? "#ccc" : "#6b7280" }
+            style: { textAnchor: "middle", fontSize: 12, fill: isDarkMode ? "#e5e7eb" : "#6b7280" }
           }}
         />
         <Tooltip 
@@ -54,7 +54,8 @@ export function DewPointAreaChart({ chartData, xAxisKey, isDarkMode = false }: D
           contentStyle={{
             backgroundColor: isDarkMode ? "#1f2937" : "#fff",
             border: `1px solid ${isDarkMode ? "#374151" : "#e5e7eb"}`,
-            color: isDarkMode ? "#e5e7eb" : "#374151"
+            color: isDarkMode ? "#e5e7eb" : "#374151",
+            boxShadow: isDarkMode ? "0 10px 15px -3px rgba(0, 0, 0, 0.4)" : "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
           }}
           labelStyle={{ color: isDarkMode ? "#e5e7eb" : "#374151" }}
           itemStyle={{ color: isDarkMode ? "#e5e7eb" : "#374151" }}
@@ -76,15 +77,17 @@ export function DewPointAreaChart({ chartData, xAxisKey, isDarkMode = false }: D
           name="surfaceTemperature"
           stroke="#f97316" 
           fill="#f97316" 
-          fillOpacity={0.2}
+          fillOpacity={isDarkMode ? 0.3 : 0.2}
+          strokeWidth={2}
         />
         <Area 
           type="monotone" 
           dataKey="dewPoint" 
           name="dewPoint"
-          stroke="#3b82f6" 
-          fill="#3b82f6" 
-          fillOpacity={0.2}
+          stroke="#60a5fa" 
+          fill="#60a5fa" 
+          fillOpacity={isDarkMode ? 0.3 : 0.2}
+          strokeWidth={2}
         />
         <Area 
           type="monotone" 
@@ -92,7 +95,8 @@ export function DewPointAreaChart({ chartData, xAxisKey, isDarkMode = false }: D
           name="riskFactor"
           stroke="#ef4444" 
           fill="#ef4444" 
-          fillOpacity={0.3}
+          fillOpacity={isDarkMode ? 0.4 : 0.3}
+          strokeWidth={2}
         />
         <ReferenceLine 
           y={3} 

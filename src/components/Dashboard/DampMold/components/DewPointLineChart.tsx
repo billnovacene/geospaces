@@ -20,33 +20,32 @@ interface DewPointLineChartProps {
 
 export function DewPointLineChart({ chartData, xAxisKey, isDarkMode = false }: DewPointLineChartProps) {
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height={350}>
       <LineChart
         data={chartData}
-        margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
+        margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#333" : "#f1f1f1"} />
+        <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#374151" : "#f3f4f6"} />
         <XAxis 
           dataKey={xAxisKey} 
-          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }} 
+          tick={{ fontSize: 12, fill: isDarkMode ? "#e5e7eb" : "#6b7280" }} 
           tickMargin={10}
         />
         <YAxis 
           domain={[0, 30]} 
-          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }}
+          tick={{ fontSize: 12, fill: isDarkMode ? "#e5e7eb" : "#6b7280" }}
           tickMargin={10}
           label={{ 
             value: "Temperature (°C)", 
             angle: -90, 
             position: "insideLeft",
-            style: { textAnchor: "middle", fontSize: 12, fill: isDarkMode ? "#ccc" : "#6b7280" }
+            style: { textAnchor: "middle", fontSize: 12, fill: isDarkMode ? "#e5e7eb" : "#6b7280" }
           }}
         />
         <Tooltip 
           formatter={(value, name) => {
             if (name === "surfaceTemperature") return [`${value}°C`, "Surface Temp"];
             if (name === "dewPoint") return [`${value}°C`, "Dew Point"];
-            if (name === "dewPointDelta") return [`${value}°C`, "Temperature Difference"];
             if (name === "riskFactor") return [`${value}`, "Condensation Risk Factor"];
             return [value, name];
           }}
@@ -55,7 +54,8 @@ export function DewPointLineChart({ chartData, xAxisKey, isDarkMode = false }: D
           contentStyle={{
             backgroundColor: isDarkMode ? "#1f2937" : "#fff",
             border: `1px solid ${isDarkMode ? "#374151" : "#e5e7eb"}`,
-            color: isDarkMode ? "#e5e7eb" : "#374151"
+            color: isDarkMode ? "#e5e7eb" : "#374151",
+            boxShadow: isDarkMode ? "0 10px 15px -3px rgba(0, 0, 0, 0.4)" : "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
           }}
           labelStyle={{ color: isDarkMode ? "#e5e7eb" : "#374151" }}
           itemStyle={{ color: isDarkMode ? "#e5e7eb" : "#374151" }}
@@ -66,7 +66,7 @@ export function DewPointLineChart({ chartData, xAxisKey, isDarkMode = false }: D
           formatter={(value) => {
             if (value === "surfaceTemperature") return "Surface Temperature";
             if (value === "dewPoint") return "Dew Point";
-            if (value === "dewPointDelta") return "Temperature Difference";
+            if (value === "riskFactor") return "Risk Factor";
             return value;
           }}
           wrapperStyle={{ color: isDarkMode ? "#e5e7eb" : "#374151" }}
@@ -75,26 +75,28 @@ export function DewPointLineChart({ chartData, xAxisKey, isDarkMode = false }: D
           type="monotone" 
           dataKey="surfaceTemperature" 
           name="surfaceTemperature"
-          stroke="#f97316" 
           strokeWidth={2}
-          dot={{ r: 4 }}
+          stroke="#f97316" 
+          dot={{ stroke: '#f97316', strokeWidth: 2, r: 4, fill: isDarkMode ? '#1f2937' : '#fff' }}
+          activeDot={{ stroke: '#f97316', strokeWidth: 2, r: 6, fill: isDarkMode ? '#f97316' : '#fff' }}
         />
         <Line 
           type="monotone" 
           dataKey="dewPoint" 
           name="dewPoint"
-          stroke="#3b82f6" 
           strokeWidth={2}
-          dot={{ r: 4 }}
+          stroke="#60a5fa" 
+          dot={{ stroke: '#60a5fa', strokeWidth: 2, r: 4, fill: isDarkMode ? '#1f2937' : '#fff' }}
+          activeDot={{ stroke: '#60a5fa', strokeWidth: 2, r: 6, fill: isDarkMode ? '#60a5fa' : '#fff' }}
         />
         <Line 
           type="monotone" 
-          dataKey="dewPointDelta" 
-          name="dewPointDelta"
-          stroke="#10b981" 
+          dataKey="riskFactor" 
+          name="riskFactor"
           strokeWidth={2}
-          strokeDasharray="5 5"
-          dot={{ r: 4 }}
+          stroke="#ef4444" 
+          dot={{ stroke: '#ef4444', strokeWidth: 2, r: 4, fill: isDarkMode ? '#1f2937' : '#fff' }}
+          activeDot={{ stroke: '#ef4444', strokeWidth: 2, r: 6, fill: isDarkMode ? '#ef4444' : '#fff' }}
         />
         <ReferenceLine 
           y={3} 

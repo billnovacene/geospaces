@@ -1,12 +1,12 @@
 
 @layer components {
   .dashboard-card {
-    @apply bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6 animate-fade-in transition-all duration-300 hover:shadow-md;
+    @apply bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6 animate-fade-in transition-all duration-300 hover:shadow-md dark:shadow-lg dark:shadow-black/20;
   }
 
   /* Table Styles */
   .table-container {
-    @apply bg-card rounded-lg border border-border shadow-sm overflow-hidden;
+    @apply bg-card rounded-lg border border-border shadow-sm overflow-hidden dark:shadow-lg dark:shadow-black/20;
   }
 
   .table-header {
@@ -31,7 +31,7 @@
   }
 
   .dark .nav-item:hover {
-    background-color: theme('colors.gray.700');
+    background-color: theme('colors.gray.800');
     color: theme('colors.white');
   }
 
@@ -43,7 +43,7 @@
   }
 
   .dark .nav-item-active {
-    background-color: theme('colors.gray.700');
+    background-color: theme('colors.gray.800');
     color: theme('colors.white');
   }
 
@@ -57,12 +57,12 @@
   }
 
   .dark .sidebar-hover-item:hover {
-    background-color: theme('colors.gray.700');
+    background-color: theme('colors.gray.800');
   }
 
   /* Card Design */
   .settings-card {
-    @apply bg-card border border-border rounded-lg p-6 mb-6;
+    @apply bg-card border border-border rounded-lg p-6 mb-6 dark:shadow-lg dark:shadow-black/20;
   }
 
   .settings-header {
@@ -112,14 +112,14 @@
   }
 
   .info-panel-blue {
-    @apply border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-400;
+    @apply border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/20 dark:text-blue-300;
   }
 
   .info-panel-amber {
-    @apply border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400;
+    @apply border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-300;
   }
 
   .info-panel-green {
-    @apply border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-400;
+    @apply border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/20 dark:text-green-300;
   }
 }
