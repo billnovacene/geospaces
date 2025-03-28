@@ -13,7 +13,7 @@ export function SidebarFooterContent() {
   const { theme, toggleTheme } = useTheme();
   
   return (
-    <UISidebarFooter className="border-t border-sidebar-border p-4">
+    <UISidebarFooter className="border-t border-sidebar-border p-4 bg-white dark:bg-gray-800">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Avatar 
@@ -35,14 +35,14 @@ export function SidebarFooterContent() {
             <AvatarFallback>{theme === "light" ? "L" : "D"}</AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-semibold text-sm">Novacene</div>
+            <div className="font-semibold text-sm dark:text-white">Novacene</div>
             <div className="flex flex-col">
-              <span className="text-xs font-medium text-sidebar-primary font-['Signal'] tracking-tighter">GEOSPACES</span>
-              <span className="text-xs font-mono">{APP_VERSION}</span>
+              <span className="text-xs font-medium text-sidebar-primary font-['Signal'] tracking-tighter dark:text-white/80">GEOSPACES</span>
+              <span className="text-xs font-mono dark:text-white/70">{APP_VERSION}</span>
             </div>
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="text-muted-foreground">
+        <Button variant="ghost" size="icon" className="text-muted-foreground dark:text-white/70">
           <MoreVertical className="h-5 w-5" />
         </Button>
       </div>
