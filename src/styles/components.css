@@ -1,16 +1,16 @@
 
 @layer components {
   .dashboard-card {
-    @apply bg-card text-card-foreground rounded-lg shadow-sm border p-6 animate-fade-in transition-all duration-300 hover:shadow-md;
+    @apply bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6 animate-fade-in transition-all duration-300 hover:shadow-md;
   }
 
   /* Table Styles */
   .table-container {
-    @apply bg-white rounded-lg border shadow-sm overflow-hidden;
+    @apply bg-card rounded-lg border border-border shadow-sm overflow-hidden;
   }
 
   .table-header {
-    @apply bg-gray-50 text-gray-600 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider;
+    @apply bg-muted text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider;
   }
 
   .table-cell {
@@ -18,16 +18,16 @@
   }
 
   .sidebar-hover-item {
-    @apply hover:bg-gray-50 transition-colors duration-150;
+    @apply hover:bg-accent/10 transition-colors duration-150;
   }
 
   /* Card Design */
   .settings-card {
-    @apply bg-white border border-gray-100 rounded-lg p-6 mb-6;
+    @apply bg-card border border-border rounded-lg p-6 mb-6;
   }
 
   .settings-header {
-    @apply text-lg font-normal text-gray-800 mb-4;
+    @apply text-lg font-normal text-card-foreground mb-4;
   }
 
   .settings-section {
@@ -35,11 +35,11 @@
   }
 
   .settings-label {
-    @apply text-sm font-light text-gray-600 mb-1.5;
+    @apply text-sm font-light text-muted-foreground mb-1.5;
   }
 
   .settings-input {
-    @apply w-full border border-gray-200 rounded px-3 py-2 text-gray-800;
+    @apply w-full border border-input rounded px-3 py-2 text-foreground;
   }
 
   .settings-action {
@@ -47,10 +47,40 @@
   }
 
   .btn-secondary {
-    @apply bg-gray-100 text-gray-600 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors mr-2;
+    @apply bg-secondary text-secondary-foreground px-4 py-2 rounded-md hover:bg-secondary/80 transition-colors mr-2;
   }
 
   .btn-primary {
-    @apply bg-emerald-100 text-emerald-700 px-4 py-2 rounded-md hover:bg-emerald-200 transition-colors;
+    @apply bg-primary/10 text-primary px-4 py-2 rounded-md hover:bg-primary/20 transition-colors;
+  }
+
+  /* Status indicators */
+  .status-good {
+    @apply text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/50;
+  }
+
+  .status-caution {
+    @apply text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/50;
+  }
+
+  .status-warning {
+    @apply text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950/50;
+  }
+
+  /* Info panels */
+  .info-panel {
+    @apply border rounded-lg p-3;
+  }
+
+  .info-panel-blue {
+    @apply border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-400;
+  }
+
+  .info-panel-amber {
+    @apply border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400;
+  }
+
+  .info-panel-green {
+    @apply border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-400;
   }
 }

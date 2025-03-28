@@ -29,9 +29,9 @@ export function DailyOverviewSection({
           <div className="flex flex-col md:flex-row gap-6 w-full">
             <div className="w-full md:w-1/4">
               <p className="text-sm text-card-foreground/80">{chartDescription}</p>
-              <div className="mt-4 p-3 border border-blue-100 bg-blue-50/30 dark:bg-blue-950/30 dark:border-blue-900/50 rounded-md">
-                <p className="text-xs text-blue-700 dark:text-blue-400 font-medium">Mould Risk Scoring</p>
-                <ul className="text-xs text-blue-700 dark:text-blue-400 mt-1 list-disc pl-4 space-y-1">
+              <div className="mt-4 info-panel info-panel-blue">
+                <p className="text-xs font-medium">Mould Risk Scoring</p>
+                <ul className="text-xs mt-1 list-disc pl-4 space-y-1">
                   <li>RH &lt;60%: Low risk (Good - green)</li>
                   <li>RH 60-69%: Moderate risk (Caution - amber)</li>
                   <li>RH ≥70%: High risk (Alarm - red)</li>

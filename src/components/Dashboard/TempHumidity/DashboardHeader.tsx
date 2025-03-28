@@ -57,7 +57,7 @@ export function DashboardHeader({ isUsingMockData, isLoading, operatingHours }: 
       </div>
       
       {operatingHours && (
-        <div className="flex items-center mb-6 text-gray-700">
+        <div className="flex items-center mb-6 text-muted-foreground">
           <Clock className="h-4 w-4 mr-1.5" />
           <span className="text-sm font-medium">Operating hours: {formatOperatingHours()}</span>
         </div>
@@ -71,7 +71,7 @@ export function DashboardHeader({ isUsingMockData, isLoading, operatingHours }: 
           </Badge>
           
           {isUsingMockData && !isLoading && (
-            <Badge variant="outline" className="text-xs px-3 py-1 bg-amber-50 text-amber-700 border-amber-200">
+            <Badge variant="outline" className="text-xs px-3 py-1 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900/50">
               <AlertTriangle className="h-3.5 w-3.5 mr-1" />
               Simulated data
             </Badge>

@@ -13,6 +13,7 @@ import { ComponentsSection } from "@/components/Settings/ComponentsSection";
 import { ColorSection } from "@/components/Settings/ColorSection";
 import { NavigationEditor } from "@/components/Settings/NavigationEditor";
 import { TableEditor } from "@/components/Settings/Tables";
+import { ThemeSection } from "@/components/Settings/ThemeSection";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 
 const Settings = () => {
@@ -22,7 +23,7 @@ const Settings = () => {
 
   return (
     <SidebarWrapper>
-      <div className="flex-1 overflow-auto bg-[#F9FAFB] min-h-screen">
+      <div className="flex-1 overflow-auto bg-background min-h-screen">
         <div className="container mx-auto py-6 px-4 md:px-6">
           <div className="mb-6">
             <div className="flex flex-row items-center justify-between">
@@ -41,6 +42,7 @@ const Settings = () => {
             <div className="flex justify-between items-center">
               <TabsList>
                 <TabsTrigger value="typography">Typography</TabsTrigger>
+                <TabsTrigger value="theme">Theme</TabsTrigger>
                 <TabsTrigger value="navigation">Navigation</TabsTrigger>
                 <TabsTrigger value="tables">Tables</TabsTrigger>
                 <TabsTrigger value="components">Components</TabsTrigger>
@@ -72,6 +74,10 @@ const Settings = () => {
               ) : (
                 <Typography />
               )}
+            </TabsContent>
+            
+            <TabsContent value="theme" className="space-y-4">
+              <ThemeSection />
             </TabsContent>
             
             <TabsContent value="navigation" className="space-y-4">
