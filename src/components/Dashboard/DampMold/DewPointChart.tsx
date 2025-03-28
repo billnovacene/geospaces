@@ -29,7 +29,7 @@ export function DewPointChart({
   };
 
   return (
-    <Card className="w-full">
+    <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium dark:text-white">Dew Point Analysis</CardTitle>
         <DewPointChartControls 
@@ -39,22 +39,12 @@ export function DewPointChart({
           setChartType={setChartType} 
         />
       </CardHeader>
-      <CardContent className="w-full pb-8">
-        <div className="flex flex-col md:flex-row gap-8 w-full">
-          <div className="w-full md:w-1/4 pr-4">
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              This chart shows the current day's dew point analysis and temperature readings, 
-              helping identify potential condensation risks in real-time.
-            </p>
-          </div>
-          <div className="w-full md:w-3/4 h-[300px]">
-            {chartType === "line" ? (
-              <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} isDarkMode={isDarkMode} />
-            ) : (
-              <DewPointAreaChart chartData={chartData} xAxisKey={getXAxisKey()} isDarkMode={isDarkMode} />
-            )}
-          </div>
-        </div>
+      <CardContent>
+        {chartType === "line" ? (
+          <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} isDarkMode={isDarkMode} />
+        ) : (
+          <DewPointAreaChart chartData={chartData} xAxisKey={getXAxisKey()} isDarkMode={isDarkMode} />
+        )}
       </CardContent>
     </Card>
   );
