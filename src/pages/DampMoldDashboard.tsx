@@ -26,30 +26,35 @@ const DampMoldDashboard = () => {
   });
   console.log("Current route:", location.pathname);
 
-  // Summary stats for damp and mold conditions with keys for filtering
+  // Summary stats for damp and mold conditions with keys for filtering and secondary labels
   const summaryStats = [{
     value: "5",
-    label: "Buildings Connected",
+    label: "Buildings",
+    secondaryLabel: "Connected",
     type: "normal" as const,
     key: "buildings"
   }, {
     value: "46",
-    label: "Zones Monitored",
+    label: "Zones",
+    secondaryLabel: "Monitored", 
     type: "normal" as const,
     key: "zones"
   }, {
     value: "1",
-    label: "Zones High Risk",
+    label: "Zones",
+    secondaryLabel: "High Risk",
     type: "high-risk" as const,
     key: "high-risk"
   }, {
     value: "3",
-    label: "Zones Caution",
+    label: "Zones",
+    secondaryLabel: "Caution",
     type: "caution" as const,
     key: "caution"
   }, {
     value: "42",
-    label: "Total Zones Normal",
+    label: "Zones",
+    secondaryLabel: "Normal",
     type: "success" as const,
     key: "normal"
   }];
