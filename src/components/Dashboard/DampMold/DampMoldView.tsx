@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -15,7 +14,6 @@ import { generateMonthlyRiskData } from "./utils/mockRiskData";
 import { generateMockData } from "@/services/sensors/mock-data-generator";
 import { LogItem } from "@/hooks/temperature/types";
 import { useTheme } from "@/components/ThemeProvider";
-import { DewPointChart } from "./DewPointChart";
 
 interface DampMoldViewProps {
   contextType?: "zone" | "site" | "all";
@@ -117,9 +115,6 @@ export function DampMoldView({
   
   return (
     <div className="space-y-6 dark:bg-gray-900 transition-colors duration-300">
-      {/* Add Dew Point Chart as first item */}
-      <DewPointChart data={{ dewPointData }} />
-      
       {/* Monthly Overview section */}
       <MonthlyOverviewSection 
         timeRange={monthlyTimeRange}
