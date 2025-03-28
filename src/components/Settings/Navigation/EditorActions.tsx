@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { RefreshCw, Save } from "lucide-react";
 
 interface EditorActionsProps {
   resetToDefaults: () => void;
@@ -8,21 +9,38 @@ interface EditorActionsProps {
   isUpdating: boolean;
 }
 
-export const EditorActions = ({ resetToDefaults, applyChanges, isUpdating }: EditorActionsProps) => {
+export function EditorActions({ 
+  resetToDefaults, 
+  applyChanges, 
+  isUpdating 
+}: EditorActionsProps) {
   return (
-    <div className="flex justify-end space-x-2 pt-4">
+    <div className="flex justify-end gap-2">
       <Button 
         variant="outline" 
-        onClick={resetToDefaults}
+        onClick={resetToDefaults} 
+        disabled={isUpdating}
       >
+        <RefreshCw className="h-4 w-4 mr-2" />
         Reset to Defaults
       </Button>
       <Button 
+        variant="default" 
         onClick={applyChanges} 
         disabled={isUpdating}
       >
-        {isUpdating ? "Applying..." : "Apply Changes"}
+        {isUpdating ? (
+          <>
+            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+            Applying...
+          </>
+        ) : (
+          <>
+            <Save className="h-4 w-4 mr-2" />
+            Apply Changes
+          </>
+        )}
       </Button>
     </div>
   );
-};
+}
