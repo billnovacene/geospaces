@@ -95,7 +95,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const currentTimeMinutes = currentHour * 60 + currentMinute;
       
       // Check if current time is within dark mode hours
-      // For example, if dark mode is 10:00 PM to 6:00 AM
       if (endTime < startTime) {
         // Spans midnight (e.g., 22:00 to 06:00)
         if (currentTimeMinutes >= startTime || currentTimeMinutes < endTime) {
@@ -114,10 +113,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
     
     setActiveTheme(theme);
-    applyTheme(theme, settings.colorScheme);
     
-    // Add logging to help debug
-    console.log("ThemeProvider: activeTheme set to", theme);
+    // Apply theme to HTML element
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      console.log("Applied dark theme to HTML");
+    } else {
+      document.documentElement.classList.remove("dark");
+      console.log("Removed dark theme from HTML");
+    }
+    
+    // Apply color scheme
+    document.documentElement.setAttribute("data-color-scheme", settings.colorScheme);
+    
+    // Store the last active theme
+    localStorage.setItem("activeTheme", theme);
+    
+    // Log theme application
+    console.log("Theme applied:", theme, "Color scheme:", settings.colorScheme);
     
   }, [settings]);
 
@@ -129,33 +142,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       if (settings.theme === "system") {
         const newTheme = mediaQuery.matches ? "dark" : "light";
         setActiveTheme(newTheme);
-        applyTheme(newTheme, settings.colorScheme);
+        
+        // Apply theme to HTML element
+        if (newTheme === "dark") {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+        
         console.log("System theme changed to:", newTheme);
       }
     };
     
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [settings.theme, settings.colorScheme]);
-
-  // Apply theme to DOM
-  const applyTheme = (theme: "light" | "dark", colorScheme: ColorScheme) => {
-    // Force document class update for reliability
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    
-    // Apply color scheme
-    document.documentElement.setAttribute("data-color-scheme", colorScheme);
-    
-    // Store the last active theme
-    localStorage.setItem("activeTheme", theme);
-    
-    // Log theme application
-    console.log("Theme applied:", theme, "Color scheme:", colorScheme);
-  };
+  }, [settings.theme]);
 
   // Set theme
   const setTheme = (theme: Theme) => {
@@ -169,6 +170,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Toggle between light and dark
   const toggleTheme = () => {
+    console.log("Toggle theme called, current theme:", settings.theme);
     const newTheme = settings.theme === "light" ? "dark" : "light";
     updateThemeSettings({ theme: newTheme });
     console.log(`Theme toggled from ${settings.theme} to ${newTheme}`);
