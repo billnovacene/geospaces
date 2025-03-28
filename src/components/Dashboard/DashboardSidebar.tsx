@@ -34,7 +34,7 @@ export function DashboardSidebar() {
         const activeBgClass = settings.activeBackground.replace('bg-', '');
         const activeTextClass = settings.activeTextColor.replace('text-', '');
         
-        // Set CSS variables for the sidebar navigation
+        // Set CSS variables for the sidebar navigation with dark mode considerations
         document.documentElement.style.setProperty('--nav-text-color', `var(--${textClass})`);
         document.documentElement.style.setProperty('--nav-hover-bg-color', `var(--${hoverBgClass.replace('/', '-')})`);
         document.documentElement.style.setProperty('--nav-hover-text-color', `var(--${hoverTextClass})`);
@@ -56,7 +56,7 @@ export function DashboardSidebar() {
   }, []);
   
   return (
-    <Sidebar className="border-r border-transparent dark:bg-gray-800">
+    <Sidebar className="border-r border-transparent dark:bg-gray-800 dark:border-gray-700">
       <UISidebarContent className="p-0 flex flex-col h-full bg-sidebar dark:bg-gray-800">
         <SidebarHeader />
 

@@ -36,7 +36,7 @@ export function RiskGlanceSection({
     }
   };
 
-  return <Card className="shadow-sm mb-10 w-full">
+  return <Card className="shadow-sm mb-10 w-full dark:bg-gray-800 dark:border-gray-700">
       {activeFilter && (
         <div className="bg-blue-50/50 dark:bg-blue-900/20 p-3 border-b border-blue-100 dark:border-blue-900/50">
           <p className="text-sm text-blue-700 dark:text-blue-400">
@@ -68,7 +68,7 @@ export function RiskGlanceSection({
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
+                    <TableRow className="dark:border-gray-700">
                       <TableHead className="w-[100px] dark:text-gray-300">Building</TableHead>
                       <TableHead className="dark:text-gray-300">Zone</TableHead>
                       <TableHead className="text-right dark:text-gray-300">Temp (°C)</TableHead>
@@ -83,7 +83,7 @@ export function RiskGlanceSection({
                   <TableBody>
                     {monthlyRiskData.length > 0 ? (
                       monthlyRiskData.map(row => (
-                        <TableRow key={row.id}>
+                        <TableRow key={row.id} className="dark:border-gray-700">
                           <TableCell className="font-medium dark:text-gray-200">{row.building}</TableCell>
                           <TableCell className="dark:text-gray-200">{row.zone}</TableCell>
                           <TableCell className="text-right dark:text-gray-200">{row.temp}</TableCell>
@@ -104,7 +104,7 @@ export function RiskGlanceSection({
                         </TableRow>
                       ))
                     ) : (
-                      <TableRow>
+                      <TableRow className="dark:border-gray-700">
                         <TableCell colSpan={9} className="text-center py-6 text-muted-foreground dark:text-gray-400">
                           No data available for the current filter.
                         </TableCell>

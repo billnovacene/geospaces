@@ -73,9 +73,9 @@ export function SitesSidebar({
       <CollapsibleContent>
         {isLoading ? (
           <div className="py-2 px-5 dark:bg-gray-800">
-            <Skeleton className="h-8 w-full mb-2" />
-            <Skeleton className="h-8 w-full mb-2" />
-            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full mb-2 dark:bg-gray-700" />
+            <Skeleton className="h-8 w-full mb-2 dark:bg-gray-700" />
+            <Skeleton className="h-8 w-full dark:bg-gray-700" />
           </div>
         ) : error ? (
           <SitesSidebarError onRetry={refetch} />
@@ -103,7 +103,7 @@ export function SitesSidebar({
                   >
                     {activeSiteId === site.id ? (
                       <>
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-primary" />
                         <span className="nav-item-active uppercase dark:text-white">{site.name}</span>
                       </>
                     ) : (
