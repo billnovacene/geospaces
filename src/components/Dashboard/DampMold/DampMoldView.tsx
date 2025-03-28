@@ -108,7 +108,20 @@ export function DampMoldView({
   
   return (
     <div className="space-y-6">
-      {/* "Risk at a glance" section */}
+      {/* Monthly Overview section - moved to the top */}
+      <MonthlyOverviewSection 
+        timeRange={monthlyTimeRange}
+        setTimeRange={setMonthlyTimeRange}
+        monthlyRiskData={monthlyRiskData} 
+      />
+      
+      {/* Daily Overview section with description */}
+      <DailyOverviewSection 
+        timeRange={dailyTimeRange} 
+        setTimeRange={setDailyTimeRange}
+      />
+      
+      {/* "Risk at a glance" section - moved to the bottom */}
       <RiskGlanceSection 
         activeTab={activeTab} 
         setActiveTab={setActiveTab}
@@ -116,19 +129,6 @@ export function DampMoldView({
         setTimeRange={setDailyTimeRange} 
         monthlyRiskData={monthlyRiskData}
         activeFilter={activeFilter}
-      />
-
-      {/* Daily Overview section with description */}
-      <DailyOverviewSection 
-        timeRange={dailyTimeRange} 
-        setTimeRange={setDailyTimeRange}
-      />
-      
-      {/* Monthly Overview section */}
-      <MonthlyOverviewSection 
-        timeRange={monthlyTimeRange}
-        setTimeRange={setMonthlyTimeRange}
-        monthlyRiskData={monthlyRiskData} 
       />
       
       {/* Only show logs in development environment */}
