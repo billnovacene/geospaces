@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchZone } from "@/services/zones";
@@ -21,6 +21,7 @@ interface DampMoldViewProps {
   siteId?: string;
   zoneId?: string;
   activeFilter?: string | null;
+  currentDate?: Date;
 }
 
 // Extend TempHumidityResponse with dew point properties
@@ -39,7 +40,8 @@ export function DampMoldView({
   contextId: propsContextId,
   siteId: propsSiteId,
   zoneId: propsZoneId,
-  activeFilter = null
+  activeFilter = null,
+  currentDate = new Date()
 }: DampMoldViewProps) {
   const [activeTab, setActiveTab] = useState("today");
   const [dailyTimeRange, setDailyTimeRange] = useState("today");
@@ -54,7 +56,7 @@ export function DampMoldView({
   const contextType = propsContextType || (zoneId ? "zone" : siteId ? "site" : "all");
   const contextId = propsContextId || zoneId || siteId || null;
   
-  console.log("DampMoldView props:", { contextType, contextId, siteId, zoneId, activeFilter });
+  console.log("DampMoldView props:", { contextType, contextId, siteId, zoneId, activeFilter, currentDate });
   console.log("Route params:", params);
   
   // Fetch context name (site or zone name)
@@ -108,7 +110,7 @@ export function DampMoldView({
   
   return (
     <div className="space-y-6">
-      {/* Monthly Overview section - moved to the top */}
+      {/* Monthly Overview section - at the top */}
       <MonthlyOverviewSection 
         timeRange={monthlyTimeRange}
         setTimeRange={setMonthlyTimeRange}

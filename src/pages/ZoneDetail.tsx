@@ -11,13 +11,15 @@ import { ZoneLoadingSkeleton } from "@/components/Zone/ZoneLoadingSkeleton";
 import { ZoneErrorState } from "@/components/Zone/ZoneErrorState";
 import { ZoneDevices } from "@/components/Zone/ZoneDevices";
 import { SubZonesList } from "@/components/Zone/SubZonesList";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Package } from "lucide-react";
+import { GlobalNavigationHeader } from "@/components/Dashboard/Common/GlobalNavigationHeader";
 
 const ZoneDetail = () => {
   const { zoneId } = useParams<{ zoneId: string }>();
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   
   const { data: zone, isLoading, error, refetch: refetchZone } = useQuery({
     queryKey: ["zone", zoneId],
@@ -51,9 +53,23 @@ const ZoneDetail = () => {
     refetchZone();
     refetchDeviceCount();
   };
+  
+  const handleDateChange = (date: Date) => {
+    console.log("Date changed in Zone Detail:", date);
+    setCurrentDate(date);
+    // You could refresh data based on date here
+    refetchZone();
+    refetchDeviceCount();
+  };
 
   return (
     <SidebarWrapper>
+      {/* Global Navigation Header at the top */}
+      <GlobalNavigationHeader 
+        onDateChange={handleDateChange}
+        initialDate={currentDate}
+      />
+      
       <div className="container mx-auto py-6 px-6 md:px-8 lg:px-12">
         {isLoading ? (
           <ZoneLoadingSkeleton />

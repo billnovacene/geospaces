@@ -9,19 +9,29 @@ import { ProjectDetailsCard } from "@/components/Project/ProjectDetailsCard";
 import { AdditionalInfoCard } from "@/components/Project/AdditionalInfoCard";
 import { ProjectErrorState } from "@/components/Project/ProjectErrorState";
 import { ProjectLoadingState } from "@/components/Project/ProjectLoadingState";
+import { GlobalNavigationHeader } from "@/components/Dashboard/Common/GlobalNavigationHeader";
+import { useState } from "react";
 
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   
   // If we're on the home page without a projectId, we'll display a project list
   // or a default view instead of trying to fetch a specific project
-  const { data: project, isLoading, error } = useQuery({
+  const { data: project, isLoading, error, refetch } = useQuery({
     queryKey: ["project", projectId],
     queryFn: () => (projectId ? fetchProject(projectId) : null),
     enabled: !!projectId,
   });
 
   console.log("Project data in ProjectDetail:", project);
+  
+  const handleDateChange = (date: Date) => {
+    console.log("Date changed in Project Detail:", date);
+    setCurrentDate(date);
+    // Refresh data based on date if needed
+    refetch();
+  };
 
   if (error && projectId) {
     return (
@@ -33,6 +43,12 @@ const ProjectDetail = () => {
 
   return (
     <SidebarWrapper>
+      {/* Global Navigation Header at the top */}
+      <GlobalNavigationHeader 
+        onDateChange={handleDateChange}
+        initialDate={currentDate}
+      />
+      
       <div className="container mx-auto py-6">
         {isLoading && projectId ? (
           <ProjectLoadingState />

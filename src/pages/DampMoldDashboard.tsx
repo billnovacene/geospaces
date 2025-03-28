@@ -8,6 +8,7 @@ import { DampMoldView } from "@/components/Dashboard/DampMold/DampMoldView";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { SummaryStats, StatItem } from "@/components/Dashboard/DampMold/SummaryStats";
+import { GlobalNavigationHeader } from "@/components/Dashboard/Common/GlobalNavigationHeader";
 
 const DampMoldDashboard = () => {
   const {
@@ -19,6 +20,7 @@ const DampMoldDashboard = () => {
   }>();
   const location = useLocation();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   
   console.log("DampMoldDashboard params:", {
     siteId,
@@ -76,9 +78,22 @@ const DampMoldDashboard = () => {
     }
   };
   
+  const handleDateChange = (date: Date) => {
+    console.log("Date changed to:", date);
+    setCurrentDate(date);
+    // Additional logic to refresh data based on the new date could be added here
+  };
+  
   return <SidebarWrapper>
       <div className="flex-1 overflow-auto bg-[#F9FAFB] min-h-screen">
-        <div className="container mx-auto py-6 px-4 md:px-6">
+        {/* Global Navigation Header added at the top */}
+        <GlobalNavigationHeader 
+          onDateChange={handleDateChange}
+          initialDate={currentDate}
+          customDashboardType="damp-mold"
+        />
+        
+        <div className="container mx-auto px-4 md:px-6">
           {/* Header section with title and stats */}
           <div className="mb-6">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-[20px] py-[20px] bg-white rounded-lg shadow-sm">
@@ -98,7 +113,10 @@ const DampMoldDashboard = () => {
             </div>
           </div>
 
-          <DampMoldView activeFilter={activeFilter} />
+          <DampMoldView 
+            activeFilter={activeFilter} 
+            currentDate={currentDate}
+          />
         </div>
       </div>
     </SidebarWrapper>;

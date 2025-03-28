@@ -7,15 +7,17 @@ import { useContextName } from "@/components/Dashboard/TempHumidity/useContextNa
 import { useParams, useLocation } from "react-router-dom";
 import { LogPanel } from "@/components/Dashboard/TempHumidity/LogPanel";
 import { SpecificZoneView } from "@/components/Dashboard/TempHumidity/SpecificZoneView";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlobalNavigationHeader } from "@/components/Dashboard/Common/GlobalNavigationHeader";
 
 export default function TempHumidityDashboard() {
   // Get route params to detect if we're viewing a zone
   const { zoneId, siteId } = useParams<{ zoneId: string; siteId: string }>();
   const location = useLocation();
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   
   // Special case handling for site 471 - always show zone 12658
   const shouldRenderSpecificZone = siteId === "471" && !zoneId;
@@ -55,6 +57,14 @@ export default function TempHumidityDashboard() {
     refetch();
   };
   
+  // Handle date change
+  const handleDateChange = (date: Date) => {
+    console.log("Date changed to:", date);
+    setCurrentDate(date);
+    // Implement date-specific data fetching here
+    refetch();
+  };
+  
   // Refetch data when the zone or site changes
   useEffect(() => {
     if (effectiveZoneId || effectiveSiteId) {
@@ -78,8 +88,14 @@ export default function TempHumidityDashboard() {
       <div className="flex h-screen overflow-hidden">
         {/* Main content - removed the sidebar with ZonesHierarchy */}
         <div className="flex-1 overflow-y-auto">
-          <div className="container mx-auto py-8 px-6 md:px-8 lg:px-12">
-            {/* Header section with breadcrumbs and badges */}
+          {/* Global Navigation Header added at the top */}
+          <GlobalNavigationHeader 
+            onDateChange={handleDateChange}
+            initialDate={currentDate}
+          />
+          
+          <div className="container mx-auto px-6 md:px-8 lg:px-12">
+            {/* Header section with badges */}
             <DashboardHeader 
               isUsingMockData={isUsingMockData} 
               isLoading={isLoading} 
