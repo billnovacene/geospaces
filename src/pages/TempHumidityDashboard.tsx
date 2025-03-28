@@ -3,13 +3,14 @@ import { useParams, useLocation } from "react-router-dom";
 import { DashboardMainContent } from "@/components/Dashboard/TempHumidity/DashboardMainContent";
 import { useTempHumidityData } from "@/hooks/useTempHumidityData";
 import { useContextName } from "@/components/Dashboard/TempHumidity/useContextName";
-import { SpecificZoneView } from "@/components/Dashboard/TempHumidity/SpecificZoneView";
+import { SpecificZoneHandler } from "@/components/Dashboard/TempHumidity/SpecificZoneHandler";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LogPanel } from "@/components/Dashboard/TempHumidity/LogPanel";
 import { DashboardLayout } from "@/components/Dashboard/Common/DashboardLayout";
 import { DashboardHeader } from "@/components/Dashboard/Common/DashboardHeader";
-import { StatItem } from "@/components/Dashboard/Common/SummaryStats";
+import { createSummaryStats } from "@/components/Dashboard/TempHumidity/utils/statsUtils";
+import { RefetchOptions } from "@tanstack/react-query";
 
 export default function TempHumidityDashboard() {
   // Get route params to detect if we're viewing a zone
@@ -44,78 +45,6 @@ export default function TempHumidityDashboard() {
   
   const { contextName } = useContextName();
   
-  // Create stats based on data
-  const createSummaryStats = (): StatItem[] => {
-    if (isLoading || !data) {
-      return [
-        { value: "-", label: "Avg Temp", secondaryLabel: "Loading...", type: "neutral", key: "avgTemp" },
-        { value: "-", label: "Min Temp", secondaryLabel: "Loading...", type: "neutral", key: "minTemp" },
-        { value: "-", label: "Max Temp", secondaryLabel: "Loading...", type: "neutral", key: "maxTemp" },
-        { value: "-", label: "Avg Humidity", secondaryLabel: "Loading...", type: "neutral", key: "avgHumidity" },
-        { value: "-", label: "Sensors", secondaryLabel: "Loading...", type: "neutral", key: "sensors" }
-      ];
-    }
-    
-    // Real data
-    return [
-      { 
-        value: data.stats.avgTemp.toFixed(1) + "°C", 
-        label: "Avg Temp", 
-        secondaryLabel: getStatusLabel(data.stats.status.avgTemp), 
-        type: getTypeFromStatus(data.stats.status.avgTemp), 
-        key: "avgTemp" 
-      },
-      { 
-        value: data.stats.minTemp.toFixed(1) + "°C", 
-        label: "Min Temp", 
-        secondaryLabel: getStatusLabel(data.stats.status.minTemp), 
-        type: getTypeFromStatus(data.stats.status.minTemp), 
-        key: "minTemp" 
-      },
-      { 
-        value: data.stats.maxTemp.toFixed(1) + "°C", 
-        label: "Max Temp", 
-        secondaryLabel: getStatusLabel(data.stats.status.maxTemp), 
-        type: getTypeFromStatus(data.stats.status.maxTemp), 
-        key: "maxTemp" 
-      },
-      { 
-        value: Math.round(data.stats.avgHumidity) + "%", 
-        label: "Avg Humidity", 
-        secondaryLabel: getStatusLabel(data.stats.status.avgHumidity), 
-        type: getTypeFromStatus(data.stats.status.avgHumidity), 
-        key: "avgHumidity" 
-      },
-      { 
-        value: data.stats.activeSensors.toString(), 
-        label: "Sensors", 
-        secondaryLabel: "Active", 
-        type: "normal", 
-        key: "sensors" 
-      }
-    ];
-  };
-  
-  // Helper function to convert status to type
-  const getTypeFromStatus = (status: 'good' | 'caution' | 'warning'): StatItem['type'] => {
-    switch (status) {
-      case 'good': return 'success';
-      case 'caution': return 'caution';
-      case 'warning': return 'high-risk';
-      default: return 'normal';
-    }
-  };
-  
-  // Helper function to get status label
-  const getStatusLabel = (status: 'good' | 'caution' | 'warning'): string => {
-    switch (status) {
-      case 'good': return 'Optimal';
-      case 'caution': return 'Caution';
-      case 'warning': return 'Warning';
-      default: return 'Unknown';
-    }
-  };
-  
   // Handle manual refresh
   const handleRefresh = () => {
     toast.info("Refreshing data...", {
@@ -137,7 +66,7 @@ export default function TempHumidityDashboard() {
   };
   
   // Handle stat click
-  const handleStatClick = (stat: StatItem) => {
+  const handleStatClick = (stat: any) => {
     console.log("Stat clicked:", stat);
     if (activeFilter === stat.key) {
       setActiveFilter(null);
@@ -164,6 +93,9 @@ export default function TempHumidityDashboard() {
     }
   }, [apiConnectionFailed, effectiveZoneId, effectiveSiteId]);
   
+  // Generate stats for dashboard header
+  const summaryStats = createSummaryStats(data?.stats, isLoading);
+  
   return (
     <DashboardLayout
       onDateChange={handleDateChange}
@@ -173,17 +105,16 @@ export default function TempHumidityDashboard() {
       <DashboardHeader
         title="Temperature & Humidity"
         subtitle={`Data for ${contextName || 'All Locations'}`}
-        stats={createSummaryStats()}
+        stats={summaryStats}
         onStatClick={handleStatClick}
         activeFilter={activeFilter}
       />
 
       {/* Special case for site 471 - show specific zone 12658 */}
       {shouldRenderSpecificZone ? (
-        <SpecificZoneView 
+        <SpecificZoneHandler 
           siteId="471" 
           zoneId="12658" 
-          contextName="Zone 12658 (Site 471)"
         />
       ) : (
         <>
