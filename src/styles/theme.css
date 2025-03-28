@@ -85,4 +85,16 @@
   * {
     @apply border-border;
   }
+  
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+}
+
+.dark .theme-toggle-icon {
+  transform: translateY(-45px);
+}
+
+.theme-toggle-icon {
+  transition: transform 0.5s ease;
 }

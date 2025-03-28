@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -68,33 +69,33 @@ export function SidebarDashboardItem({
   const displayName = isOverview ? "Overview" : name;
   
   const collapsibleContent = (
-    <div className="ml-7 pl-3 py-2 border-l border-gray-200">
-      <div className="text-sm text-gray-600 py-1">Dashboard Details</div>
-      <div className="text-sm text-gray-600 py-1">Settings</div>
+    <div className="ml-7 pl-3 py-2 border-l border-gray-200 dark:border-gray-700">
+      <div className="text-sm text-gray-600 dark:text-gray-400 py-1">Dashboard Details</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400 py-1">Settings</div>
     </div>
   );
   
   const renderTrigger = () => (
     <div 
-      className="flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] w-full"
+      className="flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] dark:hover:bg-gray-800 w-full"
     >
       <div className="flex items-center gap-3 w-full">
         {isSelected ? (
           <>
-            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-            <span className="nav-item-active font-light">{displayName}</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-accent dark:bg-blue-500" />
+            <span className="nav-item-active font-light dark:text-white">{displayName}</span>
             <div className="ml-auto">
               {isOpen ? (
-                <ChevronUp size={16} className="text-gray-400" />
+                <ChevronUp size={16} className="text-gray-400 dark:text-gray-500" />
               ) : (
-                <ChevronDown size={16} className="text-gray-400" />
+                <ChevronDown size={16} className="text-gray-400 dark:text-gray-500" />
               )}
             </div>
           </>
         ) : (
           <>
-            <Circle size={14} className="text-zinc-400" />
-            <span className="nav-item font-light">{displayName}</span>
+            <Circle size={14} className="text-zinc-400 dark:text-gray-500" />
+            <span className="nav-item font-light dark:text-gray-300">{displayName}</span>
           </>
         )}
       </div>

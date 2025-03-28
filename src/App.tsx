@@ -12,6 +12,7 @@ import DampMoldDashboard from "./pages/DampMoldDashboard";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import React from "react";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -25,40 +26,42 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<ProjectDetail />} />
-            <Route path="/dashboard" element={<Navigate to="/" replace />} />
-            <Route path="/project/:projectId" element={<ProjectDetail />} />
-            <Route path="/site" element={<Navigate to="/" replace />} />
-            <Route path="/site/:siteId" element={<SiteDetail />} />
-            <Route path="/zone/:zoneId" element={<ZoneDetail />} />
-            
-            {/* Global dashboards */}
-            <Route path="/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
-            <Route path="/dashboard/damp-mold" element={<DampMoldDashboard />} />
-            
-            {/* Site-specific dashboards */}
-            <Route path="/site/:siteId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
-            <Route path="/site/:siteId/dashboard/damp-mold" element={<DampMoldDashboard />} />
-            
-            {/* Zone-specific dashboards */}
-            <Route path="/zone/:zoneId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
-            <Route path="/zone/:zoneId/dashboard/damp-mold" element={<DampMoldDashboard />} />
-            
-            {/* Settings */}
-            <Route path="/settings" element={<Settings />} />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-          <Sonner position="top-right" />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<ProjectDetail />} />
+              <Route path="/dashboard" element={<Navigate to="/" replace />} />
+              <Route path="/project/:projectId" element={<ProjectDetail />} />
+              <Route path="/site" element={<Navigate to="/" replace />} />
+              <Route path="/site/:siteId" element={<SiteDetail />} />
+              <Route path="/zone/:zoneId" element={<ZoneDetail />} />
+              
+              {/* Global dashboards */}
+              <Route path="/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
+              <Route path="/dashboard/damp-mold" element={<DampMoldDashboard />} />
+              
+              {/* Site-specific dashboards */}
+              <Route path="/site/:siteId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
+              <Route path="/site/:siteId/dashboard/damp-mold" element={<DampMoldDashboard />} />
+              
+              {/* Zone-specific dashboards */}
+              <Route path="/zone/:zoneId/dashboard/temp-humidity" element={<TempHumidityDashboard />} />
+              <Route path="/zone/:zoneId/dashboard/damp-mold" element={<DampMoldDashboard />} />
+              
+              {/* Settings */}
+              <Route path="/settings" element={<Settings />} />
+              
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Toaster />
+            <Sonner position="top-right" />
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
 
