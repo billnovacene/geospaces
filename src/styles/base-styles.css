@@ -20,6 +20,48 @@
   .dark .card, .dark .paper {
     @apply shadow-xl shadow-black/20;
   }
+  
+  /* Custom scrollbar styling */
+  /* For Webkit browsers (Chrome, Safari, etc.) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
+  
+  /* Dark mode scrollbar styles */
+  .dark ::-webkit-scrollbar-track {
+    @apply bg-gray-800;
+  }
+  
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-gray-600;
+  }
+  
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
+  }
+  
+  /* For Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f3f4f6;
+  }
+  
+  .dark * {
+    scrollbar-color: #4b5563 #1f2937;
+  }
 }
 
 /* Theme toggle animation */
