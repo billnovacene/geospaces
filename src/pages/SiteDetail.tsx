@@ -53,11 +53,11 @@ const SiteDetail = () => {
             <SiteHeader site={site} />
             
             <div className="grid gap-6 md:grid-cols-2 mb-8">
-              <SiteDetailsCard site={site} />
+              <SiteDetailsCard site={site} calculatedDeviceCount={null} />
               <SiteAdditionalInfoCard site={site} />
             </div>
             
-            <SiteZonesTabs site={site} />
+            <SiteZonesTabs siteId={site.id} />
           </>
         ) : (
           <SiteErrorState />
