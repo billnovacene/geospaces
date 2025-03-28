@@ -42,7 +42,7 @@
   }
   
   .dark ::-webkit-scrollbar-thumb {
-    @apply bg-gray-500 hover:bg-gray-400;
+    @apply bg-gray-600 hover:bg-gray-500;
   }
   
   /* For Firefox */
@@ -52,7 +52,7 @@
   }
   
   .dark * {
-    scrollbar-color: #6b7280 #1f2937;
+    scrollbar-color: #4b5563 #1f2937;
   }
 
   /* Chart containers should show scrollbars when needed */

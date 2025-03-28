@@ -63,6 +63,9 @@ export function applyThemeToDOM(theme: "light" | "dark", colorScheme: string): v
   // Apply color scheme
   document.documentElement.setAttribute("data-color-scheme", colorScheme);
   
+  // Force scrollbar style refresh
+  document.documentElement.style.overflow = 'auto';
+  
   // Log theme application
   console.log("Theme applied:", theme, "Color scheme:", colorScheme);
 }
