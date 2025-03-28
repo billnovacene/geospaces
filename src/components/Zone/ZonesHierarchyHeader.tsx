@@ -20,8 +20,8 @@ export function ZonesHierarchyHeader({
   return (
     <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
       <div>
-        <CardTitle className="text-2xl font-bold">Zones Hierarchy</CardTitle>
-        <CardDescription className="flex items-center gap-2">
+        <CardTitle className="text-2xl font-bold dark:text-white">Zones Hierarchy</CardTitle>
+        <CardDescription className="flex items-center gap-2 dark:text-gray-300">
           View the hierarchical structure of zones for this site
           {!isLoading && totalZones !== undefined && (
             <Badge variant="secondary" className="ml-1">

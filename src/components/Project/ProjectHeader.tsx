@@ -34,7 +34,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                <BreadcrumbPage className="dark:text-white">Dashboard</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -69,7 +69,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{project.name}</BreadcrumbPage>
+              <BreadcrumbPage className="dark:text-white">{project.name}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

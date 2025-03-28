@@ -57,7 +57,7 @@ export function DashboardHeader({ isUsingMockData, isLoading, operatingHours }: 
       </div>
       
       {operatingHours && (
-        <div className="flex items-center mb-6 text-muted-foreground">
+        <div className="flex items-center mb-6 text-muted-foreground dark:text-gray-300">
           <Clock className="h-4 w-4 mr-1.5" />
           <span className="text-sm font-medium">Operating hours: {formatOperatingHours()}</span>
         </div>

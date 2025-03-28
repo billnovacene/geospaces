@@ -83,7 +83,7 @@ export const ZoneDetailHeader = ({ zone }: ZoneDetailHeaderProps) => {
             
             <BreadcrumbItem>
               <BreadcrumbPage>
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1 dark:text-white">
                   <Package className="h-3.5 w-3.5" />
                   <span>{zone.name}</span>
                 </span>

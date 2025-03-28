@@ -92,7 +92,7 @@ export function BreadcrumbNav() {
         )}
         
         <BreadcrumbItem>
-          <BreadcrumbPage>Temperature & Humidity</BreadcrumbPage>
+          <BreadcrumbPage className="dark:text-white">Temperature & Humidity</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

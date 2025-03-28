@@ -82,10 +82,10 @@ export function ZonesHierarchy({
       <div key={zone.id}>
         <div 
           className={cn(
-            "flex items-center py-2 px-5 cursor-pointer hover:bg-gray-100/50",
-            isActive ? "bg-gray-100" : "",
+            "flex items-center py-2 px-5 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-gray-800/50",
+            isActive ? "bg-gray-100 dark:bg-gray-800" : "",
             level > 0 ? "pl-10" : "pl-5",
-            "font-light text-black"
+            "font-light text-black dark:text-white"
           )}
           style={{ paddingLeft: `${level * 12 + 20}px` }}
         >
@@ -96,7 +96,7 @@ export function ZonesHierarchy({
                 e.stopPropagation();
                 toggleExpanded(zone.id);
               }}
-              className="text-gray-500 hover:text-gray-700 p-0.5 mr-1.5"
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 p-0.5 mr-1.5"
             >
               {isExpanded ? 
                 <ChevronDown className="h-4 w-4" /> : 
@@ -111,7 +111,7 @@ export function ZonesHierarchy({
             <span className={`text-sm ${isActive ? "font-medium" : ""}`}>
               {zone.name}
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
               {zone.devices || 0} device{zone.devices !== 1 ? 's' : ''}
             </span>
           </Link>
@@ -128,8 +128,8 @@ export function ZonesHierarchy({
   
   return (
     <>
-      <div className="px-5 py-2 flex items-center justify-between bg-[#F9F9FA]">
-        <Label htmlFor="show-empty-zones" className="text-xs text-gray-500 cursor-pointer">
+      <div className="px-5 py-2 flex items-center justify-between bg-[#F9F9FA] dark:bg-slate-800">
+        <Label htmlFor="show-empty-zones" className="text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
           Show empty zones
         </Label>
         <Switch 
@@ -141,10 +141,10 @@ export function ZonesHierarchy({
       </div>
       
       <Link to={siteLink} className="block">
-        <div className="bg-[#F9F9FA] py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6]">
+        <div className="bg-[#F9F9FA] dark:bg-slate-800 py-2.5 px-5 cursor-pointer hover:bg-[#F5F5F6] dark:hover:bg-slate-700">
           <div className="flex items-center gap-1.5">
             <Package className="h-4 w-4" />
-            <span className="font-medium text-sm text-zinc-950">All zones</span>
+            <span className="font-medium text-sm text-zinc-950 dark:text-white">All zones</span>
           </div>
         </div>
       </Link>
