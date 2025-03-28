@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Moon, Sun } from "lucide-react";
+import { MoreVertical, MoonStar, SunMoon } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { SidebarFooter as UISidebarFooter } from "@/components/ui/sidebar";
 
@@ -28,9 +28,9 @@ export function SidebarFooterContent() {
             title={`Switch to ${activeTheme === 'dark' ? 'light' : 'dark'} mode`}
           >
             {activeTheme === 'dark' ? (
-              <Moon className="h-5 w-5 text-white transition-all" />
+              <SunMoon className="h-5 w-5 text-white transition-all" />
             ) : (
-              <Sun className="h-5 w-5 text-yellow-500 transition-all" />
+              <MoonStar className="h-5 w-5 text-yellow-500 transition-all" />
             )}
           </div>
           <div>
