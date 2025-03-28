@@ -50,7 +50,7 @@ export function MonthYearSelector({
   return (
     <div className={cn("flex items-center space-x-2", className)}>
       <Button
-        variant="outline"
+        variant="ghost"
         size="icon"
         className="h-8 w-8"
         onClick={handlePreviousMonth}
@@ -62,7 +62,7 @@ export function MonthYearSelector({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            variant="ghost"
             className="min-w-[130px] justify-start text-left font-normal h-8"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -80,7 +80,7 @@ export function MonthYearSelector({
       </Popover>
 
       <Button
-        variant="outline"
+        variant="ghost"
         size="icon"
         className="h-8 w-8"
         onClick={handleNextMonth}
