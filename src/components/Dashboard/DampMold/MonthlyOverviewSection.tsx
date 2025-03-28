@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MonthlyOverviewSectionProps {
   timeRange: string;
@@ -33,7 +34,7 @@ export function MonthlyOverviewSection({
   };
   
   return (
-    <Card className="shadow-sm">
+    <Card className="shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl font-medium dark:text-white">Monthly Overview</CardTitle>
         <div className="flex space-x-4 mt-3">
@@ -61,46 +62,48 @@ export function MonthlyOverviewSection({
             </div>
           </div>
           <div className="w-full md:w-3/4">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-muted/50">
-                    <TableHead className="w-[100px] dark:text-gray-300">Building</TableHead>
-                    <TableHead className="dark:text-gray-300">Zone</TableHead>
-                    <TableHead className="text-right dark:text-gray-300">Temp (°C)</TableHead>
-                    <TableHead className="text-right dark:text-gray-300">RH (%)</TableHead>
-                    <TableHead className="text-right dark:text-gray-300">Dew Point (°C)</TableHead>
-                    <TableHead className="dark:text-gray-300">Overall Risk</TableHead>
-                    <TableHead className="text-right dark:text-gray-300">No. of Alarms</TableHead>
-                    <TableHead className="text-right dark:text-gray-300">Time at Risk (h)</TableHead>
-                    <TableHead className="dark:text-gray-300">Comments</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {monthlyRiskData.map(row => (
-                    <TableRow key={row.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium dark:text-gray-200">{row.building}</TableCell>
-                      <TableCell className="dark:text-gray-200">{row.zone}</TableCell>
-                      <TableCell className="text-right dark:text-gray-200">{row.temp}</TableCell>
-                      <TableCell className="text-right dark:text-gray-200">{row.rh}</TableCell>
-                      <TableCell className="text-right dark:text-gray-200">{row.dewPoint}</TableCell>
-                      <TableCell>
-                        <Badge className={getRiskStyles(row.overallRisk)}>
-                          {row.overallRisk}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className={cn("text-right", row.overallRisk === 'Alarm' ? "text-red-600 dark:text-red-400 font-medium" : "dark:text-gray-200")}>
-                        {row.alarmCount}
-                      </TableCell>
-                      <TableCell className={cn("text-right", row.overallRisk === 'Alarm' ? "text-red-600 dark:text-red-400 font-medium" : "dark:text-gray-200")}>
-                        {row.timeAtRisk}
-                      </TableCell>
-                      <TableCell className="dark:text-gray-200">{row.comments}</TableCell>
+            <ScrollArea className="h-[500px]">
+              <div className="pr-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-muted/50 dark:border-gray-700">
+                      <TableHead className="w-[100px] dark:text-gray-300">Building</TableHead>
+                      <TableHead className="dark:text-gray-300">Zone</TableHead>
+                      <TableHead className="text-right dark:text-gray-300">Temp (°C)</TableHead>
+                      <TableHead className="text-right dark:text-gray-300">RH (%)</TableHead>
+                      <TableHead className="text-right dark:text-gray-300">Dew Point (°C)</TableHead>
+                      <TableHead className="dark:text-gray-300">Overall Risk</TableHead>
+                      <TableHead className="text-right dark:text-gray-300">No. of Alarms</TableHead>
+                      <TableHead className="text-right dark:text-gray-300">Time at Risk (h)</TableHead>
+                      <TableHead className="dark:text-gray-300">Comments</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {monthlyRiskData.map(row => (
+                      <TableRow key={row.id} className="hover:bg-muted/50 dark:hover:bg-gray-700/30 dark:border-gray-700">
+                        <TableCell className="font-medium dark:text-gray-200">{row.building}</TableCell>
+                        <TableCell className="dark:text-gray-200">{row.zone}</TableCell>
+                        <TableCell className="text-right dark:text-gray-200">{row.temp}</TableCell>
+                        <TableCell className="text-right dark:text-gray-200">{row.rh}</TableCell>
+                        <TableCell className="text-right dark:text-gray-200">{row.dewPoint}</TableCell>
+                        <TableCell>
+                          <Badge className={getRiskStyles(row.overallRisk)}>
+                            {row.overallRisk}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className={cn("text-right", row.overallRisk === 'Alarm' ? "text-red-600 dark:text-red-400 font-medium" : "dark:text-gray-200")}>
+                          {row.alarmCount}
+                        </TableCell>
+                        <TableCell className={cn("text-right", row.overallRisk === 'Alarm' ? "text-red-600 dark:text-red-400 font-medium" : "dark:text-gray-200")}>
+                          {row.timeAtRisk}
+                        </TableCell>
+                        <TableCell className="dark:text-gray-200">{row.comments}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </ScrollArea>
           </div>
         </div>
       </CardContent>

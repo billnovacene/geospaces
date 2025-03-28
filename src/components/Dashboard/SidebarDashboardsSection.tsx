@@ -26,31 +26,33 @@ export function SidebarDashboardsSection({
     <div className="sticky top-0 z-10 bg-sidebar dark:bg-gray-800 dark:border-gray-700">
       <SidebarSection title="Dashboards" defaultOpen={true}>
         <ScrollArea className="h-auto max-h-[35vh]">
-          <div className="py-2.5 px-5 cursor-pointer sidebar-hover-item flex items-center dark:hover:bg-gray-700 dark:text-gray-200">
-            <span className="nav-item dark:text-gray-200">Dashboards</span>
+          <div className="py-2.5 px-5 pr-3 space-y-1">
+            <div className="cursor-pointer sidebar-hover-item flex items-center dark:hover:bg-gray-700 dark:text-gray-200 py-1">
+              <span className="nav-item dark:text-gray-200">Dashboards</span>
+            </div>
+            <SidebarDashboardItem 
+              name="All Data" 
+              contextPath={contextPath}
+            />
+            <SidebarDashboardItem 
+              name="Temperature & Humidity" 
+              to="/dashboard/temp-humidity" 
+              contextPath={contextPath}
+            />
+            <SidebarDashboardItem 
+              name="Damp & Mold" 
+              to="/dashboard/damp-mold" 
+              contextPath={contextPath}
+            />
+            <SidebarDashboardItem 
+              name="Energy" 
+              contextPath={contextPath}
+            />
+            <SidebarDashboardItem 
+              name="Co2" 
+              contextPath={contextPath}
+            />
           </div>
-          <SidebarDashboardItem 
-            name="All Data" 
-            contextPath={contextPath}
-          />
-          <SidebarDashboardItem 
-            name="Temperature & Humidity" 
-            to="/dashboard/temp-humidity" 
-            contextPath={contextPath}
-          />
-          <SidebarDashboardItem 
-            name="Damp & Mold" 
-            to="/dashboard/damp-mold" 
-            contextPath={contextPath}
-          />
-          <SidebarDashboardItem 
-            name="Energy" 
-            contextPath={contextPath}
-          />
-          <SidebarDashboardItem 
-            name="Co2" 
-            contextPath={contextPath}
-          />
         </ScrollArea>
       </SidebarSection>
     </div>

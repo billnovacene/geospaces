@@ -24,8 +24,8 @@
   /* Custom scrollbar styling */
   /* For Webkit browsers (Chrome, Safari, etc.) */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
   }
   
   ::-webkit-scrollbar-track {
@@ -33,24 +33,16 @@
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full;
+    @apply bg-gray-300 rounded-full hover:bg-gray-400;
   }
   
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
-  }
-  
-  /* Dark mode scrollbar styles */
+  /* Dark mode scrollbar styles - increased contrast */
   .dark ::-webkit-scrollbar-track {
     @apply bg-gray-800;
   }
   
   .dark ::-webkit-scrollbar-thumb {
-    @apply bg-gray-600;
-  }
-  
-  .dark ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-500;
+    @apply bg-gray-500 hover:bg-gray-400;
   }
   
   /* For Firefox */
@@ -60,7 +52,12 @@
   }
   
   .dark * {
-    scrollbar-color: #4b5563 #1f2937;
+    scrollbar-color: #6b7280 #1f2937;
+  }
+
+  /* Chart containers should show scrollbars when needed */
+  .recharts-wrapper, .recharts-surface {
+    @apply overflow-visible;
   }
 }
 

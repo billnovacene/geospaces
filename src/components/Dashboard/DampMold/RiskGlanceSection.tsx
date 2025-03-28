@@ -85,7 +85,7 @@ export function RiskGlanceSection({
                     <TableBody>
                       {monthlyRiskData.length > 0 ? (
                         monthlyRiskData.map(row => (
-                          <TableRow key={row.id} className="dark:border-gray-700">
+                          <TableRow key={row.id} className="dark:border-gray-700 dark:hover:bg-gray-700/30">
                             <TableCell className="font-medium dark:text-gray-200">{row.building}</TableCell>
                             <TableCell className="dark:text-gray-200">{row.zone}</TableCell>
                             <TableCell className="text-right dark:text-gray-200">{row.temp}</TableCell>
