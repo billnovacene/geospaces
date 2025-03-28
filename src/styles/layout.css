@@ -15,4 +15,16 @@
   .card-padding {
     @apply p-6;
   }
+
+  /* New dashboard container class that accounts for sidebar width */
+  .dashboard-container {
+    @apply w-[calc(100%-280px)] ml-[280px];
+  }
+
+  /* Responsive adjustments for mobile */
+  @media (max-width: 768px) {
+    .dashboard-container {
+      @apply w-full ml-0;
+    }
+  }
 }

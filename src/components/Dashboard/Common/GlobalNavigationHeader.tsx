@@ -18,8 +18,8 @@ export function GlobalNavigationHeader({
   const location = useLocation();
   
   return (
-    <div className="w-full bg-white border-b border-gray-200 mb-6 sticky top-0 z-30">
-      <div className="container mx-auto px-4 md:px-6">
+    <div className="w-full bg-background border-b border-border mb-6 sticky top-0 z-30">
+      <div className="dashboard-container">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center h-16">
           <GlobalBreadcrumbNav customDashboardType={customDashboardType} />
           
