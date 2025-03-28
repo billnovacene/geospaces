@@ -19,19 +19,21 @@ export function SidebarFooterContent() {
             <img 
               src="/lovable-uploads/89e548e5-9c07-4eac-b530-ba4a612f8dac.png" 
               alt="Light mode logo" 
-              className="absolute inset-0 h-full w-full logo-transition" 
+              className="absolute inset-0 h-full w-full logo-transition logo-fade-in" 
               style={{
                 opacity: theme === 'light' ? 1 : 0,
-                transform: `scale(${theme === 'light' ? 1 : 0.8})`
+                transform: `scale(${theme === 'light' ? 1 : 0.8})`,
+                visibility: theme === 'light' ? 'visible' : 'hidden'
               }} 
             />
             <img 
               src="/lovable-uploads/ecd25c96-c081-4b99-aaa6-52c3fb015599.png" 
               alt="Dark mode logo" 
-              className="absolute inset-0 h-full w-full logo-transition" 
+              className="absolute inset-0 h-full w-full logo-transition logo-fade-in" 
               style={{
                 opacity: theme === 'dark' ? 1 : 0,
-                transform: `scale(${theme === 'dark' ? 1 : 0.8})`
+                transform: `scale(${theme === 'dark' ? 1 : 0.8})`,
+                visibility: theme === 'dark' ? 'visible' : 'hidden'
               }} 
             />
             <AvatarFallback>
