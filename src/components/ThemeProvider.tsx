@@ -1,42 +1,20 @@
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-
-type Theme = "light" | "dark" | "system";
-type ColorScheme = "green" | "blue" | "purple";
-
-interface ThemeSettings {
-  theme: Theme;
-  colorScheme: ColorScheme;
-  autoSwitch: boolean;
-  timeBasedSwitch: boolean;
-  startDarkTime: string; // Time to start dark mode (format: "HH:MM")
-  endDarkTime: string; // Time to end dark mode (format: "HH:MM")
-}
-
-interface ThemeContextType {
-  theme: Theme;
-  activeTheme: "light" | "dark"; // The actual applied theme (resolves system)
-  colorScheme: ColorScheme;
-  autoSwitch: boolean;
-  timeBasedSwitch: boolean;
-  startDarkTime: string;
-  endDarkTime: string;
-  setTheme: (theme: Theme) => void;
-  setColorScheme: (colorScheme: ColorScheme) => void;
-  toggleTheme: () => void;
-  updateThemeSettings: (settings: Partial<ThemeSettings>) => void;
-}
-
-const defaultThemeSettings: ThemeSettings = {
-  theme: "light",
-  colorScheme: "green",
-  autoSwitch: false,
-  timeBasedSwitch: false,
-  startDarkTime: "18:00",
-  endDarkTime: "06:00"
-};
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+import React, { useEffect, useState } from "react";
+import { 
+  ThemeContext, 
+  ThemeSettings, 
+  defaultThemeSettings, 
+  Theme, 
+  ColorScheme 
+} from "../context/ThemeContext";
+import { 
+  determineActiveTheme, 
+  applyThemeToDOM, 
+  loadSavedThemeSettings, 
+  saveThemeSettings, 
+  getInitialThemeSettings,
+  getSystemPreferredTheme 
+} from "../utils/themeUtils";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<ThemeSettings>(defaultThemeSettings);
@@ -44,94 +22,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Load saved settings or use defaults
   useEffect(() => {
-    const savedSettings = localStorage.getItem("themeSettings");
+    const savedSettings = loadSavedThemeSettings();
     if (savedSettings) {
-      try {
-        const parsed = JSON.parse(savedSettings);
-        setSettings({
-          ...defaultThemeSettings,
-          ...parsed
-        });
-      } catch (error) {
-        console.error("Failed to parse theme settings:", error);
-      }
-    } else {
-      // Check if we should use system preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const currentHour = new Date().getHours();
-      const isNightTime = currentHour >= 18 || currentHour < 6;
-      
-      // Set up default settings based on system or time
-      const initialTheme = prefersDark ? "system" : (isNightTime ? "dark" : "light");
       setSettings({
         ...defaultThemeSettings,
-        theme: initialTheme,
-        autoSwitch: isNightTime
+        ...savedSettings
       });
+    } else {
+      // Set up default settings based on system or time
+      setSettings(getInitialThemeSettings());
     }
   }, []);
 
   // Determine active theme based on settings
   useEffect(() => {
-    let theme: "light" | "dark" = settings.theme === "light" ? "light" : "dark";
-    
-    // Handle system preference
-    if (settings.theme === "system") {
-      theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    }
-    
-    // Handle time-based switching if enabled
-    if (settings.timeBasedSwitch) {
-      const now = new Date();
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-      const currentTime = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
-      
-      const [startHour, startMinute] = settings.startDarkTime.split(':').map(Number);
-      const [endHour, endMinute] = settings.endDarkTime.split(':').map(Number);
-      
-      const startTime = startHour * 60 + startMinute;
-      const endTime = endHour * 60 + endMinute;
-      const currentTimeMinutes = currentHour * 60 + currentMinute;
-      
-      // Check if current time is within dark mode hours
-      if (endTime < startTime) {
-        // Spans midnight (e.g., 22:00 to 06:00)
-        if (currentTimeMinutes >= startTime || currentTimeMinutes < endTime) {
-          theme = "dark";
-        } else {
-          theme = "light";
-        }
-      } else {
-        // Same day (e.g., 18:00 to 22:00)
-        if (currentTimeMinutes >= startTime && currentTimeMinutes < endTime) {
-          theme = "dark";
-        } else {
-          theme = "light";
-        }
-      }
-    }
-    
+    const theme = determineActiveTheme(settings);
     setActiveTheme(theme);
     
     // Apply theme to HTML element
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-      console.log("Applied dark theme to HTML");
-    } else {
-      document.documentElement.classList.remove("dark");
-      console.log("Removed dark theme from HTML");
-    }
-    
-    // Apply color scheme
-    document.documentElement.setAttribute("data-color-scheme", settings.colorScheme);
+    applyThemeToDOM(theme, settings.colorScheme);
     
     // Store the last active theme
     localStorage.setItem("activeTheme", theme);
-    
-    // Log theme application
-    console.log("Theme applied:", theme, "Color scheme:", settings.colorScheme);
-    
   }, [settings]);
 
   // Listen for system theme changes
@@ -140,15 +52,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     
     const handleChange = () => {
       if (settings.theme === "system") {
-        const newTheme = mediaQuery.matches ? "dark" : "light";
+        const newTheme = getSystemPreferredTheme();
         setActiveTheme(newTheme);
         
         // Apply theme to HTML element
-        if (newTheme === "dark") {
-          document.documentElement.classList.add("dark");
-        } else {
-          document.documentElement.classList.remove("dark");
-        }
+        applyThemeToDOM(newTheme, settings.colorScheme);
         
         console.log("System theme changed to:", newTheme);
       }
@@ -180,7 +88,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const updateThemeSettings = (newSettings: Partial<ThemeSettings>) => {
     const updatedSettings = { ...settings, ...newSettings };
     setSettings(updatedSettings);
-    localStorage.setItem("themeSettings", JSON.stringify(updatedSettings));
+    saveThemeSettings(updatedSettings);
   };
 
   const contextValue = {
@@ -204,10 +112,5 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
-}
+// Re-export useTheme hook
+export { useTheme } from "../context/ThemeContext";
