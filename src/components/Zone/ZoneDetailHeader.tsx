@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Zone } from "@/services/interfaces";
 import { getStatusColor } from "@/utils/formatting";
@@ -36,7 +37,7 @@ export const ZoneDetailHeader = ({ zone }: ZoneDetailHeaderProps) => {
 
   return (
     <>
-      <div className="mb-8">
+      <div className="mt-4 mb-8">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -94,7 +95,7 @@ export const ZoneDetailHeader = ({ zone }: ZoneDetailHeaderProps) => {
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
-          <h1 className="text-3xl font-normal text-gray-800 mb-3">{zone.name}</h1>
+          <h1 className="text-3xl font-normal text-gray-800 dark:text-gray-200 mb-3">{zone.name}</h1>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className={getStatusColor(zone.status || "Unknown")}>
               {zone.status || "Unknown"}

@@ -48,7 +48,7 @@ export function DashboardHeader({ isUsingMockData, isLoading, operatingHours }: 
 
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-4 mt-4">
         <BreadcrumbNav />
       </div>
 
