@@ -1,0 +1,38 @@
+
+/* Theme toggle specific styles */
+.theme-toggle {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 300ms ease-in-out;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+.theme-toggle-image {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  transition: opacity 300ms ease-in-out;
+  pointer-events: none;
+}
+
+.theme-toggle-light {
+  opacity: 1;
+}
+
+.theme-toggle-dark {
+  opacity: 0;
+}
+
+/* When in dark mode */
+html.dark .theme-toggle-light {
+  opacity: 0;
+}
+
+html.dark .theme-toggle-dark {
+  opacity: 1;
+}

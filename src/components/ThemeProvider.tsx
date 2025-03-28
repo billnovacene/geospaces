@@ -116,6 +116,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setActiveTheme(theme);
     applyTheme(theme, settings.colorScheme);
     
+    // Add logging to help debug
+    console.log("ThemeProvider: activeTheme set to", theme);
+    
   }, [settings]);
 
   // Listen for system theme changes
@@ -127,6 +130,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const newTheme = mediaQuery.matches ? "dark" : "light";
         setActiveTheme(newTheme);
         applyTheme(newTheme, settings.colorScheme);
+        console.log("System theme changed to:", newTheme);
       }
     };
     
@@ -136,13 +140,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Apply theme to DOM
   const applyTheme = (theme: "light" | "dark", colorScheme: ColorScheme) => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    // Force document class update for reliability
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
     
     // Apply color scheme
     document.documentElement.setAttribute("data-color-scheme", colorScheme);
     
     // Store the last active theme
     localStorage.setItem("activeTheme", theme);
+    
+    // Log theme application
+    console.log("Theme applied:", theme, "Color scheme:", colorScheme);
   };
 
   // Set theme

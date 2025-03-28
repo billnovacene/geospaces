@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
@@ -11,32 +11,42 @@ const APP_VERSION = import.meta.env.VITE_APP_VERSION || "1.2.4";
 export function SidebarFooterContent() {
   const { theme, toggleTheme } = useTheme();
 
+  // Add logging to help diagnose theme state
+  useEffect(() => {
+    console.log("Current theme in SidebarFooter:", theme);
+  }, [theme]);
+
   return (
     <UISidebarFooter className="border-t border-sidebar-border p-4 bg-white dark:bg-gray-800">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8 bg-transparent cursor-pointer transition-all duration-300 hover:scale-110 overflow-hidden relative" onClick={toggleTheme}>
+          <Avatar 
+            className="h-8 w-8 bg-transparent cursor-pointer transition-all duration-300 hover:scale-110 overflow-hidden relative" 
+            onClick={toggleTheme}
+          >
+            {/* Light mode logo - simplified styling */}
             <img 
               src="/lovable-uploads/89e548e5-9c07-4eac-b530-ba4a612f8dac.png" 
               alt="Light mode logo" 
-              className="absolute inset-0 h-full w-full logo-transition logo-fade-in" 
+              className="absolute inset-0 h-full w-full transition-opacity duration-300"
               style={{
                 opacity: theme === 'light' ? 1 : 0,
-                transform: `scale(${theme === 'light' ? 1 : 0.8})`,
-                visibility: theme === 'light' ? 'visible' : 'hidden'
-              }} 
+                pointerEvents: 'none'
+              }}
             />
+            
+            {/* Dark mode logo - simplified styling */}
             <img 
               src="/lovable-uploads/ecd25c96-c081-4b99-aaa6-52c3fb015599.png" 
               alt="Dark mode logo" 
-              className="absolute inset-0 h-full w-full logo-transition logo-fade-in" 
+              className="absolute inset-0 h-full w-full transition-opacity duration-300"
               style={{
                 opacity: theme === 'dark' ? 1 : 0,
-                transform: `scale(${theme === 'dark' ? 1 : 0.8})`,
-                visibility: theme === 'dark' ? 'visible' : 'hidden'
-              }} 
+                pointerEvents: 'none'
+              }}
             />
-            <AvatarFallback>
+            
+            <AvatarFallback className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
               {theme === "light" ? "L" : "D"}
             </AvatarFallback>
           </Avatar>

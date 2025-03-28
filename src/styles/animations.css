@@ -8,19 +8,13 @@
     @apply transition-transform duration-300 ease-in-out hover:-translate-y-1;
   }
   
-  /* Logo transitions */
+  /* Logo transitions - simplified for better reliability */
   .logo-transition {
-    @apply transition-all duration-500 ease-in-out;
+    @apply transition-all duration-300 ease-in-out;
   }
   
-  .logo-fade-in {
-    opacity: 1;
-    transform: scale(1);
-  }
-  
-  .logo-fade-out {
-    opacity: 0;
-    transform: scale(0.8);
+  .theme-toggle-image {
+    @apply absolute inset-0 h-full w-full transition-opacity duration-300;
   }
 }
 
