@@ -5,15 +5,18 @@ import { DampMoldView } from "@/components/Dashboard/DampMold/DampMoldView";
 import { DashboardLayout } from "@/components/Dashboard/Common/DashboardLayout";
 import { DashboardHeader } from "@/components/Dashboard/Common/DashboardHeader";
 import { StatItem } from "@/components/Dashboard/Common/SummaryStats";
+import { useTheme } from "@/components/ThemeProvider";
 
 const DampMoldDashboard = () => {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string; }>();
   const location = useLocation();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const { activeTheme } = useTheme();
   
   console.log("DampMoldDashboard params:", { siteId, zoneId });
   console.log("Current route:", location.pathname);
+  console.log("Current theme:", activeTheme);
 
   // Summary stats for damp and mold conditions with keys for filtering and secondary labels
   const summaryStats: StatItem[] = [{

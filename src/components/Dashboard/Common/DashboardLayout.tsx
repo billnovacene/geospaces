@@ -2,6 +2,7 @@
 import React, { ReactNode } from "react";
 import { SidebarWrapper } from "@/components/Dashboard/SidebarWrapper";
 import { GlobalNavigationHeader } from "@/components/Dashboard/Common/GlobalNavigationHeader";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -18,9 +19,11 @@ export function DashboardLayout({
   customDashboardType,
   title
 }: DashboardLayoutProps) {
+  const { activeTheme } = useTheme();
+  
   return (
     <SidebarWrapper>
-      <div className="flex-1 overflow-auto bg-background min-h-screen">
+      <div className={`flex-1 overflow-auto bg-background dark:bg-gray-900 min-h-screen transition-colors duration-300`}>
         {/* Global Navigation Header at the top */}
         <GlobalNavigationHeader 
           onDateChange={onDateChange}

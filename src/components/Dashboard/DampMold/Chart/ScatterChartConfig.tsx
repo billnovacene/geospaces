@@ -13,6 +13,7 @@ import {
   ZAxis,
   Cell
 } from "recharts";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface ScatterChartConfigProps {
   chartData: any[];
@@ -71,30 +72,32 @@ export function ScatterChartConfig({
   xAxisKey 
 }: ScatterChartConfigProps) {
   const scatterData = prepareScatterData(chartData, xAxisKey);
+  const { activeTheme } = useTheme();
+  const isDarkMode = activeTheme === "dark";
   
   return (
     <ResponsiveContainer width="100%" height="100%">
       <ScatterChart
         margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f1" />
+        <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#333" : "#f1f1f1"} />
         <XAxis 
           dataKey="x" 
           name={xAxisKey === "hour" ? "Hour" : "Day"}
-          tick={{ fontSize: 12 }} 
+          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }} 
           tickMargin={10}
         />
         <YAxis 
           dataKey="y" 
           name="Humidity"
           domain={[0, 100]} 
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }}
           tickMargin={10}
           label={{ 
             value: "Humidity (%)", 
             angle: -90, 
             position: "insideLeft",
-            style: { textAnchor: "middle", fontSize: 12, fill: "#6b7280" }
+            style: { textAnchor: "middle", fontSize: 12, fill: isDarkMode ? "#ccc" : "#6b7280" }
           }}
         />
         <ZAxis 
@@ -121,7 +124,7 @@ export function ScatterChartConfig({
               else if (data.riskScore >= 1) riskIndex = 1;
               
               return (
-                <div className="bg-white p-2 border border-gray-200 shadow-sm rounded-md">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-800'} p-2 border shadow-sm rounded-md`}>
                   <p className="text-sm font-medium">{data.x}</p>
                   <p className="text-xs">Temperature: {data.temp}°C</p>
                   <p className="text-xs">Humidity: {data.hum}%</p>
@@ -143,6 +146,7 @@ export function ScatterChartConfig({
             { value: 'Moderate Risk (60-69% RH)', type: 'circle', color: '#f97316' },
             { value: 'High Risk (≥70% RH)', type: 'circle', color: '#ef4444' }
           ]}
+          wrapperStyle={{ color: isDarkMode ? "#ccc" : "#333" }}
         />
         {/* High humidity threshold line at 70% */}
         <ReferenceLine 
@@ -152,7 +156,7 @@ export function ScatterChartConfig({
           label={{ 
             value: "High Risk Threshold (70%)", 
             position: "insideBottomRight", 
-            fill: "#ef4444", 
+            fill: isDarkMode ? "#f87171" : "#ef4444", 
             fontSize: 12 
           }} 
         />
@@ -164,7 +168,7 @@ export function ScatterChartConfig({
           label={{ 
             value: "Caution Threshold (60%)", 
             position: "insideTopRight", 
-            fill: "#f97316", 
+            fill: isDarkMode ? "#fb923c" : "#f97316", 
             fontSize: 12 
           }} 
         />

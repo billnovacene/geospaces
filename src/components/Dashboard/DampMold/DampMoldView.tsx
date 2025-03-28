@@ -15,6 +15,7 @@ import { generateMonthlyRiskData } from "./utils/mockRiskData";
 import { generateMockData } from "@/services/sensors/mock-data-generator";
 import { LogItem } from "@/hooks/temperature/types";
 import { useTheme } from "@/components/ThemeProvider";
+import { DewPointChart } from "./DewPointChart";
 
 interface DampMoldViewProps {
   contextType?: "zone" | "site" | "all";
@@ -111,9 +112,15 @@ export function DampMoldView({
     // Other filters like 'buildings' or 'zones' could be implemented similarly
   }
   
+  // Generate dewPointData for the chart
+  const dewPointData = data?.daily || [];
+  
   return (
-    <div className="space-y-6">
-      {/* Monthly Overview section - at the top */}
+    <div className="space-y-6 dark:bg-gray-900 transition-colors duration-300">
+      {/* Add Dew Point Chart as first item */}
+      <DewPointChart data={{ dewPointData }} />
+      
+      {/* Monthly Overview section */}
       <MonthlyOverviewSection 
         timeRange={monthlyTimeRange}
         setTimeRange={setMonthlyTimeRange}
@@ -126,7 +133,7 @@ export function DampMoldView({
         setTimeRange={setDailyTimeRange}
       />
       
-      {/* "Risk at a glance" section - moved to the bottom */}
+      {/* "Risk at a glance" section */}
       <RiskGlanceSection 
         activeTab={activeTab} 
         setActiveTab={setActiveTab}

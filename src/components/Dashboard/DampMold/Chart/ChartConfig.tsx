@@ -13,6 +13,7 @@ import {
   Area,
   ResponsiveContainer
 } from "recharts";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface ChartConfigProps {
   chartData: any[];
@@ -24,41 +25,44 @@ export function ChartConfig({
   chartData, 
   xAxisKey 
 }: ChartConfigProps) {
+  const { activeTheme } = useTheme();
+  const isDarkMode = activeTheme === "dark";
+
   return (
     <ResponsiveContainer width="100%" height="100%" minHeight={200}>
       <ComposedChart
         data={chartData}
         margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f1" />
+        <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#333" : "#f1f1f1"} />
         <XAxis 
           dataKey={xAxisKey} 
-          tick={{ fontSize: 12 }} 
+          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }} 
           tickMargin={10}
         />
         <YAxis 
           yAxisId="left"
           domain={[0, 100]} 
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }}
           tickMargin={10}
           label={{ 
             value: "Humidity (%)", 
             angle: -90, 
             position: "insideLeft",
-            style: { textAnchor: "middle", fontSize: 12, fill: "#6b7280" }
+            style: { textAnchor: "middle", fontSize: 12, fill: isDarkMode ? "#ccc" : "#6b7280" }
           }}
         />
         <YAxis 
           yAxisId="right" 
           orientation="right" 
           domain={[0, 30]} 
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: isDarkMode ? "#ccc" : "#666" }}
           tickMargin={10}
           label={{ 
             value: "Temperature (°C)", 
             angle: 90, 
             position: "insideRight",
-            style: { textAnchor: "middle", fontSize: 12, fill: "#6b7280" }
+            style: { textAnchor: "middle", fontSize: 12, fill: isDarkMode ? "#ccc" : "#6b7280" }
           }}
         />
         <Tooltip 
@@ -70,6 +74,13 @@ export function ChartConfig({
           }}
           wrapperStyle={{ zIndex: 1000 }}
           cursor={{ strokeDasharray: '3 3', strokeWidth: 2 }}
+          contentStyle={{
+            backgroundColor: isDarkMode ? "#1f2937" : "#fff",
+            border: `1px solid ${isDarkMode ? "#374151" : "#e5e7eb"}`,
+            color: isDarkMode ? "#e5e7eb" : "#374151"
+          }}
+          labelStyle={{ color: isDarkMode ? "#e5e7eb" : "#374151" }}
+          itemStyle={{ color: isDarkMode ? "#e5e7eb" : "#374151" }}
         />
         <Legend 
           verticalAlign="top" 
@@ -81,6 +92,7 @@ export function ChartConfig({
             if (value === "riskZone") return "Risk Zone";
             return value;
           }}
+          wrapperStyle={{ color: isDarkMode ? "#ccc" : "#333" }}
         />
         <Area
           yAxisId="right"
@@ -124,7 +136,7 @@ export function ChartConfig({
           label={{ 
             value: "Risk Threshold", 
             position: "insideBottomRight", 
-            fill: "#ef4444", 
+            fill: isDarkMode ? "#f87171" : "#ef4444", 
             fontSize: 12 
           }} 
         />

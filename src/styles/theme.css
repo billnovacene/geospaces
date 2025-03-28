@@ -103,23 +103,61 @@
 
   /* Dark mode - Green theme */
   .dark {
-    /* ... keep existing code (Dark mode - Green theme color variables) */
+    --primary: 142 76% 36%;
+    --primary-foreground: 355 100% 100%;
+    --secondary: 142 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 74.2% 50.2%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 142 76% 36%;
+    
+    /* Sidebar specific colors - green theme */
+    --sidebar-primary: 142 76% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 142 76% 16%;
+    --sidebar-accent-foreground: 0 0% 100%;
   }
 
   /* Dark mode - Blue theme */
   .dark[data-color-scheme="blue"] {
-    /* ... keep existing code (Dark mode - Blue theme color variables) */
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 17%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 210 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --ring: 210 100% 50%;
+    
+    /* Sidebar specific colors - blue theme */
+    --sidebar-primary: 210 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 64% 15%;
+    --sidebar-accent-foreground: 0 0% 100%;
   }
 
   /* Dark mode - Purple theme */
   .dark[data-color-scheme="purple"] {
-    /* ... keep existing code (Dark mode - Purple theme color variables) */
+    --primary: 250 95% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 40% 17%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 250 95% 65%;
+    --accent-foreground: 0 0% 100%;
+    --ring: 250 95% 65%;
+    
+    /* Sidebar specific colors - purple theme */
+    --sidebar-primary: 250 95% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 250 64% 15%;
+    --sidebar-accent-foreground: 0 0% 100%;
   }
 }
 
 @layer base {
   * {
-    /* Remove the default border styling */
+    @apply border-border;
   }
   
   body {
@@ -127,4 +165,39 @@
   }
 }
 
-/* ... keep existing code (Theme toggle animation, Card theme transitions, and theme transitions) */
+/* Theme toggle animation */
+.theme-toggle {
+  @apply transition-transform duration-300;
+}
+
+.theme-toggle[data-state="checked"] {
+  @apply transform rotate-180;
+}
+
+/* Card theme transitions */
+.card,
+.card-header,
+.card-footer,
+.card-title,
+.card-description,
+.card-content {
+  @apply transition-colors duration-300;
+}
+
+/* Additional theme transitions for specific elements */
+button, a, input, select, textarea {
+  @apply transition-colors duration-300;
+}
+
+/* Chart elements transitions */
+.recharts-cartesian-grid-bg,
+.recharts-cartesian-grid line,
+.recharts-xAxis line,
+.recharts-yAxis line,
+.recharts-brush rect {
+  @apply transition-colors duration-300;
+}
+
+.recharts-text {
+  @apply transition-colors duration-300;
+}
