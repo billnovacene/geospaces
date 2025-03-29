@@ -20,18 +20,16 @@ export function DailyRiskSummary({ data }: DailyRiskSummaryProps) {
     });
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/import-from-sheet`, {
+      // Use the Supabase client to invoke the function instead of raw fetch
+      const { data: result, error } = await supabase.functions.invoke('import-from-sheet', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+          'Content-Type': 'application/json'
         }
       });
       
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.error || 'Import failed');
+      if (error) {
+        throw error;
       }
       
       if (result.success) {
