@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { 
   BarChart, 
   Bar, 
@@ -27,9 +27,29 @@ interface StackedRiskColumnChartProps {
 export function StackedRiskColumnChart({ data }: StackedRiskColumnChartProps) {
   const { activeTheme } = useTheme();
   const isDarkMode = activeTheme === "dark";
+  const [chartData, setChartData] = useState<DailyRiskData[]>([]);
+  
+  // Generate sample data if none is provided
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setChartData(data);
+    } else {
+      // Generate default sample data
+      const sampleData: DailyRiskData[] = [
+        { day: 'Mon', Good: 70, Caution: 20, Alarm: 10, total: 100 },
+        { day: 'Tue', Good: 60, Caution: 30, Alarm: 10, total: 100 },
+        { day: 'Wed', Good: 40, Caution: 40, Alarm: 20, total: 100 },
+        { day: 'Thu', Good: 30, Caution: 50, Alarm: 20, total: 100 },
+        { day: 'Fri', Good: 50, Caution: 30, Alarm: 20, total: 100 },
+        { day: 'Sat', Good: 80, Caution: 15, Alarm: 5, total: 100 },
+        { day: 'Sun', Good: 90, Caution: 8, Alarm: 2, total: 100 },
+      ];
+      setChartData(sampleData);
+    }
+  }, [data]);
   
   // Convert data to percentage for stacked 100% view
-  const percentageData = data.map(item => {
+  const percentageData = chartData.map(item => {
     const total = item.Good + item.Caution + item.Alarm;
     return {
       day: item.day,

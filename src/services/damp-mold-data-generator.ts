@@ -1,3 +1,7 @@
 
-// Re-export the generate function from damp-mold.ts
-export { generateAndInsertDampMoldData } from './damp-mold';
+// Re-export the generate function and data utility functions from damp-mold.ts
+export { 
+  generateAndInsertDampMoldData,
+  generateMonthlyRiskDataFromDailyData 
+} from './damp-mold';
+

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ScrollbarStyler } from "../ScrollbarStyler";
 import { MonthlyOverviewSection } from "../MonthlyOverviewSection";
 import { DailyOverviewSection } from "../DailyOverviewSection";
@@ -9,13 +9,14 @@ import { EmptyStateView } from "./EmptyStateView";
 import { ErrorStateView } from "./ErrorStateView";
 import { useDampMold } from "../context/DampMoldContext";
 import { toast } from "sonner";
-import { generateAndInsertDampMoldData } from "@/services/damp-mold-data-generator";
+import { generateAndInsertDampMoldData, generateMonthlyRiskDataFromDailyData } from "@/services/damp-mold-data-generator";
 
 export function DampMoldContent() {
   const [activeTab, setActiveTab] = useState("today");
   const [dailyTimeRange, setDailyTimeRange] = useState("today");
   const [monthlyTimeRange, setMonthlyTimeRange] = useState("month");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [monthlyRiskData, setMonthlyRiskData] = useState([]);
   
   const { 
     contextInfo,
@@ -25,6 +26,16 @@ export function DampMoldContent() {
     refetch,
     activeFilter
   } = useDampMold();
+
+  useEffect(() => {
+    if (data && data.daily && data.daily.length > 0) {
+      // Generate monthly risk data from daily data points
+      const riskData = generateMonthlyRiskDataFromDailyData(data.daily);
+      setMonthlyRiskData(riskData);
+    } else {
+      setMonthlyRiskData([]);
+    }
+  }, [data]);
 
   const handleGenerateTestData = async () => {
     try {
@@ -53,9 +64,6 @@ export function DampMoldContent() {
   if (!isLoading && (!data || !data.daily || data.daily.length === 0)) {
     return <EmptyStateView onGenerateData={handleGenerateTestData} isLoading={isGenerating} contextInfo={contextInfo} />;
   }
-
-  // We don't have any real monthly data source yet, leaving as empty array
-  let monthlyRiskData = [];
 
   return (
     <div className="space-y-6 dark:bg-gray-900 transition-colors duration-300">

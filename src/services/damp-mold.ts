@@ -159,6 +159,57 @@ function generateMonthlyDataFromDaily(dailyData: any[]): any[] {
   });
 }
 
+// Add the monthly risk data generator function
+export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] => {
+  if (!dailyData || dailyData.length === 0) return [];
+  
+  // Get zones and buildings from data
+  const uniqueZones = [...new Set(dailyData.map(item => item.zone_id))];
+  
+  // Get site info from database if available
+  return uniqueZones.map((zoneId, index) => {
+    // Filter data for this zone
+    const zoneData = dailyData.filter(item => item.zone_id === zoneId);
+    
+    // Calculate temperature and humidity averages
+    const temps = zoneData.map(item => item.temperature).filter(Boolean);
+    const humidities = zoneData.map(item => item.humidity).filter(Boolean);
+    
+    const avgTemp = temps.length > 0 ? temps.reduce((sum, val) => sum + val, 0) / temps.length : 0;
+    const avgHumidity = humidities.length > 0 ? humidities.reduce((sum, val) => sum + val, 0) / humidities.length : 0;
+    
+    // Calculate dew point: simplified formula
+    const dewPoint = avgTemp - ((100 - avgHumidity) / 5);
+    
+    // Determine risk level based on humidity and temperature
+    let overallRisk = 'Good';
+    if (avgHumidity > 70 || (avgHumidity > 60 && avgTemp < 16)) {
+      overallRisk = 'Alarm';
+    } else if (avgHumidity > 60 || (avgHumidity > 50 && avgTemp < 18)) {
+      overallRisk = 'Caution';
+    }
+    
+    // Calculate risk hours - this would be based on how many hours had high humidity readings
+    const totalHours = zoneData.length; // Assuming each data point is an hour
+    const alarmsCount = zoneData.filter(item => item.humidity > 70 || (item.humidity > 60 && item.temperature < 16)).length;
+    const timeAtRisk = alarmsCount;
+    
+    // Build the risk data object
+    return {
+      id: `${index + 1}`,
+      building: `Building ${Math.floor(index / 3) + 1}`, // Group zones into buildings
+      zone: `Zone ${zoneId}`,
+      temp: avgTemp.toFixed(1),
+      rh: avgHumidity.toFixed(1),
+      dewPoint: dewPoint.toFixed(1),
+      overallRisk,
+      alarmCount: alarmsCount,
+      timeAtRisk: `${timeAtRisk}`,
+      comments: overallRisk === 'Alarm' ? 'Needs attention' : overallRisk === 'Caution' ? 'Monitor closely' : 'Normal operation'
+    };
+  });
+};
+
 // Function to generate and insert sample damp mold data for testing
 export const generateAndInsertDampMoldData = async (zoneIdParam?: string, siteIdParam?: string): Promise<void> => {
   try {
