@@ -1,4 +1,139 @@
 
+import { supabase } from "@/integrations/supabase/client";
+import { TempHumidityResponse } from "./interfaces/temp-humidity";
+import { toast } from "sonner";
+
+// Fetch damp and mold data from Supabase
+export const fetchDampMoldData = async (
+  siteId?: string,
+  zoneId?: string
+): Promise<TempHumidityResponse | null> => {
+  try {
+    console.log(`Fetching damp mold data for site: ${siteId}, zone: ${zoneId}`);
+    
+    // Build the query based on provided parameters
+    let query = supabase
+      .from('damp_mold_data')
+      .select('*')
+      .order('timestamp', { ascending: true });
+    
+    // Add filter conditions if site or zone ids are provided
+    if (zoneId) {
+      query = query.eq('zone_id', zoneId);
+    } else if (siteId) {
+      query = query.eq('site_id', siteId);
+    }
+    
+    // Execute the query
+    const { data, error } = await query;
+    
+    if (error) {
+      throw error;
+    }
+    
+    console.log(`Fetched ${data?.length || 0} damp mold data points`);
+    
+    if (!data || data.length === 0) {
+      return {
+        daily: [],
+        monthly: [],
+        yearly: []
+      };
+    }
+    
+    // Format the data for the response
+    return {
+      daily: data,
+      monthly: [], // We'll generate this from daily data
+      yearly: []   // We'll generate this from monthly data
+    };
+  } catch (error) {
+    console.error("Error fetching damp mold data:", error);
+    throw error;
+  }
+};
+
+// Generate and insert sample damp and mold data for testing
+export const generateAndInsertDampMoldData = async (
+  zoneId?: string,
+  siteId?: string,
+  days: number = 30
+): Promise<boolean> => {
+  try {
+    if (!zoneId && !siteId) {
+      throw new Error("Either zoneId or siteId must be provided");
+    }
+    
+    console.log(`Generating ${days} days of damp mold data for site: ${siteId}, zone: ${zoneId}`);
+    
+    // Delete existing data for this zone/site to avoid duplication
+    let deleteQuery = supabase.from('damp_mold_data').delete();
+    if (zoneId) {
+      deleteQuery = deleteQuery.eq('zone_id', zoneId);
+    } else if (siteId) {
+      deleteQuery = deleteQuery.eq('site_id', siteId);
+    }
+    
+    await deleteQuery;
+    
+    // Generate sample data points
+    const dataPoints = [];
+    const today = new Date();
+    
+    for (let i = days; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      
+      // Generate multiple entries per day
+      for (let hour = 0; hour < 24; hour += 4) {
+        date.setHours(hour);
+        
+        // Base values with some randomness
+        const baseTemp = 18 + (Math.sin(hour / 5) * 3); // Temperature varies during the day
+        const baseRH = 60 + (Math.cos(hour / 6) * 10); // Humidity varies during the day
+        
+        // Add random fluctuations
+        const temp = baseTemp + (Math.random() * 4 - 2); // ±2°C random variation
+        const humidity = baseRH + (Math.random() * 15 - 7.5); // ±7.5% random variation
+        
+        // Occasionally create high-risk conditions
+        const isRiskDay = Math.random() < 0.2; // 20% chance for a risk day
+        const riskAdjustment = isRiskDay ? 15 : 0; // Increase humidity for risk days
+        
+        dataPoints.push({
+          zone_id: zoneId || null,
+          site_id: siteId || null,
+          timestamp: date.toISOString(),
+          temperature: parseFloat(temp.toFixed(1)),
+          humidity: parseFloat((humidity + riskAdjustment).toFixed(1)),
+          pressure: parseFloat((1013 + (Math.random() * 10 - 5)).toFixed(1)),
+          dewpoint: parseFloat((temp - ((100 - humidity) / 5)).toFixed(1)),
+          voc: Math.floor(Math.random() * 500),
+          co2: Math.floor(800 + Math.random() * 600)
+        });
+      }
+    }
+    
+    // Insert data in chunks to avoid payload size limits
+    const chunkSize = 100;
+    for (let i = 0; i < dataPoints.length; i += chunkSize) {
+      const chunk = dataPoints.slice(i, i + chunkSize);
+      const { error } = await supabase.from('damp_mold_data').insert(chunk);
+      
+      if (error) {
+        console.error("Error inserting data chunk:", error);
+        throw error;
+      }
+    }
+    
+    console.log(`Successfully inserted ${dataPoints.length} damp mold data points`);
+    return true;
+  } catch (error) {
+    console.error("Error generating damp mold data:", error);
+    throw error;
+  }
+};
+
 export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] => {
   if (!dailyData || dailyData.length === 0) return [];
   
@@ -62,3 +197,4 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
 
   return monthlyRiskData;
 };
+
