@@ -1,109 +1,137 @@
 
-import { assessMoldRisk } from "./risk-assessment";
+/**
+ * Data processing utilities for damp and mold data
+ */
+import { assessMoldRisk } from './risk-assessment';
+import { DailyOverviewPoint } from '../interfaces/temp-humidity';
 
 /**
- * Processes daily data into monthly risk assessment data
- * @param dailyData Daily temperature and humidity readings
- * @returns Processed monthly risk data
+ * Generates monthly risk data from daily data points
+ * This converts raw data points into risk assessment summaries
+ * @param dailyData Array of daily data points
+ * @returns Array of risk assessment objects
  */
-export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] => {
-  if (!dailyData || dailyData.length === 0) return [];
+export const generateMonthlyRiskDataFromDailyData = (dailyData: DailyOverviewPoint[]) => {
+  if (!dailyData || dailyData.length === 0) {
+    return [];
+  }
   
-  // Group data by zone and month
-  const monthlyGroupedData = dailyData.reduce((groups, item) => {
-    const date = new Date(item.timestamp || item.time);
-    const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-    const zoneKey = item.zoneId || 'undefined';
-    const siteKey = item.siteId || 'undefined';
+  console.log(`Generating monthly risk data from ${dailyData.length} daily data points`);
+  
+  // Group data by site and zone
+  const groupedData = groupDataBySiteAndZone(dailyData);
+  
+  // Process each site/zone group to calculate risk metrics
+  return Object.keys(groupedData).map((key, index) => {
+    const zoneData = groupedData[key];
+    const siteData = zoneData[0]; // Taking the first entry for site/zone info
     
-    const groupKey = `${monthKey}-${siteKey}-${zoneKey}`;
-    if (!groups[groupKey]) {
-      groups[groupKey] = {
-        monthKey,
-        siteKey,
-        zoneKey,
-        siteName: item.siteName,
-        zoneName: item.zoneName,
-        items: []
-      };
-    }
-    
-    groups[groupKey].items.push(item);
-    return groups;
-  }, {});
-
-  // Process monthly grouped data
-  const monthlyRiskData = Object.values(monthlyGroupedData).map((group: any) => {
-    const { monthKey, siteKey, zoneKey, siteName, zoneName, items } = group;
-    
-    // Extract temperature and humidity data
-    const temps = items.map((item: any) => item.temperature).filter(Boolean);
-    const humidities = items.map((item: any) => item.humidity).filter(Boolean);
-    
-    // Calculate averages
-    const avgTemp = temps.length > 0 
-      ? temps.reduce((sum: number, val: number) => sum + val, 0) / temps.length 
-      : 0;
-    const avgHumidity = humidities.length > 0 
-      ? humidities.reduce((sum: number, val: number) => sum + val, 0) / humidities.length 
-      : 0;
-    
-    // Calculate dew point: simplified formula
+    // Calculate average temperature and humidity
+    const avgTemp = calculateAverage(zoneData.map(item => item.temperature));
+    const avgHumidity = calculateAverage(zoneData.map(item => item.humidity));
     const dewPoint = avgTemp - ((100 - avgHumidity) / 5);
     
-    // Count readings with high risk conditions using our standardized assessment
-    const highRiskReadings = items.filter((item: any) => 
-      assessMoldRisk(item.temperature, item.humidity) === 'Alarm'
-    );
+    // Count of readings at various risk levels
+    const riskCounts = countRiskLevels(zoneData);
     
-    const cautionRiskReadings = items.filter((item: any) => 
-      assessMoldRisk(item.temperature, item.humidity) === 'Caution'
-    );
-    
-    // Calculate actual hours at risk
-    const timeIntervalHours = 4; // Assuming each reading represents 4 hours of data
-    const hoursAtRisk = highRiskReadings.length * timeIntervalHours;
-    const hoursAtCaution = cautionRiskReadings.length * timeIntervalHours;
-    
-    // Determine overall risk level using the standardized assessment function
-    // For the monthly view, we use the average values
-    const overallRisk = assessMoldRisk(avgTemp, avgHumidity);
-    
-    // Use actual site and zone names from the data
-    let buildingName = siteName || `Building ${siteKey}`;
-    let actualZoneName = zoneName || `Zone ${zoneKey}`;
-    
-    if (siteKey === 'undefined') buildingName = 'Unknown Building';
-    if (zoneKey === 'undefined') actualZoneName = 'Unknown Zone';
-    
-    // Generate appropriate comment based on risk level
-    let comment = '';
-    switch (overallRisk) {
-      case 'Alarm':
-        comment = 'Needs immediate attention';
-        break;
-      case 'Caution':
-        comment = 'Monitor closely';
-        break;
-      default:
-        comment = 'Normal operation';
+    // Determine overall risk based on alarm count
+    let overallRisk = 'Good';
+    if (riskCounts.Alarm > 10 || (riskCounts.Alarm > 5 && riskCounts.Caution > 10)) {
+      overallRisk = 'Alarm';
+    } else if (riskCounts.Caution > 15 || riskCounts.Alarm > 0) {
+      overallRisk = 'Caution';
     }
     
+    // Calculate time at risk (each data point represents 4 hours in our mock data)
+    const timeAtRisk = Math.round((riskCounts.Alarm + riskCounts.Caution * 0.5) * 4);
+    
     return {
-      id: `${monthKey}-${siteKey}-${zoneKey}`,
-      building: buildingName,
-      zone: actualZoneName,
+      id: index + 1,
+      building: siteData.siteName || `Building ${siteData.siteId}`,
+      zone: siteData.zoneName || `Zone ${siteData.zoneId}`,
       temp: avgTemp.toFixed(1),
-      rh: avgHumidity.toFixed(1),
+      rh: Math.round(avgHumidity),
       dewPoint: dewPoint.toFixed(1),
       overallRisk,
-      alarmCount: highRiskReadings.length,
-      timeAtRisk: `${hoursAtRisk}`,
-      comments: comment,
-      siteId: siteKey,
-      zoneId: zoneKey
+      alarmCount: riskCounts.Alarm,
+      timeAtRisk: `${timeAtRisk}h`,
+      comments: generateComments(overallRisk, avgTemp, avgHumidity, dewPoint)
     };
   });
+};
 
-  return monthlyRiskData;
+/**
+ * Group data points by site and zone
+ * @param data Array of data points
+ * @returns Object with site/zone keys and arrays of data points
+ */
+const groupDataBySiteAndZone = (data: DailyOverviewPoint[]) => {
+  const grouped: Record<string, DailyOverviewPoint[]> = {};
+  
+  data.forEach(point => {
+    const key = `${point.siteId || 'unknown'}_${point.zoneId || 'unknown'}`;
+    if (!grouped[key]) {
+      grouped[key] = [];
+    }
+    grouped[key].push(point);
+  });
+  
+  return grouped;
+};
+
+/**
+ * Calculate average of numerical values
+ * @param values Array of numbers
+ * @returns Average value
+ */
+const calculateAverage = (values: number[]) => {
+  if (!values || values.length === 0) return 0;
+  const sum = values.reduce((acc, val) => acc + val, 0);
+  return sum / values.length;
+};
+
+/**
+ * Count risk levels across data points
+ * @param data Array of data points
+ * @returns Object with counts for each risk level
+ */
+const countRiskLevels = (data: DailyOverviewPoint[]) => {
+  const counts = {
+    Good: 0,
+    Caution: 0,
+    Alarm: 0
+  };
+  
+  data.forEach(point => {
+    const risk = assessMoldRisk(point.temperature, point.humidity);
+    counts[risk as keyof typeof counts]++;
+  });
+  
+  return counts;
+};
+
+/**
+ * Generate comments based on risk assessment
+ * @param risk Overall risk level
+ * @param temp Average temperature
+ * @param humidity Average humidity
+ * @param dewPoint Dew point
+ * @returns Comment string
+ */
+const generateComments = (risk: string, temp: number, humidity: number, dewPoint: number) => {
+  if (risk === 'Alarm') {
+    if (humidity > 70) {
+      return 'High humidity detected. Ventilation recommended.';
+    }
+    return 'High risk conditions detected. Monitor closely.';
+  }
+  
+  if (risk === 'Caution') {
+    if (temp < 16) {
+      return 'Low temperature increasing condensation risk.';
+    }
+    return 'Monitor humidity and temperature levels.';
+  }
+  
+  return 'Conditions within acceptable parameters.';
 };

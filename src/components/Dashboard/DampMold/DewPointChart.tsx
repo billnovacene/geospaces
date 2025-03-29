@@ -4,23 +4,40 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DewPointChartControls } from "./components/DewPointChartControls";
 import { DewPointLineChart } from "./components/DewPointLineChart";
 import { DewPointAreaChart } from "./components/DewPointAreaChart";
-import { generateDewPointData } from "./utils/dewPointDataGenerator";
 import { useTheme } from "@/components/ThemeProvider";
+import { useDampMold } from "./context/DampMoldContext";
 
-interface DewPointChartProps {
-  data: any;
-}
-
-export function DewPointChart({
-  data
-}: DewPointChartProps) {
+export function DewPointChart() {
   const [selectedRange, setSelectedRange] = useState("day");
   const [chartType, setChartType] = useState("line");
   const { activeTheme } = useTheme();
+  const { data } = useDampMold();
+  
   const isDarkMode = activeTheme === "dark";
 
-  // Get data either from props or generate mock data
-  const chartData = data?.dewPointData || generateDewPointData(selectedRange);
+  // Transform real data for the dew point chart if available
+  const transformDataForDewPointChart = () => {
+    if (!data?.daily || data.daily.length === 0) {
+      return [];
+    }
+    
+    return data.daily.map(point => {
+      // Calculate dew point if not provided
+      const dewPoint = point.dewPoint || 
+        (point.temperature - ((100 - point.humidity) / 5));
+      
+      return {
+        hour: new Date(point.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        day: new Date(point.time).toLocaleDateString(),
+        temperature: point.temperature,
+        humidity: point.humidity,
+        dewPoint: parseFloat(dewPoint.toFixed(1))
+      };
+    });
+  };
+
+  // Use transformed real data
+  const chartData = transformDataForDewPointChart();
 
   // Configure x-axis based on selected time range
   const getXAxisKey = () => {
@@ -40,13 +57,18 @@ export function DewPointChart({
         />
       </CardHeader>
       <CardContent>
-        {chartType === "line" ? (
-          <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} isDarkMode={isDarkMode} />
+        {chartData.length > 0 ? (
+          chartType === "line" ? (
+            <DewPointLineChart chartData={chartData} xAxisKey={getXAxisKey()} isDarkMode={isDarkMode} />
+          ) : (
+            <DewPointAreaChart chartData={chartData} xAxisKey={getXAxisKey()} isDarkMode={isDarkMode} />
+          )
         ) : (
-          <DewPointAreaChart chartData={chartData} xAxisKey={getXAxisKey()} isDarkMode={isDarkMode} />
+          <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+            No data available. Please add sensor data to view dew point analysis.
+          </div>
         )}
       </CardContent>
     </Card>
   );
 }
-

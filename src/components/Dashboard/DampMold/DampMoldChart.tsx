@@ -3,17 +3,15 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TimeRangeSelector } from "./Chart/TimeRangeSelector";
 import { ChartConfig } from "./Chart/ChartConfig";
-import { generateMockData, getXAxisKey } from "./Chart/mockDataUtils";
+import { getXAxisKey } from "./Chart/mockDataUtils";
+import { useDampMold } from "./context/DampMoldContext";
 
-interface DampMoldChartProps {
-  data: any;
-}
-
-export function DampMoldChart({ data }: DampMoldChartProps) {
+export function DampMoldChart() {
   const [selectedRange, setSelectedRange] = useState("day");
+  const { data } = useDampMold();
   
-  // Use real data or generate mock data
-  const chartData = data?.dampMoldData || generateMockData(selectedRange);
+  // Use real data from database, no mock data
+  const chartData = data?.daily || [];
   
   // Get the appropriate x-axis key for the selected time range
   const xAxisKey = getXAxisKey(selectedRange);
@@ -28,10 +26,16 @@ export function DampMoldChart({ data }: DampMoldChartProps) {
         />
       </CardHeader>
       <CardContent className="h-[400px]">
-        <ChartConfig 
-          chartData={chartData}
-          xAxisKey={xAxisKey}
-        />
+        {chartData.length > 0 ? (
+          <ChartConfig 
+            chartData={chartData}
+            xAxisKey={xAxisKey}
+          />
+        ) : (
+          <div className="h-full flex items-center justify-center text-muted-foreground">
+            No data available. Please add sensor data to view this chart.
+          </div>
+        )}
       </CardContent>
     </Card>
   );
