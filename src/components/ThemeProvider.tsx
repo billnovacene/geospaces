@@ -34,7 +34,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Determine active theme based on settings
+  // Determine active theme based on settings and apply it
   useEffect(() => {
     const theme = determineActiveTheme(settings);
     setActiveTheme(theme);
@@ -45,7 +45,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Store the last active theme
     localStorage.setItem("activeTheme", theme);
     
-    // Improved scrollbar style application
+    // Apply scrollbar styles based on theme with a robust mechanism
     const applyScrollbarStyles = () => {
       // Get any saved scrollbar settings
       const savedScrollbarSettings = localStorage.getItem('scrollbar-settings');
@@ -53,32 +53,65 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         try {
           const settings = JSON.parse(savedScrollbarSettings);
           
-          // Clear any inline styles first
-          document.documentElement.style.removeProperty('--scrollbar-track-color');
-          document.documentElement.style.removeProperty('--scrollbar-thumb-color');
-          document.documentElement.style.removeProperty('--scrollbar-thumb-hover-color');
-          
-          // Apply the appropriate theme colors with !important for higher specificity
-          if (theme === 'dark') {
-            document.documentElement.style.setProperty('--scrollbar-track-color', `${settings.darkMode.trackColor} !important`);
-            document.documentElement.style.setProperty('--scrollbar-thumb-color', `${settings.darkMode.thumbColor} !important`);
-            document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', `${settings.darkMode.thumbHoverColor} !important`);
-          } else {
-            document.documentElement.style.setProperty('--scrollbar-track-color', `${settings.lightMode.trackColor} !important`);
-            document.documentElement.style.setProperty('--scrollbar-thumb-color', `${settings.lightMode.thumbColor} !important`);
-            document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', `${settings.lightMode.thumbHoverColor} !important`);
+          // Create or get an existing style element for scrollbar styles
+          let styleEl = document.getElementById('theme-scrollbar-styles');
+          if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'theme-scrollbar-styles';
+            document.head.appendChild(styleEl);
           }
           
-          // Apply size and radius settings
-          document.documentElement.style.setProperty('--scrollbar-width', `${settings.width}px`);
-          document.documentElement.style.setProperty('--scrollbar-height', `${settings.width}px`);
-          document.documentElement.style.setProperty('--scrollbar-radius', `${settings.radius}px`);
+          // Select color variables based on active theme
+          const colors = theme === 'dark' ? settings.darkMode : settings.lightMode;
+          
+          // Create CSS with !important rules for maximum specificity
+          const css = `
+            :root {
+              --scrollbar-width: ${settings.width}px !important;
+              --scrollbar-height: ${settings.width}px !important;
+              --scrollbar-radius: ${settings.radius}px !important;
+              --scrollbar-track-color: ${colors.trackColor} !important;
+              --scrollbar-thumb-color: ${colors.thumbColor} !important;
+              --scrollbar-thumb-hover-color: ${colors.thumbHoverColor} !important;
+            }
+            
+            /* Ensure styles are applied to all scrollbars */
+            *::-webkit-scrollbar-track {
+              background-color: ${colors.trackColor} !important;
+            }
+            
+            *::-webkit-scrollbar-thumb {
+              background-color: ${colors.thumbColor} !important;
+            }
+            
+            *::-webkit-scrollbar-thumb:hover {
+              background-color: ${colors.thumbHoverColor} !important;
+            }
+            
+            /* Special sidebar scrollbar override */
+            [data-sidebar="sidebar"] *::-webkit-scrollbar-track,
+            [data-sidebar] *::-webkit-scrollbar-track {
+              background-color: ${colors.trackColor} !important;
+            }
+            
+            [data-sidebar="sidebar"] *::-webkit-scrollbar-thumb,
+            [data-sidebar] *::-webkit-scrollbar-thumb {
+              background-color: ${colors.thumbColor} !important;
+            }
+            
+            [data-sidebar="sidebar"] *::-webkit-scrollbar-thumb:hover,
+            [data-sidebar] *::-webkit-scrollbar-thumb:hover {
+              background-color: ${colors.thumbHoverColor} !important;
+            }
+          `;
+          
+          styleEl.textContent = css;
         } catch (e) {
-          console.error("Failed to parse scrollbar settings", e);
+          console.error("Failed to apply scrollbar settings", e);
         }
       }
       
-      // Improved scrollbar refresh mechanism
+      // Trigger scrollbar refresh
       document.documentElement.classList.add('scrollbar-refresh');
       setTimeout(() => {
         document.documentElement.classList.add('scrollbar-refresh-done');
@@ -113,17 +146,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [settings.theme]);
 
-  // Set theme
+  // Theme control functions
   const setTheme = (theme: Theme) => {
     updateThemeSettings({ theme });
   };
 
-  // Set color scheme
   const setColorScheme = (colorScheme: ColorScheme) => {
     updateThemeSettings({ colorScheme });
   };
 
-  // Toggle between light and dark
   const toggleTheme = () => {
     console.log("Toggle theme called, current theme:", settings.theme);
     const newTheme = settings.theme === "light" ? "dark" : "light";
@@ -131,7 +162,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     console.log(`Theme toggled from ${settings.theme} to ${newTheme}`);
   };
 
-  // Update theme settings
   const updateThemeSettings = (newSettings: Partial<ThemeSettings>) => {
     const updatedSettings = { ...settings, ...newSettings };
     setSettings(updatedSettings);

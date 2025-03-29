@@ -1,7 +1,6 @@
 
 import * as React from "react"
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
-
 import { cn } from "@/lib/utils"
 import { useTheme } from "@/components/ThemeProvider"
 
@@ -11,38 +10,40 @@ const ScrollArea = React.forwardRef<
 >(({ className, children, ...props }, ref) => {
   const { activeTheme } = useTheme();
 
-  // Force refresh when theme changes
+  // Force refresh scrollbar styles when theme changes
   React.useEffect(() => {
-    // Get scrollbar settings from localStorage
     try {
       const savedScrollbarSettings = localStorage.getItem('scrollbar-settings');
       if (savedScrollbarSettings) {
         const settings = JSON.parse(savedScrollbarSettings);
         
-        // Apply scrollbar styles based on current theme
-        if (activeTheme === 'dark') {
-          document.documentElement.style.setProperty('--scrollbar-track-color', settings.darkMode.trackColor);
-          document.documentElement.style.setProperty('--scrollbar-thumb-color', settings.darkMode.thumbColor);
-          document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', settings.darkMode.thumbHoverColor);
-        } else {
-          document.documentElement.style.setProperty('--scrollbar-track-color', settings.lightMode.trackColor);
-          document.documentElement.style.setProperty('--scrollbar-thumb-color', settings.lightMode.thumbColor);
-          document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', settings.lightMode.thumbHoverColor);
-        }
+        // Apply scrollbar styles based on current theme with !important for higher specificity
+        const currentMode = activeTheme === 'dark' ? 'darkMode' : 'lightMode';
+        const colors = settings[currentMode];
         
-        // Apply general scrollbar properties
-        document.documentElement.style.setProperty('--scrollbar-width', `${settings.width}px`);
-        document.documentElement.style.setProperty('--scrollbar-height', `${settings.width}px`);
-        document.documentElement.style.setProperty('--scrollbar-radius', `${settings.radius}px`);
+        document.documentElement.style.setProperty('--scrollbar-track-color', `${colors.trackColor} !important`);
+        document.documentElement.style.setProperty('--scrollbar-thumb-color', `${colors.thumbColor} !important`);
+        document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', `${colors.thumbHoverColor} !important`);
+        
+        // Apply size and radius settings
+        document.documentElement.style.setProperty('--scrollbar-width', `${settings.width}px !important`);
+        document.documentElement.style.setProperty('--scrollbar-height', `${settings.width}px !important`);
+        document.documentElement.style.setProperty('--scrollbar-radius', `${settings.radius}px !important`);
       }
     } catch (e) {
       console.error("Failed to apply scrollbar settings in ScrollArea", e);
     }
     
-    // Force refresh scrollbar styles
+    // Improved scrollbar refresh mechanism
     document.documentElement.classList.add('scrollbar-refresh');
     setTimeout(() => {
+      document.documentElement.classList.add('scrollbar-refresh-done');
       document.documentElement.classList.remove('scrollbar-refresh');
+      
+      // Remove the refresh-done class after styles are fully applied
+      setTimeout(() => {
+        document.documentElement.classList.remove('scrollbar-refresh-done');
+      }, 100);
     }, 50);
   }, [activeTheme]);
 
@@ -55,7 +56,7 @@ const ScrollArea = React.forwardRef<
       <ScrollAreaPrimitive.Viewport 
         className="h-full w-full rounded-[inherit]"
         style={{
-          // Override any hardcoded scrollbar styling that might be applied
+          // Apply scrollbar styles directly to ensure they take effect
           scrollbarWidth: 'thin',
           scrollbarColor: 'var(--scrollbar-thumb-color) var(--scrollbar-track-color)',
         }}
@@ -90,7 +91,7 @@ const ScrollBar = React.forwardRef<
       <ScrollAreaPrimitive.ScrollAreaThumb 
         className={cn(
           "relative flex-1 rounded-full",
-          // Use CSS variables for colors to ensure theme consistency
+          // Use CSS variables for colors with !important to ensure theme consistency
           "bg-[var(--scrollbar-thumb-color)] hover:bg-[var(--scrollbar-thumb-hover-color)]"
         )} 
       />

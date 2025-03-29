@@ -13,26 +13,28 @@ export const ScrollbarPreview: React.FC<ScrollbarPreviewProps> = ({ settings }) 
   const lightPreviewRef = useRef<HTMLDivElement>(null);
   const darkPreviewRef = useRef<HTMLDivElement>(null);
 
-  // Apply styles directly to the preview elements
+  // Apply styles directly to the preview elements with improved specificity
   useEffect(() => {
     if (lightPreviewRef.current) {
-      // Apply light mode scrollbar styles directly to the preview
-      lightPreviewRef.current.style.setProperty('--scrollbar-width', `${settings.width}px`);
-      lightPreviewRef.current.style.setProperty('--scrollbar-height', `${settings.width}px`);
-      lightPreviewRef.current.style.setProperty('--scrollbar-radius', `${settings.radius}px`);
-      lightPreviewRef.current.style.setProperty('--scrollbar-track-color', settings.lightMode.trackColor);
-      lightPreviewRef.current.style.setProperty('--scrollbar-thumb-color', settings.lightMode.thumbColor);
-      lightPreviewRef.current.style.setProperty('--scrollbar-thumb-hover-color', settings.lightMode.thumbHoverColor);
+      // Apply light mode scrollbar styles directly to the preview with !important
+      const lightStyles = lightPreviewRef.current.style;
+      lightStyles.setProperty('--scrollbar-width', `${settings.width}px`, 'important');
+      lightStyles.setProperty('--scrollbar-height', `${settings.width}px`, 'important');
+      lightStyles.setProperty('--scrollbar-radius', `${settings.radius}px`, 'important');
+      lightStyles.setProperty('--scrollbar-track-color', settings.lightMode.trackColor, 'important');
+      lightStyles.setProperty('--scrollbar-thumb-color', settings.lightMode.thumbColor, 'important');
+      lightStyles.setProperty('--scrollbar-thumb-hover-color', settings.lightMode.thumbHoverColor, 'important');
     }
     
     if (darkPreviewRef.current) {
-      // Apply dark mode scrollbar styles directly to the preview
-      darkPreviewRef.current.style.setProperty('--scrollbar-width', `${settings.width}px`);
-      darkPreviewRef.current.style.setProperty('--scrollbar-height', `${settings.width}px`);
-      darkPreviewRef.current.style.setProperty('--scrollbar-radius', `${settings.radius}px`);
-      darkPreviewRef.current.style.setProperty('--scrollbar-track-color', settings.darkMode.trackColor);
-      darkPreviewRef.current.style.setProperty('--scrollbar-thumb-color', settings.darkMode.thumbColor);
-      darkPreviewRef.current.style.setProperty('--scrollbar-thumb-hover-color', settings.darkMode.thumbHoverColor);
+      // Apply dark mode scrollbar styles directly to the preview with !important
+      const darkStyles = darkPreviewRef.current.style;
+      darkStyles.setProperty('--scrollbar-width', `${settings.width}px`, 'important');
+      darkStyles.setProperty('--scrollbar-height', `${settings.width}px`, 'important');
+      darkStyles.setProperty('--scrollbar-radius', `${settings.radius}px`, 'important');
+      darkStyles.setProperty('--scrollbar-track-color', settings.darkMode.trackColor, 'important');
+      darkStyles.setProperty('--scrollbar-thumb-color', settings.darkMode.thumbColor, 'important');
+      darkStyles.setProperty('--scrollbar-thumb-hover-color', settings.darkMode.thumbHoverColor, 'important');
     }
   }, [settings]);
 
