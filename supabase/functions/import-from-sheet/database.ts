@@ -48,6 +48,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
     
     // Import projects
     if (data.projects.length > 0) {
+      console.log("Importing projects:", JSON.stringify(data.projects, null, 2));
+      
       const projectsResponse = await fetch(`${URL}/rest/v1/projects`, {
         method: 'POST',
         headers: {
@@ -61,7 +63,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
       });
       
       if (!projectsResponse.ok) {
-        throw new Error(`Failed to import projects: ${projectsResponse.status} ${projectsResponse.statusText}`);
+        const errorText = await projectsResponse.text();
+        throw new Error(`Failed to import projects: ${projectsResponse.status} ${projectsResponse.statusText} - ${errorText}`);
       }
       
       counts.projects = data.projects.length;
@@ -71,6 +74,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
     
     // Import sites
     if (data.sites.length > 0) {
+      console.log("Importing sites:", JSON.stringify(data.sites, null, 2));
+      
       const sitesResponse = await fetch(`${URL}/rest/v1/sites`, {
         method: 'POST',
         headers: {
@@ -84,7 +89,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
       });
       
       if (!sitesResponse.ok) {
-        throw new Error(`Failed to import sites: ${sitesResponse.status} ${sitesResponse.statusText}`);
+        const errorText = await sitesResponse.text();
+        throw new Error(`Failed to import sites: ${sitesResponse.status} ${sitesResponse.statusText} - ${errorText}`);
       }
       
       counts.sites = data.sites.length;
@@ -94,6 +100,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
     
     // Import zones
     if (data.zones.length > 0) {
+      console.log("Importing zones:", JSON.stringify(data.zones, null, 2));
+      
       const zonesResponse = await fetch(`${URL}/rest/v1/zones`, {
         method: 'POST',
         headers: {
@@ -107,7 +115,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
       });
       
       if (!zonesResponse.ok) {
-        throw new Error(`Failed to import zones: ${zonesResponse.status} ${zonesResponse.statusText}`);
+        const errorText = await zonesResponse.text();
+        throw new Error(`Failed to import zones: ${zonesResponse.status} ${zonesResponse.statusText} - ${errorText}`);
       }
       
       counts.zones = data.zones.length;
@@ -117,6 +126,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
     
     // Import devices
     if (data.devices.length > 0) {
+      console.log("Importing devices:", JSON.stringify(data.devices, null, 2));
+      
       const devicesResponse = await fetch(`${URL}/rest/v1/devices`, {
         method: 'POST',
         headers: {
@@ -130,7 +141,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
       });
       
       if (!devicesResponse.ok) {
-        throw new Error(`Failed to import devices: ${devicesResponse.status} ${devicesResponse.statusText}`);
+        const errorText = await devicesResponse.text();
+        throw new Error(`Failed to import devices: ${devicesResponse.status} ${devicesResponse.statusText} - ${errorText}`);
       }
       
       counts.devices = data.devices.length;
@@ -140,6 +152,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
     
     // Import sensors
     if (data.sensors.length > 0) {
+      console.log("Importing sensors:", JSON.stringify(data.sensors, null, 2));
+      
       const sensorsResponse = await fetch(`${URL}/rest/v1/sensors`, {
         method: 'POST',
         headers: {
@@ -153,7 +167,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
       });
       
       if (!sensorsResponse.ok) {
-        throw new Error(`Failed to import sensors: ${sensorsResponse.status} ${sensorsResponse.statusText}`);
+        const errorText = await sensorsResponse.text();
+        throw new Error(`Failed to import sensors: ${sensorsResponse.status} ${sensorsResponse.statusText} - ${errorText}`);
       }
       
       counts.sensors = data.sensors.length;
@@ -163,6 +178,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
     
     // Import sensor data
     if (data.sensorData.length > 0) {
+      console.log("Importing sensor data:", JSON.stringify(data.sensorData.slice(0, 2), null, 2), `... and ${data.sensorData.length - 2} more`);
+      
       const sensorDataResponse = await fetch(`${URL}/rest/v1/sensor_data`, {
         method: 'POST',
         headers: {
@@ -176,7 +193,8 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
       });
       
       if (!sensorDataResponse.ok) {
-        throw new Error(`Failed to import sensor data: ${sensorDataResponse.status} ${sensorDataResponse.statusText}`);
+        const errorText = await sensorDataResponse.text();
+        throw new Error(`Failed to import sensor data: ${sensorDataResponse.status} ${sensorDataResponse.statusText} - ${errorText}`);
       }
       
       counts.sensorData = data.sensorData.length;
@@ -211,6 +229,14 @@ export async function importToSupabase(data: ProcessedData, importLogId: string)
     
   } catch (error) {
     console.error('Error in importToSupabase:', error);
+    
+    // Update import log with error
+    try {
+      await markImportAsFailed(importLogId, error.message || 'Unknown error');
+    } catch (logError) {
+      console.error('Failed to update import log with error:', logError);
+    }
+    
     return {
       success: false,
       totalImported,
