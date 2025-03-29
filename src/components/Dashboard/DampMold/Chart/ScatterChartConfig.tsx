@@ -14,55 +14,37 @@ import {
   Cell
 } from "recharts";
 import { useTheme } from "@/components/ThemeProvider";
+import { calculateMoldRiskScore, assessMoldRisk } from "@/services/damp-mold";
 
 interface ScatterChartConfigProps {
   chartData: any[];
   xAxisKey: string;
 }
 
-// Calculate a risk score based on temperature and humidity
-// Following the mould risk standards document
-const calculateMouldRiskScore = (temperature: number, humidity: number): number => {
-  let score = 0;
-  
-  // Apply humidity thresholds for risk scoring
-  if (humidity < 60) {
-    score = 0; // Low risk
-  } else if (humidity < 70) {
-    score = 1; // Caution
-  } else if (humidity < 80) {
-    score = 2; // High risk
-  } else {
-    score = 3; // Very high risk
+// Get the color based on risk assessment
+const getRiskColor = (riskLevel: string): string => {
+  switch(riskLevel) {
+    case 'Alarm': return "#ef4444"; // Red - high risk
+    case 'Caution': return "#f97316"; // Amber - medium risk
+    default: return "#10b981"; // Green - low risk
   }
-  
-  // Additional risk if temperature is below 16°C (risk of condensation)
-  if (temperature < 16) {
-    score += 1;
-  }
-  
-  return score;
-};
-
-// Get the color based on risk score
-const getRiskColor = (score: number): string => {
-  if (score >= 3) return "#ef4444"; // Red - high risk
-  if (score >= 1) return "#f97316"; // Amber - medium risk
-  return "#10b981"; // Green - low risk
 };
 
 // Convert the chartData into scatter data format
 const prepareScatterData = (data: any[], xAxisKey: string) => {
   return data.map(item => {
-    const riskScore = calculateMouldRiskScore(item.temperature, item.humidity);
+    const riskLevel = assessMoldRisk(item.temperature, item.humidity);
+    const riskScore = calculateMoldRiskScore(item.temperature, item.humidity);
+    
     return {
       x: item[xAxisKey], // Time point (hour or day)
       y: item.humidity,  // Y-axis: humidity
       z: item.temperature, // Z-axis (size): temperature
       riskScore,
+      riskLevel,
       temp: item.temperature,
       hum: item.humidity,
-      color: getRiskColor(riskScore)
+      color: getRiskColor(riskLevel)
     };
   });
 };
@@ -116,13 +98,6 @@ export function ScatterChartConfig({
           content={({ active, payload }) => {
             if (active && payload && payload.length) {
               const data = payload[0].payload;
-              const riskLabels = ["Low Risk", "Moderate Risk", "High Risk", "Very High Risk"];
-              let riskIndex = 0;
-              
-              if (data.riskScore >= 3) riskIndex = 3;
-              else if (data.riskScore >= 2) riskIndex = 2;
-              else if (data.riskScore >= 1) riskIndex = 1;
-              
               return (
                 <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-800'} p-2 border shadow-sm rounded-md`}>
                   <p className="text-sm font-medium">{data.x}</p>
@@ -130,7 +105,7 @@ export function ScatterChartConfig({
                   <p className="text-xs">Humidity: {data.hum}%</p>
                   <p className="text-xs">Risk Score: {data.riskScore}</p>
                   <p className="text-xs font-semibold mt-1" style={{ color: data.color }}>
-                    {riskLabels[riskIndex]}
+                    {data.riskLevel}
                   </p>
                 </div>
               );
@@ -142,9 +117,9 @@ export function ScatterChartConfig({
           verticalAlign="top" 
           height={36}
           payload={[
-            { value: 'Low Risk (<60% RH)', type: 'circle', color: '#10b981' },
-            { value: 'Moderate Risk (60-69% RH)', type: 'circle', color: '#f97316' },
-            { value: 'High Risk (≥70% RH)', type: 'circle', color: '#ef4444' }
+            { value: 'Good (<60% RH)', type: 'circle', color: '#10b981' },
+            { value: 'Caution (60-69% RH)', type: 'circle', color: '#f97316' },
+            { value: 'Alarm (≥70% RH or 60%+ with <16°C)', type: 'circle', color: '#ef4444' }
           ]}
           wrapperStyle={{ color: isDarkMode ? "#ccc" : "#333" }}
         />
@@ -154,7 +129,7 @@ export function ScatterChartConfig({
           stroke="#ef4444" 
           strokeDasharray="3 3" 
           label={{ 
-            value: "High Risk Threshold (70%)", 
+            value: "Alarm Threshold (70%)", 
             position: "insideBottomRight", 
             fill: isDarkMode ? "#f87171" : "#ef4444", 
             fontSize: 12 

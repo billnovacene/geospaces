@@ -26,7 +26,7 @@ export function RiskGlanceSection({
 }: RiskGlanceSectionProps) {
   const { contextInfo } = useDampMold();
   
-  // Filter data based on active filter
+  // Filter data based on active filter using standardized terms
   const filteredData = activeFilter ? monthlyRiskData.filter(row => {
     switch (activeFilter) {
       case 'high-risk':

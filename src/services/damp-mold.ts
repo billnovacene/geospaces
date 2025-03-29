@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { TempHumidityResponse, DailyOverviewPoint, StatsData } from "./interfaces/temp-humidity";
 import { toast } from "sonner";
@@ -166,6 +165,51 @@ export const generateAndInsertDampMoldData = async (
   }
 };
 
+/**
+ * Standardized risk assessment function used across the application
+ * @param temperature Temperature in Celsius
+ * @param humidity Relative humidity percentage
+ * @returns {string} Risk level: 'Good', 'Caution', or 'Alarm'
+ */
+export const assessMoldRisk = (temperature: number, humidity: number): string => {
+  // Primary factor is humidity
+  if (humidity >= 70) {
+    return 'Alarm'; // High risk
+  } else if (humidity >= 60) {
+    // Additional risk if temperature is below 16°C (risk of condensation)
+    return temperature < 16 ? 'Alarm' : 'Caution';
+  } else {
+    // Low humidity is generally good, but still watch for very cold temps
+    return temperature < 12 ? 'Caution' : 'Good';
+  }
+};
+
+/**
+ * Calculates a numeric risk score based on temperature and humidity
+ * @param temperature Temperature in Celsius
+ * @param humidity Relative humidity percentage
+ * @returns {number} Risk score (0-3)
+ */
+export const calculateMoldRiskScore = (temperature: number, humidity: number): number => {
+  let score = 0;
+  
+  // Apply humidity thresholds for risk scoring
+  if (humidity < 60) {
+    score = 0; // Low risk
+  } else if (humidity < 70) {
+    score = 1; // Caution
+  } else {
+    score = 2; // High risk
+  }
+  
+  // Additional risk if temperature is below 16°C (risk of condensation)
+  if (temperature < 16) {
+    score += 1;
+  }
+  
+  return score;
+};
+
 export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] => {
   if (!dailyData || dailyData.length === 0) return [];
   
@@ -211,35 +255,23 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
     // Calculate dew point: simplified formula
     const dewPoint = avgTemp - ((100 - avgHumidity) / 5);
     
-    // Determine risk level using proper risk assessment logic
-    let overallRisk = 'Good';
-    let riskScore = 0;
-    
-    // Count readings with high risk conditions
+    // Count readings with high risk conditions using our standardized assessment
     const highRiskReadings = items.filter((item: any) => 
-      (item.humidity > 70) || (item.humidity > 60 && item.temperature < 16)
+      assessMoldRisk(item.temperature, item.humidity) === 'Alarm'
+    );
+    
+    const cautionRiskReadings = items.filter((item: any) => 
+      assessMoldRisk(item.temperature, item.humidity) === 'Caution'
     );
     
     // Calculate actual hours at risk
-    // Each data point typically represents 10 minutes or whatever time interval we're using
-    // assuming 4 hour intervals for this example
     const timeIntervalHours = 4; // Assuming each reading represents 4 hours of data
     const hoursAtRisk = highRiskReadings.length * timeIntervalHours;
+    const hoursAtCaution = cautionRiskReadings.length * timeIntervalHours;
     
-    // Set risk level based on percentage of time at high risk
-    const totalPossibleHours = items.length * timeIntervalHours;
-    const percentAtRisk = (hoursAtRisk / totalPossibleHours) * 100;
-    
-    if (percentAtRisk > 20) {
-      overallRisk = 'Alarm';
-      riskScore = 3;
-    } else if (percentAtRisk > 10) {
-      overallRisk = 'Caution';
-      riskScore = 2;
-    } else if (percentAtRisk > 5) {
-      overallRisk = 'Good';
-      riskScore = 1;
-    }
+    // Determine overall risk level using the standardized assessment function
+    // For the monthly view, we use the average values
+    const overallRisk = assessMoldRisk(avgTemp, avgHumidity);
     
     // Use actual site and zone names from the data
     let buildingName = siteName || `Building ${siteKey}`;
@@ -247,6 +279,19 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
     
     if (siteKey === 'undefined') buildingName = 'Unknown Building';
     if (zoneKey === 'undefined') actualZoneName = 'Unknown Zone';
+    
+    // Generate appropriate comment based on risk level
+    let comment = '';
+    switch (overallRisk) {
+      case 'Alarm':
+        comment = 'Needs immediate attention';
+        break;
+      case 'Caution':
+        comment = 'Monitor closely';
+        break;
+      default:
+        comment = 'Normal operation';
+    }
     
     return {
       id: `${monthKey}-${siteKey}-${zoneKey}`,
@@ -258,8 +303,7 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
       overallRisk,
       alarmCount: highRiskReadings.length,
       timeAtRisk: `${hoursAtRisk}`,
-      comments: overallRisk === 'Alarm' ? 'Needs immediate attention' : 
-                overallRisk === 'Caution' ? 'Monitor closely' : 'Normal operation',
+      comments: comment,
       siteId: siteKey,
       zoneId: zoneKey
     };
