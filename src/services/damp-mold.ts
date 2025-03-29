@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { TempHumidityResponse } from "./interfaces/temp-humidity";
+import { TempHumidityResponse, DailyOverviewPoint } from "./interfaces/temp-humidity";
 import { toast } from "sonner";
 
 // Fetch damp and mold data from Supabase
@@ -19,9 +19,9 @@ export const fetchDampMoldData = async (
     
     // Add filter conditions if site or zone ids are provided
     if (zoneId) {
-      query = query.eq('zone_id', zoneId);
+      query = query.eq('zone_id', parseInt(zoneId, 10));
     } else if (siteId) {
-      query = query.eq('site_id', siteId);
+      query = query.eq('site_id', parseInt(siteId, 10));
     }
     
     // Execute the query
@@ -36,16 +36,25 @@ export const fetchDampMoldData = async (
     if (!data || data.length === 0) {
       return {
         daily: [],
-        monthly: [],
-        yearly: []
+        monthly: []
       };
     }
     
+    // Transform the data to match the DailyOverviewPoint type
+    const dailyData: DailyOverviewPoint[] = data.map(item => ({
+      time: new Date(item.timestamp).toISOString(),
+      temperature: item.temperature || 0,
+      humidity: item.humidity || 0,
+      isReal: {
+        temperature: true,
+        humidity: true
+      }
+    }));
+    
     // Format the data for the response
     return {
-      daily: data,
-      monthly: [], // We'll generate this from daily data
-      yearly: []   // We'll generate this from monthly data
+      daily: dailyData,
+      monthly: []
     };
   } catch (error) {
     console.error("Error fetching damp mold data:", error);
@@ -69,9 +78,9 @@ export const generateAndInsertDampMoldData = async (
     // Delete existing data for this zone/site to avoid duplication
     let deleteQuery = supabase.from('damp_mold_data').delete();
     if (zoneId) {
-      deleteQuery = deleteQuery.eq('zone_id', zoneId);
+      deleteQuery = deleteQuery.eq('zone_id', parseInt(zoneId, 10));
     } else if (siteId) {
-      deleteQuery = deleteQuery.eq('site_id', siteId);
+      deleteQuery = deleteQuery.eq('site_id', parseInt(siteId, 10));
     }
     
     await deleteQuery;
@@ -101,8 +110,8 @@ export const generateAndInsertDampMoldData = async (
         const riskAdjustment = isRiskDay ? 15 : 0; // Increase humidity for risk days
         
         dataPoints.push({
-          zone_id: zoneId || null,
-          site_id: siteId || null,
+          zone_id: zoneId ? parseInt(zoneId, 10) : null,
+          site_id: siteId ? parseInt(siteId, 10) : null,
           timestamp: date.toISOString(),
           temperature: parseFloat(temp.toFixed(1)),
           humidity: parseFloat((humidity + riskAdjustment).toFixed(1)),
@@ -139,7 +148,7 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
   
   // Group data by zone and month
   const monthlyGroupedData = dailyData.reduce((groups, item) => {
-    const date = new Date(item.timestamp);
+    const date = new Date(item.timestamp || item.time);
     const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
     const zoneKey = item.zone_id || 'undefined';
     
@@ -197,4 +206,3 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
 
   return monthlyRiskData;
 };
-

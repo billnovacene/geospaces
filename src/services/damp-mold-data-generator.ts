@@ -5,4 +5,3 @@ export {
   generateMonthlyRiskDataFromDailyData,
   fetchDampMoldData 
 } from './damp-mold';
-

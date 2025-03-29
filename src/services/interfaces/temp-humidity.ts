@@ -46,10 +46,10 @@ export interface SensorSourceData {
 }
 
 export interface TempHumidityResponse {
-  stats: StatsData;
+  stats?: StatsData;
   daily: DailyOverviewPoint[];
   monthly: MonthlyOverviewPoint[];
-  sourceData: SensorSourceData;
+  sourceData?: SensorSourceData;
   operatingHours?: {
     startTime: string;
     endTime: string;
