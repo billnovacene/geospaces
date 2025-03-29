@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { generateAndInsertDampMoldData } from "./damp-mold-data-generator";
+import { generateAndInsertDampMoldData } from "./damp-mold";
 import { toast } from "sonner";
 
 /**
@@ -23,7 +23,6 @@ export const generateExampleData = async () => {
       const { data: newProject, error: projectError } = await supabase
         .from('projects')
         .insert({
-          id: 1,  // Adding an explicit ID to fix the TypeScript error
           name: 'Example Project',
           description: 'Auto-generated example project',
           status: 'Active'
@@ -48,8 +47,8 @@ export const generateExampleData = async () => {
     const siteIds = [];
     if (!existingSites || existingSites.length < 2) {
       const sitesToCreate = [
-        { id: 1, name: 'North Building', address: '123 North St', description: 'North campus building', status: 'Active', project_id: projectId },
-        { id: 2, name: 'South Building', address: '456 South Ave', description: 'South campus building', status: 'Active', project_id: projectId }
+        { name: 'Zircon North', address: '123 North St', description: 'North campus building', status: 'Active', project_id: projectId },
+        { name: 'Zircon South', address: '456 South Ave', description: 'South campus building', status: 'Active', project_id: projectId }
       ];
       
       for (const site of sitesToCreate) {
@@ -62,7 +61,7 @@ export const generateExampleData = async () => {
         if (siteError) throw siteError;
         siteIds.push(newSite.id);
         
-        console.log(`Created new site with ID: ${newSite.id}`);
+        console.log(`Created new site with ID: ${newSite.id} and name: ${site.name}`);
       }
     } else {
       existingSites.forEach(site => siteIds.push(site.id));
@@ -81,9 +80,9 @@ export const generateExampleData = async () => {
       const zoneIds = [];
       if (!existingZones || existingZones.length < 3) {
         const zonesToCreate = [
-          { id: siteId * 10 + 1, name: 'Ground Floor', description: 'Ground floor area', type: 'Floor', status: 'Active', area: 150, site_id: siteId },
-          { id: siteId * 10 + 2, name: 'First Floor', description: 'First floor area', type: 'Floor', status: 'Active', area: 120, site_id: siteId },
-          { id: siteId * 10 + 3, name: 'Kitchen', description: 'Kitchen area', type: 'Room', status: 'Active', area: 30, site_id: siteId }
+          { name: 'Ground Floor', description: 'Ground floor area', type: 'Floor', status: 'Active', area: 150, site_id: siteId },
+          { name: 'First Floor', description: 'First floor area', type: 'Floor', status: 'Active', area: 120, site_id: siteId },
+          { name: 'Kitchen', description: 'Kitchen area', type: 'Room', status: 'Active', area: 30, site_id: siteId }
         ];
         
         for (const zone of zonesToCreate) {
@@ -96,7 +95,7 @@ export const generateExampleData = async () => {
           if (zoneError) throw zoneError;
           zoneIds.push(newZone.id);
           
-          console.log(`Created new zone with ID: ${newZone.id}`);
+          console.log(`Created new zone with ID: ${newZone.id} and name: ${zone.name}`);
         }
       } else {
         existingZones.forEach(zone => zoneIds.push(zone.id));

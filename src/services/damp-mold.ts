@@ -15,7 +15,7 @@ export const fetchDampMoldData = async (
     // Build the query based on provided parameters
     let query = supabase
       .from('damp_mold_data')
-      .select('*')
+      .select('*, sites:site_id(name), zones:zone_id(name)')
       .order('timestamp', { ascending: true });
     
     // Add filter conditions if site or zone ids are provided
@@ -32,7 +32,7 @@ export const fetchDampMoldData = async (
       throw error;
     }
     
-    console.log(`Fetched ${data?.length || 0} damp mold data points`);
+    console.log(`Fetched ${data?.length || 0} damp mold data points with site and zone info:`, data);
     
     if (!data || data.length === 0) {
       return {
@@ -62,7 +62,12 @@ export const fetchDampMoldData = async (
       isReal: {
         temperature: true,
         humidity: true
-      }
+      },
+      // Include site and zone information
+      siteId: item.site_id,
+      zoneId: item.zone_id,
+      siteName: item.sites?.name || `Building ${item.site_id}`,
+      zoneName: item.zones?.name || `Zone ${item.zone_id}`
     }));
     
     // Calculate stats from the data
@@ -168,8 +173,8 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
   const monthlyGroupedData = dailyData.reduce((groups, item) => {
     const date = new Date(item.timestamp || item.time);
     const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-    const zoneKey = item.zone_id || 'undefined';
-    const siteKey = item.site_id || 'undefined';
+    const zoneKey = item.zoneId || 'undefined';
+    const siteKey = item.siteId || 'undefined';
     
     const groupKey = `${monthKey}-${siteKey}-${zoneKey}`;
     if (!groups[groupKey]) {
@@ -177,6 +182,8 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
         monthKey,
         siteKey,
         zoneKey,
+        siteName: item.siteName,
+        zoneName: item.zoneName,
         items: []
       };
     }
@@ -187,7 +194,7 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
 
   // Process monthly grouped data
   const monthlyRiskData = Object.values(monthlyGroupedData).map((group: any) => {
-    const { monthKey, siteKey, zoneKey, items } = group;
+    const { monthKey, siteKey, zoneKey, siteName, zoneName, items } = group;
     
     // Extract temperature and humidity data
     const temps = items.map((item: any) => item.temperature).filter(Boolean);
@@ -213,11 +220,14 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
       (item.humidity > 70) || (item.humidity > 60 && item.temperature < 16)
     );
     
-    // Calculate actual hours at risk (each reading represents 4 hours in our data)
-    const hoursAtRisk = highRiskReadings.length * 4;
+    // Calculate actual hours at risk
+    // Each data point typically represents 10 minutes or whatever time interval we're using
+    // assuming 4 hour intervals for this example
+    const timeIntervalHours = 4; // Assuming each reading represents 4 hours of data
+    const hoursAtRisk = highRiskReadings.length * timeIntervalHours;
     
     // Set risk level based on percentage of time at high risk
-    const totalPossibleHours = items.length * 4;
+    const totalPossibleHours = items.length * timeIntervalHours;
     const percentAtRisk = (hoursAtRisk / totalPossibleHours) * 100;
     
     if (percentAtRisk > 20) {
@@ -231,17 +241,17 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
       riskScore = 1;
     }
     
-    // Prepare site and building names
-    let buildingName = `Building ${Math.floor(Number(siteKey) / 10)}`;
-    let zoneName = `Zone ${zoneKey}`;
+    // Use actual site and zone names from the data
+    let buildingName = siteName || `Building ${siteKey}`;
+    let actualZoneName = zoneName || `Zone ${zoneKey}`;
     
     if (siteKey === 'undefined') buildingName = 'Unknown Building';
-    if (zoneKey === 'undefined') zoneName = 'Unknown Zone';
+    if (zoneKey === 'undefined') actualZoneName = 'Unknown Zone';
     
     return {
       id: `${monthKey}-${siteKey}-${zoneKey}`,
       building: buildingName,
-      zone: zoneName,
+      zone: actualZoneName,
       temp: avgTemp.toFixed(1),
       rh: avgHumidity.toFixed(1),
       dewPoint: dewPoint.toFixed(1),

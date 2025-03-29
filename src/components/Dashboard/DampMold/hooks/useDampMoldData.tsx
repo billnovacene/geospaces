@@ -40,6 +40,7 @@ export function useDampMoldData(
     queryFn: async () => {
       if (!zoneId) return null;
       const zone = await fetchZone(Number(zoneId));
+      console.log("Zone data fetched for sidebar:", zone);
       return zone;
     },
     enabled: !!zoneId,
@@ -51,6 +52,7 @@ export function useDampMoldData(
     queryFn: async () => {
       if (!siteId) return null;
       const site = await fetchSite(Number(siteId));
+      console.log("Site data fetched for sidebar:", site);
       return site;
     },
     enabled: !!siteId,
@@ -61,6 +63,9 @@ export function useDampMoldData(
   
   // Determine the context name based on available data
   const contextName = zoneId ? `${siteName} - ${zoneName}` : siteId ? siteName : "All Locations";
+  
+  // Log context info for debugging
+  console.log("Context info:", { contextType, contextId, siteId, zoneId, siteName, zoneName, contextName });
   
   // Fetch the damp mold data
   const { 
