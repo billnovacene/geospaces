@@ -16,7 +16,7 @@ interface ImportLog {
   source: string;
   started_at: string;
   finished_at: string | null;
-  status: 'processing' | 'completed' | 'failed';
+  status: string; // Changed from union type to string to match Supabase data
   rows_imported: number;
   error_message: string | null;
   metadata: any;
