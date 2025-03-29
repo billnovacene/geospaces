@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   ScatterChart, 
@@ -14,7 +13,7 @@ import {
   Cell
 } from "recharts";
 import { useTheme } from "@/components/ThemeProvider";
-import { calculateMoldRiskScore, assessMoldRisk } from "@/services/damp-mold";
+import { calculateMoldRiskScore, assessMoldRisk } from "@/services/damp-mold/risk-assessment";
 
 interface ScatterChartConfigProps {
   chartData: any[];

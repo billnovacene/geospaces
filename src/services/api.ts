@@ -16,3 +16,4 @@ export * from "./multi-zone-devices";
 export * from "./device-sites";
 export * from "./temp-humidity";
 export * from "./sensors/mock-data-generator";
+export * from "./damp-mold"; // Updated to use the new index.ts file
