@@ -11,11 +11,13 @@ export const ScrollbarSettings = () => {
   const {
     settings,
     isUpdating,
+    hasChanges,
     handleWidthChange,
     handleRadiusChange,
     handleColorChange,
     applyChanges,
     resetToDefaults,
+    cancelChanges,
   } = useScrollbarSettings();
 
   return (
@@ -59,6 +61,7 @@ export const ScrollbarSettings = () => {
           isUpdating={isUpdating}
           onReset={resetToDefaults}
           onApply={applyChanges}
+          onCancel={hasChanges ? cancelChanges : undefined}
         />
       </CardContent>
     </Card>

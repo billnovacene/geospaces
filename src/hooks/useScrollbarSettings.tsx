@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { useTheme } from "@/components/ThemeProvider";
 
 export interface ScrollbarSettings {
   width: number;
@@ -34,20 +35,31 @@ export const defaultSettings: ScrollbarSettings = {
 
 export function useScrollbarSettings() {
   const [settings, setSettings] = useState<ScrollbarSettings>(defaultSettings);
+  const [originalSettings, setOriginalSettings] = useState<ScrollbarSettings>(defaultSettings);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
   const { toast } = useToast();
+  const { activeTheme } = useTheme();
 
   // Load saved settings on initial render
   useEffect(() => {
     const savedSettings = localStorage.getItem('scrollbar-settings');
     if (savedSettings) {
       try {
-        setSettings(JSON.parse(savedSettings));
+        const parsed = JSON.parse(savedSettings);
+        setSettings(parsed);
+        setOriginalSettings(parsed);
       } catch (error) {
         console.error("Failed to parse saved scrollbar settings", error);
       }
     }
   }, []);
+
+  // Check for changes
+  useEffect(() => {
+    const isChanged = JSON.stringify(settings) !== JSON.stringify(originalSettings);
+    setHasChanges(isChanged);
+  }, [settings, originalSettings]);
 
   // Handle width change
   const handleWidthChange = (value: number[]) => {
@@ -80,54 +92,143 @@ export function useScrollbarSettings() {
     }));
   };
 
-  // Apply changes to the DOM
+  // Cancel changes
+  const cancelChanges = () => {
+    setSettings(originalSettings);
+    toast({
+      title: "Changes Cancelled",
+      description: "Your scrollbar settings have been reverted",
+    });
+  };
+
+  // Apply changes to the DOM with improved implementation
   const applyChanges = () => {
     setIsUpdating(true);
     
     setTimeout(() => {
-      // Set scrollbar CSS variables
-      document.documentElement.style.setProperty('--scrollbar-width', `${settings.width}px`);
-      document.documentElement.style.setProperty('--scrollbar-height', `${settings.width}px`);
-      document.documentElement.style.setProperty('--scrollbar-radius', `${settings.radius}px`);
-      
-      // Set light mode colors
-      document.documentElement.style.setProperty('--scrollbar-track-color', settings.lightMode.trackColor);
-      document.documentElement.style.setProperty('--scrollbar-thumb-color', settings.lightMode.thumbColor);
-      document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', settings.lightMode.thumbHoverColor);
-      
-      // Set dark mode colors in :root.dark selector
-      const darkModeStyle = document.createElement('style');
-      darkModeStyle.textContent = `
-        .dark {
-          --scrollbar-track-color: ${settings.darkMode.trackColor} !important;
-          --scrollbar-thumb-color: ${settings.darkMode.thumbColor} !important;
-          --scrollbar-thumb-hover-color: ${settings.darkMode.thumbHoverColor} !important;
+      try {
+        // Create a style element for the scrollbar styles
+        const styleId = 'global-scrollbar-styles';
+        let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+        
+        if (!styleElement) {
+          styleElement = document.createElement('style');
+          styleElement.id = styleId;
+          document.head.appendChild(styleElement);
         }
-      `;
-      
-      // Remove any previously added style element
-      const prevStyle = document.getElementById('scrollbar-dark-style');
-      if (prevStyle) {
-        prevStyle.remove();
+        
+        // Create CSS that works for both native scrollbars and custom scrollbars
+        const css = `
+          /* Global scrollbar styles with very high specificity */
+          :root {
+            --scrollbar-width: ${settings.width}px !important;
+            --scrollbar-height: ${settings.width}px !important;
+            --scrollbar-radius: ${settings.radius}px !important;
+            --scrollbar-track-color: ${settings.lightMode.trackColor} !important;
+            --scrollbar-thumb-color: ${settings.lightMode.thumbColor} !important;
+            --scrollbar-thumb-hover-color: ${settings.lightMode.thumbHoverColor} !important;
+          }
+          
+          /* Dark mode scrollbar styles with high specificity */
+          html.dark, html.dark body, html[class*="dark"], html[data-theme="dark"] {
+            --scrollbar-track-color: ${settings.darkMode.trackColor} !important;
+            --scrollbar-thumb-color: ${settings.darkMode.thumbColor} !important;
+            --scrollbar-thumb-hover-color: ${settings.darkMode.thumbHoverColor} !important;
+          }
+          
+          /* WebKit scrollbars with !important */
+          ::-webkit-scrollbar {
+            width: var(--scrollbar-width) !important;
+            height: var(--scrollbar-height) !important;
+          }
+          
+          ::-webkit-scrollbar-track {
+            background-color: var(--scrollbar-track-color) !important;
+          }
+          
+          ::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbar-thumb-color) !important;
+            border-radius: var(--scrollbar-radius) !important;
+          }
+          
+          ::-webkit-scrollbar-thumb:hover {
+            background-color: var(--scrollbar-thumb-hover-color) !important;
+          }
+          
+          /* Firefox scrollbars */
+          * {
+            scrollbar-width: thin !important;
+            scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color) !important;
+          }
+          
+          /* Scrollbar preview styles */
+          .scrollbar-preview::-webkit-scrollbar {
+            width: var(--scrollbar-width) !important;
+            height: var(--scrollbar-height) !important;
+          }
+          
+          .scrollbar-preview::-webkit-scrollbar-track {
+            background-color: var(--scrollbar-track-color) !important;
+          }
+          
+          .scrollbar-preview::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbar-thumb-color) !important;
+            border-radius: var(--scrollbar-radius) !important;
+          }
+          
+          .scrollbar-preview::-webkit-scrollbar-thumb:hover {
+            background-color: var(--scrollbar-thumb-hover-color) !important;
+          }
+          
+          /* Add styles to ensure ScrollArea components inherit scrollbar styles */
+          [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+            width: var(--scrollbar-width) !important;
+            height: var(--scrollbar-height) !important;
+          }
+          
+          [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+            background-color: var(--scrollbar-track-color) !important;
+          }
+          
+          [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbar-thumb-color) !important;
+            border-radius: var(--scrollbar-radius) !important;
+          }
+          
+          [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+            background-color: var(--scrollbar-thumb-hover-color) !important;
+          }
+        `;
+        
+        styleElement.textContent = css;
+        
+        // Force scrollbar refresh
+        document.documentElement.classList.add('scrollbar-refresh');
+        setTimeout(() => {
+          document.documentElement.classList.add('scrollbar-refresh-done');
+          document.documentElement.classList.remove('scrollbar-refresh');
+          
+          setTimeout(() => {
+            document.documentElement.classList.remove('scrollbar-refresh-done');
+          }, 100);
+        }, 50);
+        
+        // Store settings in localStorage
+        localStorage.setItem('scrollbar-settings', JSON.stringify(settings));
+        setOriginalSettings(settings);
+        
+        toast({
+          title: "Scrollbar Settings Updated",
+          description: "Your scrollbar customizations have been applied",
+        });
+      } catch (error) {
+        console.error("Failed to apply scrollbar settings", error);
+        toast({
+          title: "Error",
+          description: "Failed to apply scrollbar settings",
+          variant: "destructive",
+        });
       }
-      
-      // Add new style element
-      darkModeStyle.id = 'scrollbar-dark-style';
-      document.head.appendChild(darkModeStyle);
-      
-      // Force scrollbar refresh
-      document.documentElement.classList.add('scrollbar-refresh');
-      setTimeout(() => {
-        document.documentElement.classList.remove('scrollbar-refresh');
-      }, 50);
-      
-      // Store settings in localStorage
-      localStorage.setItem('scrollbar-settings', JSON.stringify(settings));
-      
-      toast({
-        title: "Scrollbar Settings Updated",
-        description: "Your scrollbar customizations have been applied",
-      });
       
       setIsUpdating(false);
     }, 300);
@@ -137,42 +238,21 @@ export function useScrollbarSettings() {
   const resetToDefaults = () => {
     setSettings(defaultSettings);
     
-    // Reset CSS variables to default values
-    document.documentElement.style.removeProperty('--scrollbar-width');
-    document.documentElement.style.removeProperty('--scrollbar-height');
-    document.documentElement.style.removeProperty('--scrollbar-radius');
-    document.documentElement.style.removeProperty('--scrollbar-track-color');
-    document.documentElement.style.removeProperty('--scrollbar-thumb-color');
-    document.documentElement.style.removeProperty('--scrollbar-thumb-hover-color');
-    
-    // Remove dark mode style element
-    const prevStyle = document.getElementById('scrollbar-dark-style');
-    if (prevStyle) {
-      prevStyle.remove();
-    }
-    
-    // Force scrollbar refresh
-    document.documentElement.classList.add('scrollbar-refresh');
-    setTimeout(() => {
-      document.documentElement.classList.remove('scrollbar-refresh');
-    }, 50);
-    
-    // Remove stored settings
-    localStorage.removeItem('scrollbar-settings');
-    
     toast({
       title: "Scrollbar Settings Reset",
-      description: "Scrollbar settings have been reset to defaults",
+      description: "Settings have been reset to defaults. Click Apply to save changes.",
     });
   };
 
   return {
     settings,
     isUpdating,
+    hasChanges,
     handleWidthChange,
     handleRadiusChange,
     handleColorChange,
     applyChanges,
     resetToDefaults,
+    cancelChanges,
   };
 }
