@@ -9,6 +9,9 @@ export const SidebarContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div">
 >(({ className, ...props }, ref) => {
+  // Extract dir from props to avoid type mismatch
+  const { dir, ...restProps } = props;
+  
   return (
     <ScrollArea
       ref={ref}
@@ -17,7 +20,7 @@ export const SidebarContent = React.forwardRef<
         "flex min-h-0 flex-1 flex-col gap-2 group-data-[collapsible=icon]:overflow-hidden",
         className
       )}
-      {...props}
+      {...restProps}
     />
   );
 });
