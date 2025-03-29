@@ -6,6 +6,7 @@ import { SidebarDashboardsSection } from "./SidebarComponents/SidebarDashboardsS
 import { SidebarContent } from "./SidebarComponents/SidebarContent";
 import { SidebarFooterContent } from "./SidebarComponents/SidebarFooter";
 import { useSidebarData } from "./SidebarComponents/useSidebarData";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function DashboardSidebar() {
   const {
@@ -67,15 +68,17 @@ export function DashboardSidebar() {
           isDampMoldRoute={isDampMoldRoute}
         />
 
-        {/* Main Content with Sites and Zones */}
-        <SidebarContent 
-          effectiveSiteId={effectiveSiteId}
-          validZoneId={validZoneId}
-          zoneData={zoneData}
-          isDashboardRoute={isDashboardRoute}
-          isTempHumidityRoute={isTempHumidityRoute}
-          isDampMoldRoute={isDampMoldRoute}
-        />
+        {/* Main Content with Sites and Zones wrapped in ScrollArea */}
+        <ScrollArea className="flex-1">
+          <SidebarContent 
+            effectiveSiteId={effectiveSiteId}
+            validZoneId={validZoneId}
+            zoneData={zoneData}
+            isDashboardRoute={isDashboardRoute}
+            isTempHumidityRoute={isTempHumidityRoute}
+            isDampMoldRoute={isDampMoldRoute}
+          />
+        </ScrollArea>
       </UISidebarContent>
 
       <SidebarFooterContent />

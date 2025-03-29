@@ -3,7 +3,6 @@ import React from "react";
 import { SidebarSection } from "../SidebarSection";
 import { SitesSidebar } from "../SitesSidebar";
 import { ZonesHierarchy } from "../ZonesHierarchy";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface SidebarContentProps {
   effectiveSiteId: number | null;
@@ -29,7 +28,7 @@ export function SidebarContent({
       : "";
 
   return (
-    <ScrollArea className="flex-1 dark:bg-gray-800">
+    <div className="flex-1 dark:bg-gray-800">
       {/* Sites Sidebar */}
       <SitesSidebar 
         preserveDashboardRoute={isDashboardRoute} 
@@ -74,6 +73,6 @@ export function SidebarContent({
           System settings
         </div>
       </SidebarSection>
-    </ScrollArea>
+    </div>
   );
 }
