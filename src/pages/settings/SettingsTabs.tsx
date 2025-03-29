@@ -8,6 +8,7 @@ import { TablesTab } from "./TablesTab";
 import { ComponentsTab } from "./ComponentsTab";
 import { ColorsTab } from "./ColorsTab";
 import { ScrollbarTab } from "./ScrollbarTab";
+import { DataImportTab } from "./DataImportTab";
 
 interface SettingsTabsProps {
   activeTab: string;
@@ -30,6 +31,7 @@ export const SettingsTabs = ({ activeTab, setActiveTab }: SettingsTabsProps) => 
           <TabsTrigger value="components">Components</TabsTrigger>
           <TabsTrigger value="colors">Colors</TabsTrigger>
           <TabsTrigger value="scrollbars">Scrollbars</TabsTrigger>
+          <TabsTrigger value="data-import">Data Import</TabsTrigger>
         </TabsList>
       </div>
       
@@ -59,6 +61,10 @@ export const SettingsTabs = ({ activeTab, setActiveTab }: SettingsTabsProps) => 
       
       <TabsContent value="scrollbars">
         <ScrollbarTab />
+      </TabsContent>
+      
+      <TabsContent value="data-import">
+        <DataImportTab />
       </TabsContent>
     </Tabs>
   );

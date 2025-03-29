@@ -5,7 +5,7 @@ import { SettingsHeader } from "./settings/SettingsHeader";
 import { SettingsTabs } from "./settings/SettingsTabs";
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState("scrollbars");
+  const [activeTab, setActiveTab] = useState("data-import");
 
   return (
     <SidebarWrapper>
