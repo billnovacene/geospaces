@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { 
   ThemeContext, 
@@ -44,7 +45,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Store the last active theme
     localStorage.setItem("activeTheme", theme);
     
-    // Ensure scrollbar styles are refreshed on theme change
+    // Improved scrollbar style application
     const applyScrollbarStyles = () => {
       // Get any saved scrollbar settings
       const savedScrollbarSettings = localStorage.getItem('scrollbar-settings');
@@ -52,26 +53,40 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         try {
           const settings = JSON.parse(savedScrollbarSettings);
           
-          // Apply the dark mode colors if we're in dark mode
+          // Clear any inline styles first
+          document.documentElement.style.removeProperty('--scrollbar-track-color');
+          document.documentElement.style.removeProperty('--scrollbar-thumb-color');
+          document.documentElement.style.removeProperty('--scrollbar-thumb-hover-color');
+          
+          // Apply the appropriate theme colors with !important for higher specificity
           if (theme === 'dark') {
-            document.documentElement.style.setProperty('--scrollbar-track-color', settings.darkMode.trackColor);
-            document.documentElement.style.setProperty('--scrollbar-thumb-color', settings.darkMode.thumbColor);
-            document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', settings.darkMode.thumbHoverColor);
+            document.documentElement.style.setProperty('--scrollbar-track-color', `${settings.darkMode.trackColor} !important`);
+            document.documentElement.style.setProperty('--scrollbar-thumb-color', `${settings.darkMode.thumbColor} !important`);
+            document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', `${settings.darkMode.thumbHoverColor} !important`);
           } else {
-            // Otherwise apply light mode colors
-            document.documentElement.style.setProperty('--scrollbar-track-color', settings.lightMode.trackColor);
-            document.documentElement.style.setProperty('--scrollbar-thumb-color', settings.lightMode.thumbColor);
-            document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', settings.lightMode.thumbHoverColor);
+            document.documentElement.style.setProperty('--scrollbar-track-color', `${settings.lightMode.trackColor} !important`);
+            document.documentElement.style.setProperty('--scrollbar-thumb-color', `${settings.lightMode.thumbColor} !important`);
+            document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', `${settings.lightMode.thumbHoverColor} !important`);
           }
+          
+          // Apply size and radius settings
+          document.documentElement.style.setProperty('--scrollbar-width', `${settings.width}px`);
+          document.documentElement.style.setProperty('--scrollbar-height', `${settings.width}px`);
+          document.documentElement.style.setProperty('--scrollbar-radius', `${settings.radius}px`);
         } catch (e) {
           console.error("Failed to parse scrollbar settings", e);
         }
       }
       
-      // Force scrollbar refresh
+      // Improved scrollbar refresh mechanism
       document.documentElement.classList.add('scrollbar-refresh');
       setTimeout(() => {
+        document.documentElement.classList.add('scrollbar-refresh-done');
         document.documentElement.classList.remove('scrollbar-refresh');
+        
+        setTimeout(() => {
+          document.documentElement.classList.remove('scrollbar-refresh-done');
+        }, 100);
       }, 50);
     };
     

@@ -23,8 +23,7 @@
     @apply shadow-xl shadow-black/20;
   }
   
-  /* Unified scrollbar styling system */
-  /* For Webkit browsers (Chrome, Safari, etc.) */
+  /* Unified scrollbar styling system with higher specificity */
   :root {
     /* Scrollbar variables - LIGHT MODE */
     --scrollbar-width: 12px;
@@ -35,36 +34,36 @@
     --scrollbar-radius: 9999px; /* rounded-full */
   }
   
-  .dark {
-    /* Scrollbar variables - DARK MODE */
-    --scrollbar-track-color: rgb(31 41 55); /* bg-gray-800 */
-    --scrollbar-thumb-color: rgb(75 85 99); /* bg-gray-600 */
-    --scrollbar-thumb-hover-color: rgb(107 114 128); /* bg-gray-500 */
+  html.dark {
+    /* Scrollbar variables - DARK MODE - applied to html.dark for higher specificity */
+    --scrollbar-track-color: rgb(31 41 55) !important; /* bg-gray-800 */
+    --scrollbar-thumb-color: rgb(75 85 99) !important; /* bg-gray-600 */
+    --scrollbar-thumb-hover-color: rgb(107 114 128) !important; /* bg-gray-500 */
   }
   
-  /* Webkit scrollbar styles */
+  /* Webkit scrollbar styles with !important for higher specificity */
   ::-webkit-scrollbar {
-    width: var(--scrollbar-width);
-    height: var(--scrollbar-height);
+    width: var(--scrollbar-width) !important;
+    height: var(--scrollbar-height) !important;
   }
   
   ::-webkit-scrollbar-track {
-    background: var(--scrollbar-track-color);
+    background: var(--scrollbar-track-color) !important;
   }
   
   ::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb-color);
-    border-radius: var(--scrollbar-radius);
+    background: var(--scrollbar-thumb-color) !important;
+    border-radius: var(--scrollbar-radius) !important;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--scrollbar-thumb-hover-color);
+    background: var(--scrollbar-thumb-hover-color) !important;
   }
   
-  /* Firefox scrollbar styles */
+  /* Firefox scrollbar styles with !important for higher specificity */
   * {
-    scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color) !important;
   }
   
   /* Chart containers should show scrollbars when needed */
@@ -72,9 +71,16 @@
     @apply overflow-visible;
   }
   
-  /* Force scrollbar refresh when theme changes */
+  /* Improved scrollbar refresh when theme changes - used in multiple components */
   .scrollbar-refresh {
-    transition: all 0.3s ease;
+    /* Force recalculation of scrollbars */
+    transition: all 0.01s linear !important;
+    overflow: hidden !important;
+  }
+  
+  /* Add a small delay before restoring normal scrolling */
+  .scrollbar-refresh-done {
+    overflow: auto !important;
   }
 }
 
