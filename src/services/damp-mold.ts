@@ -1,9 +1,8 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { TempHumidityResponse } from "./interfaces/temp-humidity";
-import { generateMockData } from "./sensors/mock-data-generator";
 
-export const fetchDampMoldData = async (siteId?: string, zoneId?: string): Promise<TempHumidityResponse> => {
+export const fetchDampMoldData = async (siteId?: string, zoneId?: string): Promise<TempHumidityResponse | null> => {
   try {
     // Construct the base query
     let query = supabase
@@ -26,6 +25,31 @@ export const fetchDampMoldData = async (siteId?: string, zoneId?: string): Promi
     if (error) {
       console.error('Error fetching damp mold data:', error);
       throw error;
+    }
+
+    if (!data || data.length === 0) {
+      console.warn('No damp mold data found');
+      return {
+        stats: {
+          avgTemp: 0,
+          minTemp: 0,
+          maxTemp: 0,
+          avgHumidity: 0,
+          activeSensors: 0,
+          status: {
+            avgTemp: 'good',
+            minTemp: 'good',
+            maxTemp: 'good',
+            avgHumidity: 'good'
+          }
+        },
+        daily: [],
+        monthly: [],
+        sourceData: {
+          temperatureSensors: [],
+          humiditySensors: []
+        }
+      };
     }
 
     // Transform Supabase data to match TempHumidityResponse interface
@@ -60,7 +84,6 @@ export const fetchDampMoldData = async (siteId?: string, zoneId?: string): Promi
     };
   } catch (error) {
     console.error('Failed to fetch damp mold data:', error);
-    // Fallback to mock data if fetch fails
-    return generateMockData();
+    throw error;
   }
 };

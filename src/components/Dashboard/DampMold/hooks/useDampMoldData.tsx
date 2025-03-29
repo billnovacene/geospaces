@@ -4,8 +4,8 @@ import { useParams } from "react-router-dom";
 import { fetchDampMoldData } from "@/services/damp-mold";
 import { fetchSite } from "@/services/sites";
 import { fetchZone } from "@/services/zones";
-import { generateMockData } from "@/services/sensors/mock-data-generator";
 import { TempHumidityResponse } from "@/services/interfaces/temp-humidity";
+import { toast } from "sonner";
 
 export interface DampMoldContextInfo {
   contextType: "zone" | "site" | "all";
@@ -59,21 +59,34 @@ export function useDampMoldData(
   const { 
     data: dampMoldData, 
     isLoading, 
-    error 
+    error,
+    refetch
   } = useQuery({
     queryKey: ['damp-mold-data', siteId, zoneId],
-    queryFn: () => fetchDampMoldData(siteId, zoneId),
+    queryFn: async () => {
+      try {
+        const data = await fetchDampMoldData(siteId, zoneId);
+        if (!data) {
+          throw new Error("No data received from API");
+        }
+        return data;
+      } catch (err) {
+        console.error('Failed to fetch damp mold data:', err);
+        toast.error("Failed to fetch damp mold data", {
+          description: err instanceof Error ? err.message : "Unknown error"
+        });
+        throw err;
+      }
+    },
     // Refetch every minute
     refetchInterval: 60000,
   });
 
-  // Use mock data if no real data is available
-  const displayData: TempHumidityResponse = dampMoldData || generateMockData();
-  
   return {
     contextInfo: { contextType, contextId, siteId, zoneId, contextName },
-    data: displayData,
+    data: dampMoldData as TempHumidityResponse,
     isLoading,
-    error
+    error,
+    refetch
   };
 }
