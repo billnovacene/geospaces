@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { TypographySettings, defaultSettings } from "./types";
 
@@ -7,6 +7,18 @@ export const useTypographyEditor = () => {
   const [settings, setSettings] = useState<TypographySettings>(defaultSettings);
   const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
+
+  // Load saved settings on initial render
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('typography-settings');
+    if (savedSettings) {
+      try {
+        setSettings(JSON.parse(savedSettings));
+      } catch (error) {
+        console.error("Failed to parse saved typography settings", error);
+      }
+    }
+  }, []);
 
   const handleFontFamilyChange = (fontFamily: string) => {
     setSettings(prev => ({
@@ -70,10 +82,10 @@ export const useTypographyEditor = () => {
     setIsUpdating(true);
     
     setTimeout(() => {
-      // Update document root styles with font family
-      document.documentElement.style.fontFamily = settings.fontFamily;
+      // Set font family
+      document.documentElement.style.setProperty('--font-family-base', settings.fontFamily);
       
-      // Apply heading styles to CSS custom properties
+      // Apply heading styles
       document.documentElement.style.setProperty('--heading-1-size', settings.headings.h1.size);
       document.documentElement.style.setProperty('--heading-1-weight', settings.headings.h1.weight);
       document.documentElement.style.setProperty('--heading-1-tracking', settings.headings.h1.tracking);
@@ -92,72 +104,32 @@ export const useTypographyEditor = () => {
       
       // Apply body text styles
       document.documentElement.style.setProperty('--body-large-size', settings.body.large.size);
+      document.documentElement.style.setProperty('--body-large-weight', settings.body.large.weight);
+      document.documentElement.style.setProperty('--body-large-color', settings.body.large.color);
+      
       document.documentElement.style.setProperty('--body-normal-size', settings.body.normal.size);
+      document.documentElement.style.setProperty('--body-normal-weight', settings.body.normal.weight);
+      document.documentElement.style.setProperty('--body-normal-color', settings.body.normal.color);
+      
       document.documentElement.style.setProperty('--body-small-size', settings.body.small.size);
+      document.documentElement.style.setProperty('--body-small-weight', settings.body.small.weight);
+      document.documentElement.style.setProperty('--body-small-color', settings.body.small.color);
       
       // Update navigation styles
       document.documentElement.style.setProperty('--nav-item-size', settings.navigation.item.size);
       document.documentElement.style.setProperty('--nav-item-weight', settings.navigation.item.weight);
       document.documentElement.style.setProperty('--nav-item-color', settings.navigation.item.color);
+      
       document.documentElement.style.setProperty('--nav-active-size', settings.navigation.active.size);
       document.documentElement.style.setProperty('--nav-active-weight', settings.navigation.active.weight);
       document.documentElement.style.setProperty('--nav-active-color', settings.navigation.active.color);
-      
-      // Apply the changes to relevant classes via stylesheet
-      const styleElement = document.getElementById('typography-styles') || document.createElement('style');
-      styleElement.id = 'typography-styles';
-      styleElement.textContent = `
-        .heading-1 {
-          font-size: var(--heading-1-size, ${settings.headings.h1.size}) !important;
-          font-weight: var(--heading-1-weight, ${settings.headings.h1.weight}) !important;
-          letter-spacing: var(--heading-1-tracking, ${settings.headings.h1.tracking}) !important;
-        }
-        .heading-2 {
-          font-size: var(--heading-2-size, ${settings.headings.h2.size}) !important;
-          font-weight: var(--heading-2-weight, ${settings.headings.h2.weight}) !important;
-          letter-spacing: var(--heading-2-tracking, ${settings.headings.h2.tracking}) !important;
-        }
-        .heading-3 {
-          font-size: var(--heading-3-size, ${settings.headings.h3.size}) !important;
-          font-weight: var(--heading-3-weight, ${settings.headings.h3.weight}) !important;
-          letter-spacing: var(--heading-3-tracking, ${settings.headings.h3.tracking}) !important;
-        }
-        .heading-4 {
-          font-size: var(--heading-4-size, ${settings.headings.h4.size}) !important;
-          font-weight: var(--heading-4-weight, ${settings.headings.h4.weight}) !important;
-          letter-spacing: var(--heading-4-tracking, ${settings.headings.h4.tracking}) !important;
-        }
-        .body-large {
-          font-size: var(--body-large-size, ${settings.body.large.size}) !important;
-        }
-        .body-normal {
-          font-size: var(--body-normal-size, ${settings.body.normal.size}) !important;
-        }
-        .body-small {
-          font-size: var(--body-small-size, ${settings.body.small.size}) !important;
-        }
-        .nav-item {
-          font-size: var(--nav-item-size, ${settings.navigation.item.size}) !important;
-          font-weight: var(--nav-item-weight, ${settings.navigation.item.weight}) !important;
-          color: var(--nav-item-color, ${settings.navigation.item.color}) !important;
-        }
-        .nav-item-active {
-          font-size: var(--nav-active-size, ${settings.navigation.active.size}) !important;
-          font-weight: var(--nav-active-weight, ${settings.navigation.active.weight}) !important;
-          color: var(--nav-active-color, ${settings.navigation.active.color}) !important;
-        }
-      `;
-      
-      if (!styleElement.parentNode) {
-        document.head.appendChild(styleElement);
-      }
       
       // Store settings in localStorage for persistence
       localStorage.setItem('typography-settings', JSON.stringify(settings));
       
       toast({
         title: "Typography Updated",
-        description: "Your typography changes have been applied",
+        description: "Your typography changes have been applied across the entire site",
       });
       
       setIsUpdating(false);
@@ -167,16 +139,29 @@ export const useTypographyEditor = () => {
   const resetToDefaults = () => {
     setSettings(defaultSettings);
     
-    // Remove any custom styles
-    const styleElement = document.getElementById('typography-styles');
-    if (styleElement) {
-      styleElement.textContent = '';
-    }
+    // Reset CSS variables to default values
+    Object.entries(defaultSettings.headings).forEach(([level, props]) => {
+      Object.entries(props).forEach(([prop, value]) => {
+        document.documentElement.style.setProperty(`--heading-${level}-${prop}`, value as string);
+      });
+    });
+    
+    Object.entries(defaultSettings.body).forEach(([type, props]) => {
+      Object.entries(props).forEach(([prop, value]) => {
+        document.documentElement.style.setProperty(`--body-${type}-${prop}`, value as string);
+      });
+    });
+    
+    Object.entries(defaultSettings.navigation).forEach(([type, props]) => {
+      Object.entries(props).forEach(([prop, value]) => {
+        document.documentElement.style.setProperty(`--nav-${type}-${prop}`, value as string);
+      });
+    });
+    
+    document.documentElement.style.setProperty('--font-family-base', defaultSettings.fontFamily);
     
     // Clear localStorage settings
     localStorage.removeItem('typography-settings');
-    
-    document.documentElement.style.fontFamily = defaultSettings.fontFamily;
     
     toast({
       title: "Typography Reset",

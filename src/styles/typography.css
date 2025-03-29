@@ -22,43 +22,112 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap');
 
-/* Load Signal font - for this example, we're using a CSS import assuming it's available */
-/* Using IBM Plex Sans as a stand-in for Signal since it's similar */
-
+/* Define CSS variables for typography */
 :root {
+  /* Base font family */
+  --font-family-base: 'Inter', sans-serif;
+  
+  /* Heading styles */
+  --heading-1-size: text-3xl;
+  --heading-1-weight: font-medium;
+  --heading-1-tracking: tracking-tight;
+  --heading-1-color: text-gray-900;
+  
+  --heading-2-size: text-2xl;
+  --heading-2-weight: font-medium;
+  --heading-2-tracking: tracking-tight;
+  --heading-2-color: text-gray-800;
+  
+  --heading-3-size: text-xl;
+  --heading-3-weight: font-medium;
+  --heading-3-tracking: normal;
+  --heading-3-color: text-gray-800;
+  
+  --heading-4-size: text-lg;
+  --heading-4-weight: font-medium;
+  --heading-4-tracking: normal;
+  --heading-4-color: text-gray-800;
+  
+  /* Body text styles */
+  --body-large-size: text-base;
+  --body-large-weight: font-normal;
+  --body-large-color: text-gray-700;
+  
+  --body-normal-size: text-sm;
+  --body-normal-weight: font-normal;
+  --body-normal-color: text-gray-600;
+  
+  --body-small-size: text-xs;
+  --body-small-weight: font-normal;
+  --body-small-color: text-gray-500;
+  
+  --caption-size: text-xs;
+  --caption-weight: font-light;
+  --caption-color: text-gray-400;
+  
+  /* Navigation styles */
   --nav-item-size: text-sm;
   --nav-item-weight: font-medium;
   --nav-item-color: text-foreground;
+  
   --nav-active-size: text-sm;
   --nav-active-weight: font-medium;
   --nav-active-color: text-accent-foreground;
+  
+  /* Table typography */
+  --table-header-size: text-sm;
+  --table-header-weight: font-medium;
+  --table-header-color: text-muted-foreground;
+  
+  --table-cell-size: text-sm;
+  --table-cell-weight: font-normal;
+  --table-cell-color: text-card-foreground;
 }
 
 @layer base {
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-family-base);
     font-weight: 300;
   }
   
   h1 {
-    @apply text-3xl font-medium tracking-tight mb-4 text-gray-900;
+    font-size: var(--heading-1-size);
+    font-weight: var(--heading-1-weight);
+    letter-spacing: var(--heading-1-tracking);
+    color: var(--heading-1-color);
+    @apply mb-4;
   }
   
   h2 {
-    @apply text-2xl font-medium tracking-tight mb-3 text-gray-800;
+    font-size: var(--heading-2-size);
+    font-weight: var(--heading-2-weight);
+    letter-spacing: var(--heading-2-tracking);
+    color: var(--heading-2-color);
+    @apply mb-3;
   }
   
   h3 {
-    @apply text-xl font-medium mb-3 text-gray-800;
+    font-size: var(--heading-3-size);
+    font-weight: var(--heading-3-weight);
+    letter-spacing: var(--heading-3-tracking);
+    color: var(--heading-3-color);
+    @apply mb-3;
   }
   
   h4 {
-    @apply text-lg font-medium mb-2 text-gray-800;
+    font-size: var(--heading-4-size);
+    font-weight: var(--heading-4-weight);
+    letter-spacing: var(--heading-4-tracking);
+    color: var(--heading-4-color);
+    @apply mb-2;
   }
   
   p {
-    @apply text-base font-light text-gray-700 mb-4;
+    font-size: var(--body-large-size);
+    font-weight: var(--body-large-weight);
+    color: var(--body-large-color);
+    @apply mb-4;
   }
   
   .text-sm {
@@ -72,53 +141,81 @@
 
 @layer components {
   .heading-1 {
-    @apply text-3xl font-medium tracking-tight text-gray-900;
+    font-size: var(--heading-1-size);
+    font-weight: var(--heading-1-weight);
+    letter-spacing: var(--heading-1-tracking);
+    color: var(--heading-1-color);
   }
   
   .heading-2 {
-    @apply text-2xl font-medium tracking-tight text-gray-800;
+    font-size: var(--heading-2-size);
+    font-weight: var(--heading-2-weight);
+    letter-spacing: var(--heading-2-tracking);
+    color: var(--heading-2-color);
   }
   
   .heading-3 {
-    @apply text-xl font-medium text-gray-800;
+    font-size: var(--heading-3-size);
+    font-weight: var(--heading-3-weight);
+    letter-spacing: var(--heading-3-tracking);
+    color: var(--heading-3-color);
   }
   
   .heading-4 {
-    @apply text-lg font-medium text-gray-800;
+    font-size: var(--heading-4-size);
+    font-weight: var(--heading-4-weight);
+    letter-spacing: var(--heading-4-tracking);
+    color: var(--heading-4-color);
   }
   
   .body-large {
-    @apply text-base text-gray-700;
+    font-size: var(--body-large-size);
+    font-weight: var(--body-large-weight);
+    color: var(--body-large-color);
   }
   
   .body-normal {
-    @apply text-sm text-gray-600;
+    font-size: var(--body-normal-size);
+    font-weight: var(--body-normal-weight);
+    color: var(--body-normal-color);
   }
   
   .body-small {
-    @apply text-xs text-gray-500;
+    font-size: var(--body-small-size);
+    font-weight: var(--body-small-weight);
+    color: var(--body-small-color);
   }
   
   .caption {
-    @apply text-xs text-gray-400;
+    font-size: var(--caption-size);
+    font-weight: var(--caption-weight);
+    color: var(--caption-color);
   }
 
   /* Table Typography */
   .table-header {
-    @apply text-sm font-medium text-muted-foreground;
+    font-size: var(--table-header-size);
+    font-weight: var(--table-header-weight);
+    color: var(--table-header-color);
   }
   
   .table-cell {
-    @apply text-sm text-card-foreground;
+    font-size: var(--table-cell-size);
+    font-weight: var(--table-cell-weight);
+    color: var(--table-cell-color);
   }
   
   /* Navigation Typography */
   .nav-item {
-    @apply var(--nav-item-size) var(--nav-item-weight) var(--nav-item-color);
+    font-size: var(--nav-item-size);
+    font-weight: var(--nav-item-weight);
+    color: var(--nav-item-color);
   }
   
   .nav-item-active {
-    @apply var(--nav-active-size) var(--nav-active-weight) var(--nav-active-color);
+    font-size: var(--nav-active-size);
+    font-weight: var(--nav-active-weight);
+    color: var(--nav-active-color);
   }
 }
 
