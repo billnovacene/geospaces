@@ -28,7 +28,7 @@ export const fetchDampMoldData = async (siteId?: string, zoneId?: string): Promi
     }
 
     if (!data || data.length === 0) {
-      console.warn('No damp mold data found');
+      console.warn('No damp mold data found for filters', { siteId, zoneId });
       return {
         stats: {
           avgTemp: 0,
@@ -52,19 +52,53 @@ export const fetchDampMoldData = async (siteId?: string, zoneId?: string): Promi
       };
     }
 
+    // Calculate statistics
+    const temperatures = data.map(item => item.temperature).filter(Boolean);
+    const humidities = data.map(item => item.humidity).filter(Boolean);
+    
+    const avgTemp = temperatures.length > 0 
+      ? temperatures.reduce((sum, val) => sum + val, 0) / temperatures.length 
+      : 0;
+    
+    const minTemp = temperatures.length > 0 
+      ? Math.min(...temperatures) 
+      : 0;
+    
+    const maxTemp = temperatures.length > 0 
+      ? Math.max(...temperatures) 
+      : 0;
+    
+    const avgHumidity = humidities.length > 0 
+      ? humidities.reduce((sum, val) => sum + val, 0) / humidities.length 
+      : 0;
+
+    // Determine status values
+    const getTempStatus = (temp: number) => {
+      if (temp < 16) return 'caution';
+      if (temp > 24) return 'caution';
+      return 'good';
+    };
+
+    const getHumidityStatus = (humidity: number) => {
+      if (humidity > 65) return 'warning';
+      if (humidity > 55) return 'caution';
+      if (humidity < 35) return 'caution';
+      return 'good';
+    };
+
     // Transform Supabase data to match TempHumidityResponse interface
     return {
       stats: {
-        avgTemp: data.reduce((sum, item) => sum + (item.temperature || 0), 0) / data.length,
-        minTemp: Math.min(...data.map(item => item.temperature || 0)),
-        maxTemp: Math.max(...data.map(item => item.temperature || 0)),
-        avgHumidity: data.reduce((sum, item) => sum + (item.humidity || 0), 0) / data.length,
-        activeSensors: data.length,
+        avgTemp,
+        minTemp,
+        maxTemp,
+        avgHumidity,
+        activeSensors: data.filter(item => item.is_real).length,
         status: {
-          avgTemp: 'good',
-          minTemp: 'good',
-          maxTemp: 'good',
-          avgHumidity: 'good'
+          avgTemp: getTempStatus(avgTemp),
+          minTemp: getTempStatus(minTemp),
+          maxTemp: getTempStatus(maxTemp),
+          avgHumidity: getHumidityStatus(avgHumidity)
         }
       },
       daily: data.map(item => ({
@@ -76,7 +110,7 @@ export const fetchDampMoldData = async (siteId?: string, zoneId?: string): Promi
           humidity: item.is_real || false 
         }
       })),
-      monthly: [], // This would require additional data processing
+      monthly: generateMonthlyDataFromDaily(data),
       sourceData: {
         temperatureSensors: [],
         humiditySensors: []
@@ -84,6 +118,131 @@ export const fetchDampMoldData = async (siteId?: string, zoneId?: string): Promi
     };
   } catch (error) {
     console.error('Failed to fetch damp mold data:', error);
+    throw error;
+  }
+};
+
+// Helper function to generate monthly data from daily points
+function generateMonthlyDataFromDaily(dailyData: any[]): any[] {
+  if (!dailyData || dailyData.length === 0) return [];
+  
+  // Group data by month
+  const monthlyGroups = dailyData.reduce((groups, item) => {
+    const date = new Date(item.timestamp);
+    const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+    
+    if (!groups[monthKey]) {
+      groups[monthKey] = [];
+    }
+    
+    groups[monthKey].push(item);
+    return groups;
+  }, {});
+  
+  // Generate monthly data points
+  return Object.entries(monthlyGroups).map(([monthKey, items]: [string, any[]]) => {
+    const temps = items.map(item => item.temperature).filter(Boolean);
+    const humidities = items.map(item => item.humidity).filter(Boolean);
+    
+    const [year, month] = monthKey.split('-').map(Number);
+    const date = new Date(year, month - 1, 15);
+    
+    return {
+      month: date.toISOString(),
+      avgTemp: temps.length > 0 ? temps.reduce((sum, val) => sum + val, 0) / temps.length : 0,
+      minTemp: temps.length > 0 ? Math.min(...temps) : 0,
+      maxTemp: temps.length > 0 ? Math.max(...temps) : 0,
+      avgHumidity: humidities.length > 0 ? humidities.reduce((sum, val) => sum + val, 0) / humidities.length : 0,
+      minHumidity: humidities.length > 0 ? Math.min(...humidities) : 0,
+      maxHumidity: humidities.length > 0 ? Math.max(...humidities) : 0
+    };
+  });
+}
+
+// Function to generate and insert sample damp mold data for testing
+export const generateAndInsertDampMoldData = async (zoneIdParam?: string, siteIdParam?: string): Promise<void> => {
+  try {
+    const zoneId = zoneIdParam ? parseInt(zoneIdParam, 10) : null;
+    const siteId = siteIdParam ? parseInt(siteIdParam, 10) : null;
+    
+    if (!zoneId && !siteId) {
+      throw new Error("Either zoneId or siteId must be provided");
+    }
+    
+    // Get the zone information
+    let zoneInfo;
+    if (zoneId) {
+      const { data, error } = await supabase
+        .from('zones')
+        .select('id, site_id')
+        .eq('id', zoneId)
+        .single();
+        
+      if (error) throw error;
+      zoneInfo = data;
+    } else {
+      // Get all zones for the site
+      const { data, error } = await supabase
+        .from('zones')
+        .select('id, site_id')
+        .eq('site_id', siteId)
+        .limit(1);
+        
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        throw new Error(`No zones found for site ${siteId}`);
+      }
+      zoneInfo = data[0];
+    }
+    
+    // Generate data points for the last 30 days, every 6 hours
+    const dataPoints = [];
+    const now = new Date();
+    
+    for (let i = 0; i < 30; i++) {
+      for (let hour = 0; hour < 24; hour += 6) {
+        const date = new Date(now);
+        date.setDate(now.getDate() - i);
+        date.setHours(hour, 0, 0, 0);
+        
+        // Generate slightly different values to provide variety
+        const temperature = (18 + Math.random() * 7).toFixed(2);
+        const humidity = (40 + Math.random() * 40).toFixed(2);
+        const dewPoint = (15 + Math.random() * 5).toFixed(2);
+        const surfaceTemp = (17 + Math.random() * 6).toFixed(2);
+        
+        // Determine risk levels based on values
+        const condensationRisk = parseFloat(humidity) > 70 ? 'High' : 'Low';
+        const moldRisk = parseFloat(humidity) > 65 ? 'Moderate' : 'Low';
+        
+        dataPoints.push({
+          zone_id: zoneInfo.id,
+          site_id: zoneInfo.site_id,
+          timestamp: date.toISOString(),
+          temperature: parseFloat(temperature),
+          humidity: parseFloat(humidity),
+          dew_point: parseFloat(dewPoint),
+          surface_temperature: parseFloat(surfaceTemp),
+          condensation_risk: condensationRisk,
+          mold_risk: moldRisk,
+          is_real: true
+        });
+      }
+    }
+    
+    // Insert the data in batches of 100
+    for (let i = 0; i < dataPoints.length; i += 100) {
+      const batch = dataPoints.slice(i, i + 100);
+      const { error } = await supabase
+        .from('damp_mold_data')
+        .insert(batch);
+        
+      if (error) throw error;
+    }
+    
+    console.log(`Successfully inserted ${dataPoints.length} data points for zone ${zoneInfo.id}`);
+  } catch (error) {
+    console.error('Failed to generate damp mold data:', error);
     throw error;
   }
 };
