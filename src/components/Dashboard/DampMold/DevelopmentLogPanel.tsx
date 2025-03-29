@@ -2,26 +2,17 @@
 import React from "react";
 import { LogPanel } from "../TempHumidity/LogPanel";
 import { LogItem } from "@/hooks/temperature/types";
+import { useDampMold } from "./context/DampMoldContext";
 
-interface DevelopmentLogPanelProps {
-  dataPoints: number;
-  isLoading: boolean;
-  error: Error | null;
-  activeTheme: string;
-  activeFilter: string | null;
-}
-
-export function DevelopmentLogPanel({ 
-  dataPoints, 
-  isLoading, 
-  error, 
-  activeTheme, 
-  activeFilter 
-}: DevelopmentLogPanelProps) {
+export function DevelopmentLogPanel() {
   // Only render in development environment
   if (process.env.NODE_ENV !== 'development') {
     return null;
   }
+
+  // Access data from context
+  const { data, isLoading, error, activeTheme, activeFilter } = useDampMold();
+  const dataPoints = data.daily.length;
   
   // Construct logs array
   const logs: LogItem[] = [

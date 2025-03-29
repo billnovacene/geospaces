@@ -7,7 +7,7 @@ import { MonthlyOverviewSection } from "./MonthlyOverviewSection";
 import { RiskGlanceSection } from "./RiskGlanceSection";
 import { ScrollbarStyler } from "./ScrollbarStyler";
 import { DevelopmentLogPanel } from "./DevelopmentLogPanel";
-import { useDampMoldData } from "./hooks/useDampMoldData";
+import { DampMoldProvider } from "./context/DampMoldContext";
 
 interface DampMoldViewProps {
   contextType?: "zone" | "site" | "all";
@@ -31,29 +31,6 @@ export function DampMoldView({
   const [monthlyTimeRange, setMonthlyTimeRange] = useState("month");
   const { activeTheme } = useTheme();
   
-  // Use our custom hook to fetch data and determine context
-  const { 
-    contextInfo, 
-    data: displayData, 
-    isLoading, 
-    error 
-  } = useDampMoldData(
-    propsContextType,
-    propsContextId,
-    propsSiteId,
-    propsZoneId,
-    activeFilter
-  );
-  
-  console.log("DampMoldView props:", { 
-    contextType: contextInfo.contextType, 
-    contextId: contextInfo.contextId, 
-    siteId: contextInfo.siteId, 
-    zoneId: contextInfo.zoneId, 
-    activeFilter, 
-    currentDate 
-  });
-  
   // Get monthly risk data and apply filters
   let monthlyRiskData = generateMonthlyRiskData();
   
@@ -69,41 +46,44 @@ export function DampMoldView({
   }
 
   return (
-    <div className="space-y-6 dark:bg-gray-900 transition-colors duration-300">
-      {/* Apply scrollbar styling */}
-      <ScrollbarStyler />
-      
-      {/* Monthly Overview section */}
-      <MonthlyOverviewSection 
-        timeRange={monthlyTimeRange}
-        setTimeRange={setMonthlyTimeRange}
-        monthlyRiskData={monthlyRiskData} 
-      />
-      
-      {/* Daily Overview section with description */}
-      <DailyOverviewSection 
-        timeRange={dailyTimeRange} 
-        setTimeRange={setDailyTimeRange}
-      />
-      
-      <RiskGlanceSection 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab}
-        timeRange={dailyTimeRange} 
-        setTimeRange={setDailyTimeRange} 
-        monthlyRiskData={monthlyRiskData}
-        activeFilter={activeFilter}
-      />
-      
-      {/* Development logs panel */}
-      <DevelopmentLogPanel 
-        dataPoints={displayData.daily.length} 
-        isLoading={isLoading}
-        error={error as Error}
-        activeTheme={activeTheme}
-        activeFilter={activeFilter}
-      />
-    </div>
+    <DampMoldProvider
+      contextType={propsContextType}
+      contextId={propsContextId}
+      siteId={propsSiteId}
+      zoneId={propsZoneId}
+      activeFilter={activeFilter}
+      currentDate={currentDate}
+    >
+      <div className="space-y-6 dark:bg-gray-900 transition-colors duration-300">
+        {/* Apply scrollbar styling */}
+        <ScrollbarStyler />
+        
+        {/* Monthly Overview section */}
+        <MonthlyOverviewSection 
+          timeRange={monthlyTimeRange}
+          setTimeRange={setMonthlyTimeRange}
+          monthlyRiskData={monthlyRiskData} 
+        />
+        
+        {/* Daily Overview section with description */}
+        <DailyOverviewSection 
+          timeRange={dailyTimeRange} 
+          setTimeRange={setDailyTimeRange}
+        />
+        
+        <RiskGlanceSection 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab}
+          timeRange={dailyTimeRange} 
+          setTimeRange={setDailyTimeRange} 
+          monthlyRiskData={monthlyRiskData}
+          activeFilter={activeFilter}
+        />
+        
+        {/* Development logs panel */}
+        <DevelopmentLogPanel />
+      </div>
+    </DampMoldProvider>
   );
 }
 
