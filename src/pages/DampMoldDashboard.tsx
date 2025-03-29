@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { DampMoldView } from "@/components/Dashboard/DampMold/DampMoldView";
@@ -6,6 +5,8 @@ import { DashboardLayout } from "@/components/Dashboard/Common/DashboardLayout";
 import { DashboardHeader } from "@/components/Dashboard/Common/DashboardHeader";
 import { StatItem } from "@/components/Dashboard/Common/SummaryStats";
 import { useTheme } from "@/components/ThemeProvider";
+import { useDampMoldStats } from "@/hooks/useDampMoldStats";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const DampMoldDashboard = () => {
   const { siteId, zoneId } = useParams<{ siteId: string; zoneId: string; }>();
@@ -14,15 +15,15 @@ const DampMoldDashboard = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const { activeTheme } = useTheme();
   
+  const { data: statsData, isLoading: isLoadingStats, error: statsError } = useDampMoldStats(siteId, zoneId);
+  
   console.log("DampMoldDashboard params:", { siteId, zoneId });
   console.log("Current route:", location.pathname);
   console.log("Current theme:", activeTheme);
 
-  // Add a body class for damp-mold dashboard specific styling
   useEffect(() => {
     document.body.classList.add('damp-mold-dashboard-active');
     
-    // Force a scrollbar refresh when this component mounts
     const refreshScrollbars = () => {
       console.log("DampMoldDashboard: Forcing scrollbar refresh");
       document.documentElement.classList.add('scrollbar-refresh');
@@ -35,9 +36,7 @@ const DampMoldDashboard = () => {
       }, 50);
     };
     
-    // Apply scrollbar styles with the highest specificity possible
     const applyDampMoldScrollbarStyles = () => {
-      // Get scrollbar settings or use defaults
       try {
         const savedSettings = localStorage.getItem('scrollbar-settings');
         if (savedSettings) {
@@ -52,9 +51,7 @@ const DampMoldDashboard = () => {
             document.head.appendChild(styleEl);
           }
           
-          // Ultra-specific CSS just for this page
           const css = `
-            /* DampMold page scrollbar styles with maximum specificity */
             body.damp-mold-dashboard-active *::-webkit-scrollbar-track {
               background-color: ${colors.trackColor} !important;
             }
@@ -88,11 +85,9 @@ const DampMoldDashboard = () => {
       }
     };
     
-    // Apply both techniques
     applyDampMoldScrollbarStyles();
     refreshScrollbars();
     
-    // Do this again in 500ms to catch any lazy-loaded components
     const timer = setTimeout(() => {
       applyDampMoldScrollbarStyles();
       refreshScrollbars();
@@ -108,42 +103,10 @@ const DampMoldDashboard = () => {
     };
   }, [activeTheme]);
 
-  // Summary stats for damp and mold conditions with keys for filtering and secondary labels
-  const summaryStats: StatItem[] = [{
-    value: "5",
-    label: "Buildings",
-    secondaryLabel: "Connected",
-    type: "normal",
-    key: "buildings"
-  }, {
-    value: "46",
-    label: "Zones",
-    secondaryLabel: "Monitored", 
-    type: "normal",
-    key: "zones"
-  }, {
-    value: "1",
-    label: "Zones",
-    secondaryLabel: "High Risk",
-    type: "high-risk",
-    key: "high-risk"
-  }, {
-    value: "3",
-    label: "Zones",
-    secondaryLabel: "Caution",
-    type: "caution",
-    key: "caution"
-  }, {
-    value: "42",
-    label: "Zones",
-    secondaryLabel: "Normal",
-    type: "success",
-    key: "normal"
-  }];
+  const summaryStats = statsData?.stats || [];
   
   const handleStatClick = (stat: StatItem) => {
     console.log("Stat clicked:", stat);
-    // Toggle the filter if the same stat is clicked again
     if (activeFilter === stat.key) {
       setActiveFilter(null);
     } else {
@@ -162,14 +125,36 @@ const DampMoldDashboard = () => {
       currentDate={currentDate}
       customDashboardType="damp-mold"
     >
-      {/* Header section with title and stats */}
-      <DashboardHeader
-        title="Damp & Mold"
-        subtitle="Active Insights & Alert Status"
-        stats={summaryStats}
-        onStatClick={handleStatClick}
-        activeFilter={activeFilter}
-      />
+      {isLoadingStats ? (
+        <div className="mb-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-[20px] py-[20px] bg-card dark:bg-gray-800/50">
+            <div className="flex flex-col mb-6 md:mb-0 md:w-1/4 pr-4">
+              <h1 className="heading-1 mb-1 font-light text-left text-3xl text-gray-800 dark:text-white">Damp & Mold</h1>
+              <p className="body-normal text-sm font-extralight text-muted-foreground dark:text-gray-300">Active Insights & Alert Status</p>
+            </div>
+            
+            <div className="md:w-3/4">
+              <div className="flex space-x-4 items-stretch w-full">
+                {[1, 2, 3, 4, 5].map((_, index) => (
+                  <div key={index} className="flex-1 bg-card dark:bg-card rounded-lg overflow-hidden shadow-sm p-4">
+                    <Skeleton className="h-8 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-1/3 mt-2" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <DashboardHeader
+          title="Damp & Mold"
+          subtitle="Active Insights & Alert Status"
+          stats={summaryStats}
+          onStatClick={handleStatClick}
+          activeFilter={activeFilter}
+        />
+      )}
 
       <DampMoldView 
         activeFilter={activeFilter} 
