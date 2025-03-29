@@ -4,6 +4,8 @@ import { ImportControls } from "./data-import/ImportControls";
 import { ImportSummary } from "./data-import/ImportSummary";
 import { ImportHistory } from "./data-import/ImportHistory";
 import { useImportData } from "./data-import/useImportData";
+import { DbTools } from "./data-import/DbTools";
+import { Separator } from "@/components/ui/separator";
 
 export const DataImportTab = () => {
   const {
@@ -29,6 +31,10 @@ export const DataImportTab = () => {
         isLoadingLogs={isLoadingLogs} 
         onRefresh={fetchImportLogs} 
       />
+      
+      <Separator className="my-6" />
+      
+      <DbTools />
     </div>
   );
 };
