@@ -131,9 +131,25 @@ export function DashboardMainContent({
   const totalDataPoints = displayData.daily.length;
   const hasRealData = realDataPoints > 0;
   
-  // Merge progressively calculated stats with API stats
+  // Fix: Ensure progressiveStats contains all required fields by merging with displayData.stats
+  // or providing default values for required fields
   const displayStats = progressiveStats 
-    ? { ...(displayData.stats || {}), ...progressiveStats }
+    ? { 
+        ...(displayData.stats || {
+          avgTemp: 0,
+          minTemp: 0,
+          maxTemp: 0,
+          avgHumidity: 0,
+          activeSensors: 0,
+          status: {
+            avgTemp: 'good',
+            minTemp: 'good',
+            maxTemp: 'good',
+            avgHumidity: 'good'
+          }
+        }),
+        ...progressiveStats 
+      } as StatsData
     : displayData.stats;
 
   return (
