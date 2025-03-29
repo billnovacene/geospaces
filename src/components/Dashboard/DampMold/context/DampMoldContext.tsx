@@ -2,6 +2,7 @@
 import React, { createContext, useContext } from "react";
 import { TempHumidityResponse } from "@/services/interfaces/temp-humidity";
 import { useDampMoldData, DampMoldContextInfo } from "../hooks/useDampMoldData";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface DampMoldProviderProps {
   children: React.ReactNode;
@@ -20,6 +21,7 @@ interface DampMoldContextType {
   error: Error | null;
   activeFilter: string | null;
   currentDate: Date;
+  activeTheme: string;  // Added this line to resolve the TypeScript error
 }
 
 const DampMoldContext = createContext<DampMoldContextType | undefined>(undefined);
@@ -33,6 +35,9 @@ export function DampMoldProvider({
   activeFilter = null,
   currentDate = new Date()
 }: DampMoldProviderProps) {
+  // Use the theme hook to get the active theme
+  const { activeTheme } = useTheme();
+
   // Use the custom hook to fetch data and determine context
   const { 
     contextInfo, 
@@ -53,7 +58,8 @@ export function DampMoldProvider({
     isLoading,
     error,
     activeFilter,
-    currentDate
+    currentDate,
+    activeTheme  // Added this line to include the active theme in the context
   };
 
   return (
