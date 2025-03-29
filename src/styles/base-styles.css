@@ -35,7 +35,9 @@
   }
   
   /* Enhanced dark mode scrollbar colors with !important flag for highest specificity */
-  html.dark, html[data-theme="dark"], html[class*="dark"] {
+  html.dark, 
+  html[data-theme="dark"], 
+  html[class*="dark"] {
     --scrollbar-track-color: rgb(31 41 55) !important; /* bg-gray-800 */
     --scrollbar-thumb-color: rgb(75 85 99) !important; /* bg-gray-600 */
     --scrollbar-thumb-hover-color: rgb(107 114 128) !important; /* bg-gray-500 */
@@ -67,22 +69,25 @@
     scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color) !important;
   }
   
-  /* Direct dark mode overrides with high specificity */
-  .dark *::-webkit-scrollbar-track,
+  /* Ultra-high specificity dark mode overrides */
   html.dark *::-webkit-scrollbar-track,
-  [data-theme="dark"] *::-webkit-scrollbar-track {
+  .dark *::-webkit-scrollbar-track,
+  [data-theme="dark"] *::-webkit-scrollbar-track,
+  html[class*="dark"] *::-webkit-scrollbar-track {
     background-color: rgb(31 41 55) !important; /* bg-gray-800 */
   }
   
-  .dark *::-webkit-scrollbar-thumb,
   html.dark *::-webkit-scrollbar-thumb,
-  [data-theme="dark"] *::-webkit-scrollbar-thumb {
+  .dark *::-webkit-scrollbar-thumb,
+  [data-theme="dark"] *::-webkit-scrollbar-thumb,
+  html[class*="dark"] *::-webkit-scrollbar-thumb {
     background-color: rgb(75 85 99) !important; /* bg-gray-600 */
   }
   
-  .dark *::-webkit-scrollbar-thumb:hover,
   html.dark *::-webkit-scrollbar-thumb:hover,
-  [data-theme="dark"] *::-webkit-scrollbar-thumb:hover {
+  .dark *::-webkit-scrollbar-thumb:hover,
+  [data-theme="dark"] *::-webkit-scrollbar-thumb:hover,
+  html[class*="dark"] *::-webkit-scrollbar-thumb:hover {
     background-color: rgb(107 114 128) !important; /* bg-gray-500 */
   }
   
@@ -132,6 +137,23 @@
   }
   
   .dark .scrollbar-preview.dark-preview::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(107 114 128) !important; /* bg-gray-500 */
+  }
+  
+  /* DampMold dashboard specific scrollbar overrides */
+  /* These styles should always apply when on damp-mold dashboard */
+  body.damp-mold-dashboard-active.dark *::-webkit-scrollbar-track,
+  body.damp-mold-dashboard-active.dark [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+    background-color: rgb(31 41 55) !important; /* bg-gray-800 */
+  }
+  
+  body.damp-mold-dashboard-active.dark *::-webkit-scrollbar-thumb,
+  body.damp-mold-dashboard-active.dark [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+    background-color: rgb(75 85 99) !important; /* bg-gray-600 */
+  }
+  
+  body.damp-mold-dashboard-active.dark *::-webkit-scrollbar-thumb:hover,
+  body.damp-mold-dashboard-active.dark [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
     background-color: rgb(107 114 128) !important; /* bg-gray-500 */
   }
 }
