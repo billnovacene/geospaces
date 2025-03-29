@@ -45,7 +45,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Store the last active theme
     localStorage.setItem("activeTheme", theme);
     
-    // Apply scrollbar styles based on theme with a robust mechanism
+    // Apply scrollbar styles based on theme with a direct style element for maximum specificity
     const applyScrollbarStyles = () => {
       // Get any saved scrollbar settings
       const savedScrollbarSettings = localStorage.getItem('scrollbar-settings');
@@ -53,7 +53,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         try {
           const settings = JSON.parse(savedScrollbarSettings);
           
-          // Create or get an existing style element for scrollbar styles
+          // Create a dedicated style element for theme-specific scrollbar styles
           let styleEl = document.getElementById('theme-scrollbar-styles');
           if (!styleEl) {
             styleEl = document.createElement('style');
@@ -61,11 +61,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             document.head.appendChild(styleEl);
           }
           
-          // Select color variables based on active theme
+          // Select the appropriate colors based on current theme
           const colors = theme === 'dark' ? settings.darkMode : settings.lightMode;
           
-          // Create CSS with !important rules for maximum specificity
+          // Create CSS with !important for maximum specificity
+          // This ensures scrollbar colors override any other styles
           const css = `
+            /* Global CSS Variables with !important */
             :root {
               --scrollbar-width: ${settings.width}px !important;
               --scrollbar-height: ${settings.width}px !important;
@@ -75,7 +77,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               --scrollbar-thumb-hover-color: ${colors.thumbHoverColor} !important;
             }
             
-            /* Ensure styles are applied to all scrollbars */
+            /* Direct style application for WebKit scrollbars */
             *::-webkit-scrollbar-track {
               background-color: ${colors.trackColor} !important;
             }
@@ -88,30 +90,58 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               background-color: ${colors.thumbHoverColor} !important;
             }
             
-            /* Special sidebar scrollbar override */
-            [data-sidebar="sidebar"] *::-webkit-scrollbar-track,
-            [data-sidebar] *::-webkit-scrollbar-track {
-              background-color: ${colors.trackColor} !important;
-            }
-            
-            [data-sidebar="sidebar"] *::-webkit-scrollbar-thumb,
-            [data-sidebar] *::-webkit-scrollbar-thumb {
-              background-color: ${colors.thumbColor} !important;
-            }
-            
-            [data-sidebar="sidebar"] *::-webkit-scrollbar-thumb:hover,
-            [data-sidebar] *::-webkit-scrollbar-thumb:hover {
-              background-color: ${colors.thumbHoverColor} !important;
-            }
+            /* Special theme-specific styles for dark mode */
+            ${theme === 'dark' ? `
+              /* High specificity selectors for dark mode */
+              html.dark *::-webkit-scrollbar-track,
+              .dark *::-webkit-scrollbar-track,
+              [data-theme="dark"] *::-webkit-scrollbar-track {
+                background-color: ${colors.trackColor} !important;
+              }
+              
+              html.dark *::-webkit-scrollbar-thumb,
+              .dark *::-webkit-scrollbar-thumb,
+              [data-theme="dark"] *::-webkit-scrollbar-thumb {
+                background-color: ${colors.thumbColor} !important;
+              }
+              
+              html.dark *::-webkit-scrollbar-thumb:hover,
+              .dark *::-webkit-scrollbar-thumb:hover,
+              [data-theme="dark"] *::-webkit-scrollbar-thumb:hover {
+                background-color: ${colors.thumbHoverColor} !important;
+              }
+              
+              /* Target Radix UI scroll components directly */
+              [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+                background-color: ${colors.trackColor} !important;
+              }
+              
+              [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+                background-color: ${colors.thumbColor} !important;
+              }
+              
+              [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+                background-color: ${colors.thumbHoverColor} !important;
+              }
+            ` : ''}
           `;
           
           styleEl.textContent = css;
+          
+          // Add CSS class to document for debugging
+          document.documentElement.classList.toggle('scrollbar-dark-mode', theme === 'dark');
+          
+          console.log(`Applied ${theme} mode scrollbar styles:`, {
+            track: colors.trackColor,
+            thumb: colors.thumbColor,
+            hover: colors.thumbHoverColor
+          });
         } catch (e) {
           console.error("Failed to apply scrollbar settings", e);
         }
       }
       
-      // Trigger scrollbar refresh
+      // Force refresh scrollbars with a class toggle technique
       document.documentElement.classList.add('scrollbar-refresh');
       setTimeout(() => {
         document.documentElement.classList.add('scrollbar-refresh-done');
