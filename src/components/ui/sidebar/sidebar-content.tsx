@@ -3,7 +3,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { type Direction } from "@radix-ui/react-scroll-area";
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
 export const SidebarContent = React.forwardRef<
   HTMLDivElement,
