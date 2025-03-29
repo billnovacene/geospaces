@@ -1,183 +1,249 @@
 
-// Database operations for importing data
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.6';
-import { SHEET_URL } from "./config.ts";
-import { type ProcessedData, type ImportResult } from "./types.ts";
+import { ProcessedData, ImportResult } from "./types.ts";
+import { corsHeaders } from "./config.ts";
 
-// Create a Supabase client
-export function getSupabaseClient() {
-  const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
-  return createClient(supabaseUrl, supabaseAnonKey);
-}
+// Supabase client for the Edge function
+const supabaseClient = Deno.env.get('SUPABASE_URL') && Deno.env.get('SUPABASE_ANON_KEY') 
+  ? {
+    url: Deno.env.get('SUPABASE_URL')!,
+    key: Deno.env.get('SUPABASE_ANON_KEY')!
+  }
+  : {
+    url: 'https://byankhnmqnewhdcvsoyz.supabase.co',
+    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YW5raG5tcW5ld2hkY3Zzb3l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NTg5ODAsImV4cCI6MjA1ODQzNDk4MH0.T4i1-ofCC1Tjm9TAklo5xdj77ggrsXqNBv3GtPwsOm0'
+  };
 
 // Import data to Supabase
-export async function importToSupabase(
-  processedData: ProcessedData,
-  importLogId: string
-): Promise<ImportResult> {
-  const supabase = getSupabaseClient();
-  const { projects, sites, zones, devices, sensors, sensorData } = processedData;
+export async function importToSupabase(data: ProcessedData, importLogId: string): Promise<ImportResult> {
+  const URL = supabaseClient.url;
+  const KEY = supabaseClient.key;
   
   let totalImported = 0;
-  let success = true;
-  let errorMessage = '';
+  let counts = {
+    projects: 0,
+    sites: 0,
+    zones: 0,
+    devices: 0,
+    sensors: 0,
+    sensorData: 0
+  };
   
   try {
     // Create import log entry
-    const { error: importLogError } = await supabase
-      .from('import_logs')
-      .insert([
-        { 
-          id: importLogId,
-          source: 'google_sheet',
-          status: 'processing',
-          metadata: { 
-            sheet_url: SHEET_URL 
-          }
-        }
-      ]);
-      
-    if (importLogError) throw importLogError;
-    
-    console.log(`Started import with log ID: ${importLogId}`);
+    await fetch(`${URL}/rest/v1/import_logs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': KEY,
+        'Authorization': `Bearer ${KEY}`,
+        ...corsHeaders
+      },
+      body: JSON.stringify({
+        id: importLogId,
+        source: 'google_sheet',
+        status: 'processing',
+        rows_imported: 0
+      })
+    });
     
     // Import projects
-    if (projects.length > 0) {
-      const { error: projectsError } = await supabase
-        .from('projects')
-        .upsert(projects, { onConflict: 'id' });
+    if (data.projects.length > 0) {
+      const projectsResponse = await fetch(`${URL}/rest/v1/projects`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': KEY,
+          'Authorization': `Bearer ${KEY}`,
+          'Prefer': 'resolution=merge-duplicates',
+          ...corsHeaders
+        },
+        body: JSON.stringify(data.projects)
+      });
       
-      if (projectsError) throw projectsError;
-      totalImported += projects.length;
-      console.log(`Imported ${projects.length} projects`);
+      if (!projectsResponse.ok) {
+        throw new Error(`Failed to import projects: ${projectsResponse.status} ${projectsResponse.statusText}`);
+      }
+      
+      counts.projects = data.projects.length;
+      totalImported += data.projects.length;
+      console.log(`Imported ${data.projects.length} projects`);
     }
     
     // Import sites
-    if (sites.length > 0) {
-      const { error: sitesError } = await supabase
-        .from('sites')
-        .upsert(sites, { onConflict: 'id' });
+    if (data.sites.length > 0) {
+      const sitesResponse = await fetch(`${URL}/rest/v1/sites`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': KEY,
+          'Authorization': `Bearer ${KEY}`,
+          'Prefer': 'resolution=merge-duplicates',
+          ...corsHeaders
+        },
+        body: JSON.stringify(data.sites)
+      });
       
-      if (sitesError) throw sitesError;
-      totalImported += sites.length;
-      console.log(`Imported ${sites.length} sites`);
+      if (!sitesResponse.ok) {
+        throw new Error(`Failed to import sites: ${sitesResponse.status} ${sitesResponse.statusText}`);
+      }
+      
+      counts.sites = data.sites.length;
+      totalImported += data.sites.length;
+      console.log(`Imported ${data.sites.length} sites`);
     }
     
     // Import zones
-    if (zones.length > 0) {
-      const { error: zonesError } = await supabase
-        .from('zones')
-        .upsert(zones, { onConflict: 'id' });
+    if (data.zones.length > 0) {
+      const zonesResponse = await fetch(`${URL}/rest/v1/zones`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': KEY,
+          'Authorization': `Bearer ${KEY}`,
+          'Prefer': 'resolution=merge-duplicates',
+          ...corsHeaders
+        },
+        body: JSON.stringify(data.zones)
+      });
       
-      if (zonesError) throw zonesError;
-      totalImported += zones.length;
-      console.log(`Imported ${zones.length} zones`);
+      if (!zonesResponse.ok) {
+        throw new Error(`Failed to import zones: ${zonesResponse.status} ${zonesResponse.statusText}`);
+      }
+      
+      counts.zones = data.zones.length;
+      totalImported += data.zones.length;
+      console.log(`Imported ${data.zones.length} zones`);
     }
     
     // Import devices
-    if (devices.length > 0) {
-      const { error: devicesError } = await supabase
-        .from('devices')
-        .upsert(devices, { onConflict: 'id' });
+    if (data.devices.length > 0) {
+      const devicesResponse = await fetch(`${URL}/rest/v1/devices`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': KEY,
+          'Authorization': `Bearer ${KEY}`,
+          'Prefer': 'resolution=merge-duplicates',
+          ...corsHeaders
+        },
+        body: JSON.stringify(data.devices)
+      });
       
-      if (devicesError) throw devicesError;
-      totalImported += devices.length;
-      console.log(`Imported ${devices.length} devices`);
+      if (!devicesResponse.ok) {
+        throw new Error(`Failed to import devices: ${devicesResponse.status} ${devicesResponse.statusText}`);
+      }
+      
+      counts.devices = data.devices.length;
+      totalImported += data.devices.length;
+      console.log(`Imported ${data.devices.length} devices`);
     }
     
     // Import sensors
-    if (sensors.length > 0) {
-      const { error: sensorsError } = await supabase
-        .from('sensors')
-        .upsert(sensors, { onConflict: 'id' });
+    if (data.sensors.length > 0) {
+      const sensorsResponse = await fetch(`${URL}/rest/v1/sensors`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': KEY,
+          'Authorization': `Bearer ${KEY}`,
+          'Prefer': 'resolution=merge-duplicates',
+          ...corsHeaders
+        },
+        body: JSON.stringify(data.sensors)
+      });
       
-      if (sensorsError) throw sensorsError;
-      totalImported += sensors.length;
-      console.log(`Imported ${sensors.length} sensors`);
+      if (!sensorsResponse.ok) {
+        throw new Error(`Failed to import sensors: ${sensorsResponse.status} ${sensorsResponse.statusText}`);
+      }
+      
+      counts.sensors = data.sensors.length;
+      totalImported += data.sensors.length;
+      console.log(`Imported ${data.sensors.length} sensors`);
     }
     
     // Import sensor data
-    if (sensorData.length > 0) {
-      // Process in batches of 1000
-      const batchSize = 1000;
-      for (let i = 0; i < sensorData.length; i += batchSize) {
-        const batch = sensorData.slice(i, i + batchSize);
-        
-        const { error: sensorDataError } = await supabase
-          .from('sensor_data')
-          .upsert(batch, { onConflict: 'sensor_id, timestamp' });
-        
-        if (sensorDataError) throw sensorDataError;
-        totalImported += batch.length;
-        console.log(`Imported batch of ${batch.length} sensor data records`);
+    if (data.sensorData.length > 0) {
+      const sensorDataResponse = await fetch(`${URL}/rest/v1/sensor_data`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': KEY,
+          'Authorization': `Bearer ${KEY}`,
+          'Prefer': 'resolution=merge-duplicates',
+          ...corsHeaders
+        },
+        body: JSON.stringify(data.sensorData)
+      });
+      
+      if (!sensorDataResponse.ok) {
+        throw new Error(`Failed to import sensor data: ${sensorDataResponse.status} ${sensorDataResponse.statusText}`);
       }
       
-      console.log(`Imported ${sensorData.length} sensor data records total`);
+      counts.sensorData = data.sensorData.length;
+      totalImported += data.sensorData.length;
+      console.log(`Imported ${data.sensorData.length} sensor data records`);
     }
     
-  } catch (error) {
-    console.error('Import error:', error);
-    success = false;
-    errorMessage = error.message || 'Unknown error occurred during import';
-  }
-  
-  // Update import log
-  try {
-    const { error: updateLogError } = await supabase
-      .from('import_logs')
-      .update({
+    // Update import log entry with successful status
+    await fetch(`${URL}/rest/v1/import_logs`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': KEY,
+        'Authorization': `Bearer ${KEY}`,
+        ...corsHeaders
+      },
+      body: JSON.stringify({
+        id: importLogId,
         finished_at: new Date().toISOString(),
-        status: success ? 'completed' : 'failed',
+        status: 'completed',
         rows_imported: totalImported,
-        error_message: errorMessage,
-        metadata: {
-          sheet_url: SHEET_URL,
-          projects_count: projects.length,
-          sites_count: sites.length,
-          zones_count: zones.length,
-          devices_count: devices.length,
-          sensors_count: sensors.length,
-          sensor_data_count: sensorData.length
-        }
+        metadata: { counts }
       })
-      .eq('id', importLogId);
-      
-    if (updateLogError) {
-      console.error('Error updating import log:', updateLogError);
-    }
-  } catch (e) {
-    console.error('Failed to update import log:', e);
+    });
+    
+    return {
+      success: true,
+      totalImported,
+      counts,
+      error: ''
+    };
+    
+  } catch (error) {
+    console.error('Error in importToSupabase:', error);
+    return {
+      success: false,
+      totalImported,
+      counts,
+      error: error.message || 'Unknown error'
+    };
   }
-  
-  return {
-    success,
-    totalImported,
-    counts: {
-      projects: projects.length,
-      sites: sites.length,
-      zones: zones.length,
-      devices: devices.length,
-      sensors: sensors.length,
-      sensorData: sensorData.length
-    },
-    error: errorMessage
-  };
 }
 
-// Update import log to failed status
+// Mark import as failed in the database
 export async function markImportAsFailed(importLogId: string, errorMessage: string) {
-  const supabase = getSupabaseClient();
   try {
-    await supabase
-      .from('import_logs')
-      .update({
+    const URL = supabaseClient.url;
+    const KEY = supabaseClient.key;
+    
+    await fetch(`${URL}/rest/v1/import_logs`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': KEY,
+        'Authorization': `Bearer ${KEY}`,
+        ...corsHeaders
+      },
+      body: JSON.stringify({
+        id: importLogId,
         finished_at: new Date().toISOString(),
         status: 'failed',
-        error_message: errorMessage || 'Unknown error'
+        error_message: errorMessage
       })
-      .eq('id', importLogId);
-  } catch (e) {
-    console.error('Failed to update import log:', e);
+    });
+    
+    console.log(`Marked import ${importLogId} as failed: ${errorMessage}`);
+  } catch (updateError) {
+    console.error('Failed to update import log status:', updateError);
   }
 }
