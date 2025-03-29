@@ -23,43 +23,58 @@
     @apply shadow-xl shadow-black/20;
   }
   
-  /* Custom scrollbar styling */
+  /* Unified scrollbar styling system */
   /* For Webkit browsers (Chrome, Safari, etc.) */
+  :root {
+    /* Scrollbar variables - LIGHT MODE */
+    --scrollbar-width: 12px;
+    --scrollbar-height: 12px;
+    --scrollbar-track-color: rgb(243 244 246); /* bg-gray-100 */
+    --scrollbar-thumb-color: rgb(209 213 219); /* bg-gray-300 */
+    --scrollbar-thumb-hover-color: rgb(156 163 175); /* bg-gray-400 */
+    --scrollbar-radius: 9999px; /* rounded-full */
+  }
+  
+  .dark {
+    /* Scrollbar variables - DARK MODE */
+    --scrollbar-track-color: rgb(31 41 55); /* bg-gray-800 */
+    --scrollbar-thumb-color: rgb(75 85 99); /* bg-gray-600 */
+    --scrollbar-thumb-hover-color: rgb(107 114 128); /* bg-gray-500 */
+  }
+  
+  /* Webkit scrollbar styles */
   ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+    width: var(--scrollbar-width);
+    height: var(--scrollbar-height);
   }
   
   ::-webkit-scrollbar-track {
-    @apply bg-gray-100;
+    background: var(--scrollbar-track-color);
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+    background: var(--scrollbar-thumb-color);
+    border-radius: var(--scrollbar-radius);
   }
   
-  /* Dark mode scrollbar styles - increased contrast */
-  .dark ::-webkit-scrollbar-track {
-    @apply bg-gray-800;
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover-color);
   }
   
-  .dark ::-webkit-scrollbar-thumb {
-    @apply bg-gray-600 hover:bg-gray-500;
-  }
-  
-  /* For Firefox */
+  /* Firefox scrollbar styles */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #d1d5db #f3f4f6;
+    scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
   }
   
-  .dark * {
-    scrollbar-color: #4b5563 #1f2937;
-  }
-
   /* Chart containers should show scrollbars when needed */
   .recharts-wrapper, .recharts-surface {
     @apply overflow-visible;
+  }
+  
+  /* Force scrollbar refresh when theme changes */
+  .scrollbar-refresh {
+    transition: all 0.3s ease;
   }
 }
 

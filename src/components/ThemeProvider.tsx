@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { 
   ThemeContext, 
@@ -44,6 +43,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     
     // Store the last active theme
     localStorage.setItem("activeTheme", theme);
+    
+    // Force scrollbar refresh on theme change
+    document.documentElement.classList.add('scrollbar-refresh');
+    setTimeout(() => {
+      document.documentElement.classList.remove('scrollbar-refresh');
+    }, 50);
   }, [settings]);
 
   // Listen for system theme changes

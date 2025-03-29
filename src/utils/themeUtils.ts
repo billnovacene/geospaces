@@ -64,6 +64,13 @@ export function applyThemeToDOM(theme: "light" | "dark", colorScheme: string): v
   document.documentElement.setAttribute("data-color-scheme", colorScheme);
   
   // Force scrollbar style refresh
+  // First remove any existing style
+  document.documentElement.style.overflow = '';
+  
+  // Then force a reflow
+  void document.documentElement.offsetHeight;
+  
+  // Finally set the style back
   document.documentElement.style.overflow = 'auto';
   
   // Log theme application
