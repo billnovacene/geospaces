@@ -11,10 +11,15 @@ export interface DailyOverviewPoint {
   time: string;
   temperature: number;
   humidity: number;
+  dewPoint?: number;
   isReal?: {
     temperature: boolean;
     humidity: boolean;
   };
+  siteId?: number | string;
+  zoneId?: number | string;
+  siteName?: string;
+  zoneName?: string;
 }
 
 export interface StatsData {

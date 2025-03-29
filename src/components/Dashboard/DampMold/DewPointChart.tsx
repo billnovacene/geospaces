@@ -23,7 +23,7 @@ export function DewPointChart() {
     
     return data.daily.map(point => {
       // Calculate dew point if not provided
-      const dewPoint = point.dewPoint || 
+      const dewPoint = point.dewPoint !== undefined ? point.dewPoint : 
         (point.temperature - ((100 - point.humidity) / 5));
       
       return {

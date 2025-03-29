@@ -63,6 +63,7 @@ export const fetchDampMoldData = async (
       time: new Date(item.timestamp).toISOString(),
       temperature: item.temperature || 0,
       humidity: item.humidity || 0,
+      dewPoint: item.dew_point || null,
       isReal: {
         temperature: true,
         humidity: true

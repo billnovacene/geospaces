@@ -47,8 +47,8 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: DailyOverviewPoi
     
     return {
       id: index + 1,
-      building: siteData.siteName || `Building ${siteData.siteId}`,
-      zone: siteData.zoneName || `Zone ${siteData.zoneId}`,
+      building: siteData.siteName || `Building ${siteData.siteId || 'Unknown'}`,
+      zone: siteData.zoneName || `Zone ${siteData.zoneId || 'Unknown'}`,
       temp: avgTemp.toFixed(1),
       rh: Math.round(avgHumidity),
       dewPoint: dewPoint.toFixed(1),

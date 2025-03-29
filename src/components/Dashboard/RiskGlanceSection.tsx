@@ -51,7 +51,7 @@ export function RiskGlanceSection({
       <CardContent className="w-full py-8">
         {activeTab === "today" ? <div className="w-full space-y-8">
             <div className="relative w-full">
-              <DewPointChart data={null} />
+              <DewPointChart />
             </div>
           </div> : <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/4">

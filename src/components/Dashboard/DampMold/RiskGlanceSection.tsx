@@ -50,7 +50,7 @@ export function RiskGlanceSection({
       
       <CardContent className="w-full py-8">
         {activeTab === "today" ? (
-          <DailyRiskSummary data={null} />
+          <DailyRiskSummary />
         ) : (
           <div className="flex flex-col md:flex-row gap-8">
             <MonthlyDataDescription activeFilter={activeFilter} />

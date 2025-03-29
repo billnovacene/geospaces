@@ -6,11 +6,7 @@ import { FileSpreadsheet, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-interface DailyRiskSummaryProps {
-  data: any;
-}
-
-export function DailyRiskSummary({ data }: DailyRiskSummaryProps) {
+export function DailyRiskSummary() {
   const [isImporting, setIsImporting] = useState(false);
 
   const handleImport = async () => {
@@ -53,7 +49,7 @@ export function DailyRiskSummary({ data }: DailyRiskSummaryProps) {
     <div className="w-full space-y-8">
       <div className="flex justify-between items-center mb-4">
         <div className="relative w-full">
-          <DewPointChart data={data} />
+          <DewPointChart />
         </div>
         <div className="flex-shrink-0 ml-4">
           <Button
