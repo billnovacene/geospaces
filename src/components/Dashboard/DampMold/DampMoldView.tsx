@@ -8,7 +8,7 @@ import { DevelopmentLogPanel } from "./DevelopmentLogPanel";
 import { DampMoldProvider } from "./context/DampMoldContext";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ReloadIcon, DatabaseIcon, AlertTriangleIcon } from "lucide-react";
+import { LoaderIcon, DatabaseIcon, AlertTriangleIcon } from "lucide-react";
 import { useDampMoldData } from "./hooks/useDampMoldData";
 import { generateAndInsertDampMoldData } from "@/services/damp-mold-data-generator";
 import { toast } from "sonner";
@@ -48,7 +48,7 @@ const EmptyStateView = ({ onGenerateData, isLoading, contextInfo }: {
       >
         {isLoading ? (
           <>
-            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+            <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />
             Generating...
           </>
         ) : (
@@ -79,7 +79,7 @@ const ErrorStateView = ({ error, onRetry, isLoading }: {
         >
           {isLoading ? (
             <>
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />
               Retrying...
             </>
           ) : (

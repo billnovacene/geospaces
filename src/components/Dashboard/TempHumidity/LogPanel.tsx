@@ -16,9 +16,10 @@ interface LogPanelProps {
   logs: LogItem[];
   title?: string;
   onClearLogs?: () => void;
+  actionButton?: React.ReactNode;
 }
 
-export function LogPanel({ logs, title = "API Data Logs", onClearLogs }: LogPanelProps) {
+export function LogPanel({ logs, title = "API Data Logs", onClearLogs, actionButton }: LogPanelProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [filter, setFilter] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -105,6 +106,8 @@ export function LogPanel({ logs, title = "API Data Logs", onClearLogs }: LogPane
               Errors
             </Badge>
           </div>
+          
+          {actionButton}
           
           <Button 
             variant="ghost" 
