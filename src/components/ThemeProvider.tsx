@@ -44,11 +44,38 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Store the last active theme
     localStorage.setItem("activeTheme", theme);
     
-    // Force scrollbar refresh on theme change
-    document.documentElement.classList.add('scrollbar-refresh');
-    setTimeout(() => {
-      document.documentElement.classList.remove('scrollbar-refresh');
-    }, 50);
+    // Ensure scrollbar styles are refreshed on theme change
+    const applyScrollbarStyles = () => {
+      // Get any saved scrollbar settings
+      const savedScrollbarSettings = localStorage.getItem('scrollbar-settings');
+      if (savedScrollbarSettings) {
+        try {
+          const settings = JSON.parse(savedScrollbarSettings);
+          
+          // Apply the dark mode colors if we're in dark mode
+          if (theme === 'dark') {
+            document.documentElement.style.setProperty('--scrollbar-track-color', settings.darkMode.trackColor);
+            document.documentElement.style.setProperty('--scrollbar-thumb-color', settings.darkMode.thumbColor);
+            document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', settings.darkMode.thumbHoverColor);
+          } else {
+            // Otherwise apply light mode colors
+            document.documentElement.style.setProperty('--scrollbar-track-color', settings.lightMode.trackColor);
+            document.documentElement.style.setProperty('--scrollbar-thumb-color', settings.lightMode.thumbColor);
+            document.documentElement.style.setProperty('--scrollbar-thumb-hover-color', settings.lightMode.thumbHoverColor);
+          }
+        } catch (e) {
+          console.error("Failed to parse scrollbar settings", e);
+        }
+      }
+      
+      // Force scrollbar refresh
+      document.documentElement.classList.add('scrollbar-refresh');
+      setTimeout(() => {
+        document.documentElement.classList.remove('scrollbar-refresh');
+      }, 50);
+    };
+    
+    applyScrollbarStyles();
   }, [settings]);
 
   // Listen for system theme changes
