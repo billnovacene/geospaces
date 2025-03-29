@@ -20,9 +20,19 @@ export const generateExampleData = async () => {
     // Create a project if none exists
     let projectId = existingProjects?.[0]?.id;
     if (!projectId) {
+      // Get the next ID for the project - we need this since id is a required field
+      const { data: maxProjectId } = await supabase
+        .from('projects')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1);
+      
+      const nextProjectId = maxProjectId && maxProjectId.length > 0 ? maxProjectId[0].id + 1 : 1;
+      
       const { data: newProject, error: projectError } = await supabase
         .from('projects')
         .insert({
+          id: nextProjectId,
           name: 'Example Project',
           description: 'Auto-generated example project',
           status: 'Active'
@@ -46,9 +56,18 @@ export const generateExampleData = async () => {
     // Create sites if needed
     const siteIds = [];
     if (!existingSites || existingSites.length < 2) {
+      // Get the next ID for sites
+      const { data: maxSiteId } = await supabase
+        .from('sites')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1);
+      
+      let nextSiteId = maxSiteId && maxSiteId.length > 0 ? maxSiteId[0].id + 1 : 1;
+      
       const sitesToCreate = [
-        { name: 'Zircon North', address: '123 North St', description: 'North campus building', status: 'Active', project_id: projectId },
-        { name: 'Zircon South', address: '456 South Ave', description: 'South campus building', status: 'Active', project_id: projectId }
+        { id: nextSiteId, name: 'Zircon North', address: '123 North St', description: 'North campus building', status: 'Active', project_id: projectId },
+        { id: nextSiteId + 1, name: 'Zircon South', address: '456 South Ave', description: 'South campus building', status: 'Active', project_id: projectId }
       ];
       
       for (const site of sitesToCreate) {
@@ -60,6 +79,7 @@ export const generateExampleData = async () => {
         
         if (siteError) throw siteError;
         siteIds.push(newSite.id);
+        nextSiteId++;
         
         console.log(`Created new site with ID: ${newSite.id} and name: ${site.name}`);
       }
@@ -79,10 +99,19 @@ export const generateExampleData = async () => {
       // Create zones if needed
       const zoneIds = [];
       if (!existingZones || existingZones.length < 3) {
+        // Get the next ID for zones
+        const { data: maxZoneId } = await supabase
+          .from('zones')
+          .select('id')
+          .order('id', { ascending: false })
+          .limit(1);
+        
+        let nextZoneId = maxZoneId && maxZoneId.length > 0 ? maxZoneId[0].id + 1 : 1;
+        
         const zonesToCreate = [
-          { name: 'Ground Floor', description: 'Ground floor area', type: 'Floor', status: 'Active', area: 150, site_id: siteId },
-          { name: 'First Floor', description: 'First floor area', type: 'Floor', status: 'Active', area: 120, site_id: siteId },
-          { name: 'Kitchen', description: 'Kitchen area', type: 'Room', status: 'Active', area: 30, site_id: siteId }
+          { id: nextZoneId, name: 'Ground Floor', description: 'Ground floor area', type: 'Floor', status: 'Active', area: 150, site_id: siteId },
+          { id: nextZoneId + 1, name: 'First Floor', description: 'First floor area', type: 'Floor', status: 'Active', area: 120, site_id: siteId },
+          { id: nextZoneId + 2, name: 'Kitchen', description: 'Kitchen area', type: 'Room', status: 'Active', area: 30, site_id: siteId }
         ];
         
         for (const zone of zonesToCreate) {
@@ -94,6 +123,7 @@ export const generateExampleData = async () => {
           
           if (zoneError) throw zoneError;
           zoneIds.push(newZone.id);
+          nextZoneId++;
           
           console.log(`Created new zone with ID: ${newZone.id} and name: ${zone.name}`);
         }
