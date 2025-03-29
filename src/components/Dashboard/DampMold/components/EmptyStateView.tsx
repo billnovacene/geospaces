@@ -1,43 +1,55 @@
 
 import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DatabaseIcon, LoaderIcon } from "lucide-react";
+import { AlertTriangle, Database, RefreshCw } from "lucide-react";
+import { DampMoldContextInfo } from "../hooks/useDampMoldData";
 
 interface EmptyStateViewProps {
   onGenerateData: () => void;
   isLoading: boolean;
-  contextInfo: any;
+  contextInfo: DampMoldContextInfo;
 }
 
 export function EmptyStateView({ onGenerateData, isLoading, contextInfo }: EmptyStateViewProps) {
+  const contextName = contextInfo.contextType === 'zone' 
+    ? `Zone ${contextInfo.zoneId}` 
+    : contextInfo.contextType === 'site' 
+      ? `Site ${contextInfo.siteId}` 
+      : 'this location';
+
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center space-y-6">
-      <DatabaseIcon className="h-16 w-16 text-muted-foreground/50" />
-      <div className="space-y-2">
-        <h3 className="text-xl font-medium">No Damp & Mold Data Found</h3>
-        <p className="text-muted-foreground max-w-md">
-          {contextInfo.contextType === "zone"
-            ? `There is no data for this zone (${contextInfo.contextName}).`
-            : contextInfo.contextType === "site"
-            ? `There is no data for this site (${contextInfo.contextName}).`
-            : "There is no damp & mold data in the database."}
-        </p>
-      </div>
-      <Button 
-        onClick={onGenerateData} 
-        disabled={isLoading} 
-        variant="default"
-        className="mt-4"
-      >
-        {isLoading ? (
-          <>
-            <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />
-            Generating...
-          </>
-        ) : (
-          <>Generate Test Data</>
-        )}
-      </Button>
-    </div>
+    <Card className="shadow-md border-0 dark:bg-gray-800/50">
+      <CardContent className="pt-6 px-6 pb-8">
+        <div className="flex flex-col items-center text-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
+            <AlertTriangle className="h-6 w-6 text-amber-500 dark:text-amber-400" />
+          </div>
+          
+          <div className="space-y-2">
+            <h3 className="text-xl font-medium dark:text-white">No damp & mold data available</h3>
+            <p className="text-muted-foreground dark:text-gray-300 max-w-md">
+              There is no temperature or humidity data available for {contextName} to analyze for damp and mold risk.
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <Button 
+              variant="default" 
+              onClick={onGenerateData}
+              disabled={isLoading}
+              className="gap-2"
+            >
+              {isLoading ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <Database className="h-4 w-4" />
+              )}
+              {isLoading ? "Generating data..." : "Generate test data"}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
