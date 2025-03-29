@@ -13,6 +13,8 @@ export interface DampMoldContextInfo {
   siteId?: string;
   zoneId?: string;
   contextName?: string | null;
+  siteName?: string | null;
+  zoneName?: string | null;
 }
 
 export function useDampMoldData(
@@ -33,27 +35,32 @@ export function useDampMoldData(
   const contextId = propsContextId || zoneId || siteId || null;
   
   // Fetch zone name if we have a zone ID
-  const { data: zoneName } = useQuery({
+  const { data: zoneData } = useQuery({
     queryKey: ["zone-name", zoneId],
     queryFn: async () => {
+      if (!zoneId) return null;
       const zone = await fetchZone(Number(zoneId));
-      return zone?.name || "Unknown Zone";
+      return zone;
     },
     enabled: !!zoneId,
   });
   
-  // Fetch site name if we have a site ID but no zone ID
-  const { data: siteName } = useQuery({
+  // Fetch site name if we have a site ID
+  const { data: siteData } = useQuery({
     queryKey: ["site-name", siteId],
     queryFn: async () => {
+      if (!siteId) return null;
       const site = await fetchSite(Number(siteId));
-      return site?.name || "Unknown Site";
+      return site;
     },
-    enabled: !!siteId && !zoneId,
+    enabled: !!siteId,
   });
   
-  // Determine the context name
-  const contextName = zoneId ? zoneName : siteId ? siteName : "All Locations";
+  const zoneName = zoneData?.name || "Unknown Zone";
+  const siteName = zoneData?.siteId && siteData?.name ? siteData.name : (siteData?.name || "Unknown Site");
+  
+  // Determine the context name based on available data
+  const contextName = zoneId ? `${siteName} - ${zoneName}` : siteId ? siteName : "All Locations";
   
   // Fetch the damp mold data
   const { 
@@ -117,7 +124,15 @@ export function useDampMoldData(
   };
 
   return {
-    contextInfo: { contextType, contextId, siteId, zoneId, contextName },
+    contextInfo: { 
+      contextType, 
+      contextId, 
+      siteId, 
+      zoneId, 
+      contextName,
+      siteName,
+      zoneName
+    },
     data: dataWithDefaultStats,
     isLoading,
     error,

@@ -169,58 +169,91 @@ export const generateMonthlyRiskDataFromDailyData = (dailyData: any[]): any[] =>
     const date = new Date(item.timestamp || item.time);
     const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
     const zoneKey = item.zone_id || 'undefined';
+    const siteKey = item.site_id || 'undefined';
     
-    if (!groups[monthKey]) groups[monthKey] = {};
-    if (!groups[monthKey][zoneKey]) groups[monthKey][zoneKey] = [];
+    const groupKey = `${monthKey}-${siteKey}-${zoneKey}`;
+    if (!groups[groupKey]) {
+      groups[groupKey] = {
+        monthKey,
+        siteKey,
+        zoneKey,
+        items: []
+      };
+    }
     
-    groups[monthKey][zoneKey].push(item);
+    groups[groupKey].items.push(item);
     return groups;
   }, {});
 
   // Process monthly grouped data
-  const monthlyRiskData = Object.entries(monthlyGroupedData).flatMap(([monthKey, zoneData]) => {
-    return Object.entries(zoneData).map(([zoneId, zoneItems]) => {
-      const temps = zoneItems.map(item => item.temperature).filter(Boolean);
-      const humidities = zoneItems.map(item => item.humidity).filter(Boolean);
-      
-      const avgTemp = temps.length > 0 
-        ? temps.reduce((sum, val) => sum + val, 0) / temps.length 
-        : 0;
-      const avgHumidity = humidities.length > 0 
-        ? humidities.reduce((sum, val) => sum + val, 0) / humidities.length 
-        : 0;
-      
-      // Calculate dew point: simplified formula
-      const dewPoint = avgTemp - ((100 - avgHumidity) / 5);
-      
-      // Determine risk level
-      let overallRisk = 'Good';
-      const riskScore = 
-        (avgHumidity > 70 ? 2 : avgHumidity > 60 ? 1 : 0) +
-        (avgTemp < 16 ? 1 : 0);
-      
-      if (riskScore > 2) overallRisk = 'Alarm';
-      else if (riskScore > 1) overallRisk = 'Caution';
-      
-      const alarmsCount = zoneItems.filter(item => 
-        item.humidity > 70 || (item.humidity > 60 && item.temperature < 16)
-      ).length;
-      
-      return {
-        id: `${monthKey}-${zoneId}`,
-        building: `Building ${Math.floor(Number(zoneId) / 3) + 1}`,
-        zone: zoneId === 'undefined' ? 'Undefined Zone' : `Zone ${zoneId}`,
-        temp: avgTemp.toFixed(1),
-        rh: avgHumidity.toFixed(1),
-        dewPoint: dewPoint.toFixed(1),
-        overallRisk,
-        alarmCount: alarmsCount,
-        timeAtRisk: `${alarmsCount}`,
-        comments: overallRisk === 'Alarm' ? 'Needs attention' : 
-                  overallRisk === 'Caution' ? 'Monitor closely' : 'Normal operation'
-      };
-    });
-  }).flat();
+  const monthlyRiskData = Object.values(monthlyGroupedData).map((group: any) => {
+    const { monthKey, siteKey, zoneKey, items } = group;
+    
+    // Extract temperature and humidity data
+    const temps = items.map((item: any) => item.temperature).filter(Boolean);
+    const humidities = items.map((item: any) => item.humidity).filter(Boolean);
+    
+    // Calculate averages
+    const avgTemp = temps.length > 0 
+      ? temps.reduce((sum: number, val: number) => sum + val, 0) / temps.length 
+      : 0;
+    const avgHumidity = humidities.length > 0 
+      ? humidities.reduce((sum: number, val: number) => sum + val, 0) / humidities.length 
+      : 0;
+    
+    // Calculate dew point: simplified formula
+    const dewPoint = avgTemp - ((100 - avgHumidity) / 5);
+    
+    // Determine risk level using proper risk assessment logic
+    let overallRisk = 'Good';
+    let riskScore = 0;
+    
+    // Count readings with high risk conditions
+    const highRiskReadings = items.filter((item: any) => 
+      (item.humidity > 70) || (item.humidity > 60 && item.temperature < 16)
+    );
+    
+    // Calculate actual hours at risk (each reading represents 4 hours in our data)
+    const hoursAtRisk = highRiskReadings.length * 4;
+    
+    // Set risk level based on percentage of time at high risk
+    const totalPossibleHours = items.length * 4;
+    const percentAtRisk = (hoursAtRisk / totalPossibleHours) * 100;
+    
+    if (percentAtRisk > 20) {
+      overallRisk = 'Alarm';
+      riskScore = 3;
+    } else if (percentAtRisk > 10) {
+      overallRisk = 'Caution';
+      riskScore = 2;
+    } else if (percentAtRisk > 5) {
+      overallRisk = 'Good';
+      riskScore = 1;
+    }
+    
+    // Prepare site and building names
+    let buildingName = `Building ${Math.floor(Number(siteKey) / 10)}`;
+    let zoneName = `Zone ${zoneKey}`;
+    
+    if (siteKey === 'undefined') buildingName = 'Unknown Building';
+    if (zoneKey === 'undefined') zoneName = 'Unknown Zone';
+    
+    return {
+      id: `${monthKey}-${siteKey}-${zoneKey}`,
+      building: buildingName,
+      zone: zoneName,
+      temp: avgTemp.toFixed(1),
+      rh: avgHumidity.toFixed(1),
+      dewPoint: dewPoint.toFixed(1),
+      overallRisk,
+      alarmCount: highRiskReadings.length,
+      timeAtRisk: `${hoursAtRisk}`,
+      comments: overallRisk === 'Alarm' ? 'Needs immediate attention' : 
+                overallRisk === 'Caution' ? 'Monitor closely' : 'Normal operation',
+      siteId: siteKey,
+      zoneId: zoneKey
+    };
+  });
 
   return monthlyRiskData;
 };

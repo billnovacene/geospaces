@@ -4,6 +4,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { InfoIcon } from "lucide-react";
 
 interface RiskTableRowData {
   id: string | number;
@@ -43,14 +45,46 @@ export function RiskAssessmentTable({ data }: RiskAssessmentTableProps) {
           <Table>
             <TableHeader>
               <TableRow className="dark:border-gray-700">
-                <TableHead className="w-[100px] dark:text-gray-300">Building</TableHead>
-                <TableHead className="dark:text-gray-300">Zone</TableHead>
+                <TableHead className="w-[180px] dark:text-gray-300">Building/Site</TableHead>
+                <TableHead className="w-[160px] dark:text-gray-300">Zone</TableHead>
                 <TableHead className="text-right dark:text-gray-300">Temp (°C)</TableHead>
                 <TableHead className="text-right dark:text-gray-300">RH (%)</TableHead>
-                <TableHead className="text-right dark:text-gray-300">Dew Point (°C)</TableHead>
+                <TableHead className="text-right dark:text-gray-300">
+                  <div className="flex items-center justify-end gap-1">
+                    <span>Dew Point (°C)</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          <p className="max-w-[180px] text-xs">
+                            The temperature at which air becomes saturated and condensation forms
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </TableHead>
                 <TableHead className="dark:text-gray-300">Overall Risk</TableHead>
                 <TableHead className="text-right dark:text-gray-300">No. of Alarms</TableHead>
-                <TableHead className="text-right dark:text-gray-300">Time at Risk (h)</TableHead>
+                <TableHead className="text-right dark:text-gray-300">
+                  <div className="flex items-center justify-end gap-1">
+                    <span>Time at Risk (h)</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          <p className="max-w-[180px] text-xs">
+                            Total hours where conditions were favorable for mold growth or condensation
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </TableHead>
                 <TableHead className="dark:text-gray-300">Comments</TableHead>
               </TableRow>
             </TableHeader>
