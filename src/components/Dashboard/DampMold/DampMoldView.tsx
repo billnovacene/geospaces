@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { fetchDampMoldData } from "@/services/damp-mold";
@@ -9,6 +10,10 @@ import { MonthlyOverviewSection } from "./MonthlyOverviewSection";
 import { RiskGlanceSection } from "./RiskGlanceSection";
 import { useTheme } from "@/components/ThemeProvider";
 import { LogPanel } from "../TempHumidity/LogPanel";
+import { TempHumidityResponse } from "@/services/interfaces/temp-humidity";
+import { LogItem } from "@/hooks/temperature/types";
+import { fetchSite } from "@/services/sites";
+import { fetchZone } from "@/services/zones";
 
 interface DampMoldViewProps {
   contextType?: "zone" | "site" | "all";
@@ -24,10 +29,6 @@ interface ExtendedTempHumidityResponse extends TempHumidityResponse {
   currentDewPoint?: number;
   dewPointRisk?: "default" | "destructive" | "outline" | "secondary" | "success";
   dewPointDifference?: number;
-  stats: TempHumidityResponse["stats"];
-  daily: TempHumidityResponse["daily"];
-  monthly: TempHumidityResponse["monthly"];
-  sourceData: TempHumidityResponse["sourceData"];
 }
 
 export function DampMoldView({ 
@@ -235,17 +236,17 @@ export function DampMoldView({
             logs={[
               { 
                 message: `Fetched ${displayData.daily.length} damp mold data points`, 
-                type: 'info', 
+                type: 'info' as const, 
                 timestamp: new Date().toISOString() 
               },
               ...(isLoading ? [{ 
                 message: 'Data is loading', 
-                type: 'info', 
+                type: 'info' as const, 
                 timestamp: new Date().toISOString() 
               }] : []),
               ...(error ? [{ 
                 message: `Error fetching data: ${error.message}`, 
-                type: 'error', 
+                type: 'error' as const, 
                 timestamp: new Date().toISOString() 
               }] : []),
               { message: 'Using simulated data only', type: 'info' as const, timestamp: new Date().toISOString() },

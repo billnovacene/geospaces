@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { TempHumidityResponse } from "./interfaces/temp-humidity";
+import { generateMockData } from "./sensors/mock-data-generator";
 
 export const fetchDampMoldData = async (siteId?: string, zoneId?: string): Promise<TempHumidityResponse> => {
   try {
@@ -12,9 +13,9 @@ export const fetchDampMoldData = async (siteId?: string, zoneId?: string): Promi
 
     // Add filters if site or zone is provided
     if (zoneId) {
-      query = query.eq('zone_id', zoneId);
+      query = query.eq('zone_id', parseInt(zoneId, 10));
     } else if (siteId) {
-      query = query.eq('site_id', siteId);
+      query = query.eq('site_id', parseInt(siteId, 10));
     }
 
     // Limit to recent data
