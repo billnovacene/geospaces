@@ -9,6 +9,66 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      damp_mold_data: {
+        Row: {
+          condensation_risk: string | null
+          created_at: string
+          dew_point: number | null
+          humidity: number | null
+          id: string
+          is_real: boolean | null
+          mold_risk: string | null
+          site_id: number | null
+          surface_temperature: number | null
+          temperature: number | null
+          timestamp: string
+          zone_id: number | null
+        }
+        Insert: {
+          condensation_risk?: string | null
+          created_at?: string
+          dew_point?: number | null
+          humidity?: number | null
+          id?: string
+          is_real?: boolean | null
+          mold_risk?: string | null
+          site_id?: number | null
+          surface_temperature?: number | null
+          temperature?: number | null
+          timestamp?: string
+          zone_id?: number | null
+        }
+        Update: {
+          condensation_risk?: string | null
+          created_at?: string
+          dew_point?: number | null
+          humidity?: number | null
+          id?: string
+          is_real?: boolean | null
+          mold_risk?: string | null
+          site_id?: number | null
+          surface_temperature?: number | null
+          temperature?: number | null
+          timestamp?: string
+          zone_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "damp_mold_data_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "damp_mold_data_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       devices: {
         Row: {
           created_at: string

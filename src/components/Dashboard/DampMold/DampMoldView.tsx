@@ -1,20 +1,14 @@
-
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
+import { fetchDampMoldData } from "@/services/damp-mold";
 import { useQuery } from "@tanstack/react-query";
-import { fetchZone } from "@/services/zones";
-import { fetchSite } from "@/services/sites";
-import { LogPanel } from "../TempHumidity/LogPanel";
-import { LoadingState } from "../TempHumidity/LoadingState";
-import { ErrorState } from "../TempHumidity/ErrorState";
-import { TempHumidityResponse } from "@/services/interfaces/temp-humidity";
-import { RiskGlanceSection } from "./RiskGlanceSection";
+import { generateMockData } from "@/services/sensors/mock-data-generator";
+import { generateMonthlyRiskData } from "./utils/mockRiskData";
 import { DailyOverviewSection } from "./DailyOverviewSection";
 import { MonthlyOverviewSection } from "./MonthlyOverviewSection";
-import { generateMonthlyRiskData } from "./utils/mockRiskData";
-import { generateMockData } from "@/services/sensors/mock-data-generator";
-import { LogItem } from "@/hooks/temperature/types";
+import { RiskGlanceSection } from "./RiskGlanceSection";
 import { useTheme } from "@/components/ThemeProvider";
+import { LogPanel } from "../TempHumidity/LogPanel";
 
 interface DampMoldViewProps {
   contextType?: "zone" | "site" | "all";
@@ -183,6 +177,33 @@ export function DampMoldView({
   // Generate dewPointData for the chart
   const dewPointData = data?.daily || [];
   
+  // Use the new query hook to fetch damp mold data
+  const { 
+    data: dampMoldData, 
+    isLoading, 
+    error 
+  } = useQuery({
+    queryKey: ['damp-mold-data', siteId, zoneId],
+    queryFn: () => fetchDampMoldData(siteId, zoneId),
+    // Refetch every minute
+    refetchInterval: 60000,
+  });
+
+  // If no real data, use mock data
+  const displayData = dampMoldData || generateMockData();
+  monthlyRiskData = generateMonthlyRiskData();
+
+  // Apply filtering based on activeFilter
+  if (activeFilter) {
+    if (activeFilter === 'high-risk') {
+      monthlyRiskData = monthlyRiskData.filter(item => item.overallRisk === 'Alarm');
+    } else if (activeFilter === 'caution') {
+      monthlyRiskData = monthlyRiskData.filter(item => item.overallRisk === 'Caution');
+    } else if (activeFilter === 'normal') {
+      monthlyRiskData = monthlyRiskData.filter(item => item.overallRisk === 'Good');
+    }
+  }
+
   return (
     <div className="space-y-6 dark:bg-gray-900 transition-colors duration-300">
       {/* Monthly Overview section */}
@@ -198,7 +219,6 @@ export function DampMoldView({
         setTimeRange={setDailyTimeRange}
       />
       
-      {/* "Risk at a glance" section */}
       <RiskGlanceSection 
         activeTab={activeTab} 
         setActiveTab={setActiveTab}
@@ -211,18 +231,39 @@ export function DampMoldView({
       {/* Only show logs in development environment */}
       {process.env.NODE_ENV === 'development' && (
         <div className="mt-8">
-          <LogPanel logs={[
-            { message: 'Using simulated data only', type: 'info' as const, timestamp: new Date().toISOString() },
-            ...(activeFilter ? [{ 
-              message: `Filtering data by: ${activeFilter}`, 
-              type: 'info' as const, 
-              timestamp: new Date().toISOString() 
-            }] : []),
-            { message: `Theme mode: ${activeTheme}`, type: 'info' as const, timestamp: new Date().toISOString() },
-            { message: `Dark mode from DOM: ${document.documentElement.classList.contains('dark')}`, type: 'info' as const, timestamp: new Date().toISOString() }
-          ]} onClearLogs={() => {}} title="Damp & Mold Monitoring Logs" />
+          <LogPanel 
+            logs={[
+              { 
+                message: `Fetched ${displayData.daily.length} damp mold data points`, 
+                type: 'info', 
+                timestamp: new Date().toISOString() 
+              },
+              ...(isLoading ? [{ 
+                message: 'Data is loading', 
+                type: 'info', 
+                timestamp: new Date().toISOString() 
+              }] : []),
+              ...(error ? [{ 
+                message: `Error fetching data: ${error.message}`, 
+                type: 'error', 
+                timestamp: new Date().toISOString() 
+              }] : []),
+              { message: 'Using simulated data only', type: 'info' as const, timestamp: new Date().toISOString() },
+              ...(activeFilter ? [{ 
+                message: `Filtering data by: ${activeFilter}`, 
+                type: 'info' as const, 
+                timestamp: new Date().toISOString() 
+              }] : []),
+              { message: `Theme mode: ${activeTheme}`, type: 'info' as const, timestamp: new Date().toISOString() },
+              { message: `Dark mode from DOM: ${document.documentElement.classList.contains('dark')}`, type: 'info' as const, timestamp: new Date().toISOString() }
+            ]} 
+            onClearLogs={() => {}} 
+            title="Damp & Mold Monitoring Logs" 
+          />
         </div>
       )}
     </div>
   );
 }
+
+export default DampMoldView;
