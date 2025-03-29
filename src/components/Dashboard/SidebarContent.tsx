@@ -1,8 +1,8 @@
 
 import React from "react";
-import { SidebarSection } from "../SidebarSection";
-import { SitesSidebar } from "../SitesSidebar";
-import { ZonesHierarchy } from "../ZonesHierarchy";
+import { SidebarSection } from "./SidebarSection";
+import { SitesSidebar } from "./SitesSidebar";
+import { ZonesHierarchy } from "./ZonesHierarchy";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface SidebarContentProps {
