@@ -9,7 +9,7 @@ export const SidebarContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div">
 >(({ className, ...props }, ref) => {
-  // Extract dir from props to avoid type mismatch
+  // Extract all props that might cause type issues with ScrollArea
   const { dir, ...restProps } = props;
   
   return (
