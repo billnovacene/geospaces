@@ -1,7 +1,8 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { TempHumidityResponse, DailyOverviewPoint } from "./interfaces/temp-humidity";
+import { TempHumidityResponse, DailyOverviewPoint, StatsData } from "./interfaces/temp-humidity";
 import { toast } from "sonner";
+import { calculateStats } from "./sensors/stats";
 
 // Fetch damp and mold data from Supabase
 export const fetchDampMoldData = async (
@@ -36,7 +37,20 @@ export const fetchDampMoldData = async (
     if (!data || data.length === 0) {
       return {
         daily: [],
-        monthly: []
+        monthly: [],
+        stats: {
+          avgTemp: 0,
+          minTemp: 0,
+          maxTemp: 0,
+          avgHumidity: 0,
+          activeSensors: 0,
+          status: {
+            avgTemp: 'good',
+            minTemp: 'good',
+            maxTemp: 'good',
+            avgHumidity: 'good'
+          }
+        }
       };
     }
     
@@ -51,10 +65,14 @@ export const fetchDampMoldData = async (
       }
     }));
     
+    // Calculate stats from the data
+    const statsData: StatsData = calculateStats(dailyData, []);
+    
     // Format the data for the response
     return {
       daily: dailyData,
-      monthly: []
+      monthly: [],
+      stats: statsData
     };
   } catch (error) {
     console.error("Error fetching damp mold data:", error);

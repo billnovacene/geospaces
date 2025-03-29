@@ -10,6 +10,7 @@ import { LoadingState } from "@/components/Dashboard/TempHumidity/LoadingState";
 import { ErrorState } from "@/components/Dashboard/TempHumidity/ErrorState";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, AlertTriangle } from "lucide-react";
+import { StatsData } from "@/services/interfaces/temp-humidity";
 
 interface SpecificZoneViewProps {
   siteId: string;
@@ -113,6 +114,21 @@ export function SpecificZoneView({
     );
   }
 
+  // Ensure we have default stats if none provided
+  const defaultStats: StatsData = {
+    avgTemp: 21,
+    minTemp: 18,
+    maxTemp: 24,
+    avgHumidity: 55,
+    activeSensors: 0,
+    status: {
+      avgTemp: 'good',
+      minTemp: 'good',
+      maxTemp: 'good',
+      avgHumidity: 'good'
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -126,7 +142,7 @@ export function SpecificZoneView({
       <Card className="border-0 shadow-sm">
         <CardContent className="p-6">
           <DashboardStatsSection 
-            stats={data.stats} 
+            stats={data.stats || defaultStats} 
             isLoading={isLoading} 
             loadingStage={loadingStage}
           />

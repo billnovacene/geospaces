@@ -8,7 +8,7 @@ interface DashboardContentProps {
   data: {
     daily: DailyOverviewPoint[];
     monthly: MonthlyOverviewPoint[];
-    stats: StatsData;
+    stats?: StatsData; // Make stats optional to match TempHumidityResponse
     operatingHours?: {
       startTime: string;
       endTime: string;

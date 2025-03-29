@@ -82,11 +82,46 @@ export function useDampMoldData(
     refetchInterval: 60000,
   });
 
+  // Ensure we have stats even if they weren't provided
+  const dataWithDefaultStats: TempHumidityResponse = dampMoldData ? {
+    ...dampMoldData,
+    stats: dampMoldData.stats || {
+      avgTemp: 0,
+      minTemp: 0,
+      maxTemp: 0,
+      avgHumidity: 0,
+      activeSensors: 0,
+      status: {
+        avgTemp: 'good',
+        minTemp: 'good',
+        maxTemp: 'good',
+        avgHumidity: 'good'
+      }
+    }
+  } : {
+    daily: [],
+    monthly: [],
+    stats: {
+      avgTemp: 0,
+      minTemp: 0,
+      maxTemp: 0,
+      avgHumidity: 0,
+      activeSensors: 0,
+      status: {
+        avgTemp: 'good',
+        minTemp: 'good',
+        maxTemp: 'good',
+        avgHumidity: 'good'
+      }
+    }
+  };
+
   return {
     contextInfo: { contextType, contextId, siteId, zoneId, contextName },
-    data: dampMoldData as TempHumidityResponse,
+    data: dataWithDefaultStats,
     isLoading,
     error,
-    refetch
+    refetch,
+    activeFilter
   };
 }

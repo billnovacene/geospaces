@@ -54,6 +54,23 @@ export function DashboardMainContent({
   
   // Generate mock data if no data is available
   const simulatedData = generateMockData();
+  // Ensure that simulated data always has stats
+  if (!simulatedData.stats) {
+    simulatedData.stats = {
+      avgTemp: 21,
+      minTemp: 18,
+      maxTemp: 24,
+      avgHumidity: 55,
+      activeSensors: 0,
+      status: {
+        avgTemp: 'good',
+        minTemp: 'good',
+        maxTemp: 'good',
+        avgHumidity: 'good'
+      }
+    };
+  }
+  
   const displayData = (!data || data.daily.length === 0) ? simulatedData : data;
   
   // If original data was empty, but we're now using simulated data
@@ -116,7 +133,7 @@ export function DashboardMainContent({
   
   // Merge progressively calculated stats with API stats
   const displayStats = progressiveStats 
-    ? { ...displayData.stats, ...progressiveStats }
+    ? { ...(displayData.stats || {}), ...progressiveStats }
     : displayData.stats;
 
   return (
