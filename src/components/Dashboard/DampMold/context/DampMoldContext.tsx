@@ -21,7 +21,8 @@ interface DampMoldContextType {
   error: Error | null;
   activeFilter: string | null;
   currentDate: Date;
-  activeTheme: string;  // Added this line to resolve the TypeScript error
+  activeTheme: string;
+  refetch: () => void; // Added the refetch function to the context
 }
 
 const DampMoldContext = createContext<DampMoldContextType | undefined>(undefined);
@@ -43,7 +44,8 @@ export function DampMoldProvider({
     contextInfo, 
     data, 
     isLoading, 
-    error 
+    error,
+    refetch 
   } = useDampMoldData(
     propsContextType,
     propsContextId,
@@ -59,7 +61,8 @@ export function DampMoldProvider({
     error,
     activeFilter,
     currentDate,
-    activeTheme  // Added this line to include the active theme in the context
+    activeTheme,
+    refetch // Added the refetch function to the context value
   };
 
   return (
